@@ -1,0 +1,664 @@
+/* =========================================================
+   THE ONLY BAKER
+   PRODUCT REVIEWS
+========================================================= */
+
+.tob-reviews-section {
+    width: 100%;
+    padding: 78px 20px 86px;
+    background: #fff;
+    border-top: 1px solid #eee5de;
+    color: #3c2a21;
+}
+
+.tob-reviews-heading {
+    margin-bottom: 35px;
+}
+
+.tob-reviews-eyebrow,
+.tob-review-form-eyebrow {
+    display: block;
+    margin-bottom: 9px;
+    color: #967158;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 2.2px;
+    text-transform: uppercase;
+}
+
+.tob-reviews-heading h2 {
+    margin: 0;
+    color: #32180e;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(31px, 3vw, 42px);
+    font-weight: 400;
+    line-height: 1.1;
+}
+
+.tob-review-success,
+.tob-review-error {
+    margin-bottom: 24px;
+    padding: 14px 17px;
+    border: 1px solid;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.tob-review-success {
+    border-color: #cbdcc5;
+    background: #f1f7ef;
+    color: #4f7048;
+}
+
+.tob-review-error {
+    border-color: #e4c9c4;
+    background: #fff5f3;
+    color: #8a4338;
+}
+
+.tob-review-error p {
+    margin: 0;
+}
+
+.tob-review-error p + p {
+    margin-top: 4px;
+}
+
+
+/* =========================================================
+   SUMMARY + FORM
+========================================================= */
+
+.tob-reviews-layout {
+    display: grid;
+    grid-template-columns: minmax(300px, .78fr) minmax(0, 1.22fr);
+    gap: 55px;
+    padding-bottom: 55px;
+    border-bottom: 1px solid #eee5de;
+}
+
+.tob-rating-summary {
+    padding: 34px;
+    background: #fbf7f1;
+    border: 1px solid #eee3da;
+}
+
+.tob-rating-big {
+    margin-bottom: 5px;
+    color: #32180e;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 56px;
+    line-height: 1;
+}
+
+.tob-summary-stars,
+.tob-review-item-stars {
+    display: flex;
+    gap: 3px;
+}
+
+.tob-summary-stars {
+    margin-bottom: 10px;
+}
+
+.tob-summary-stars span,
+.tob-review-item-stars span {
+    color: #d8ccc2;
+}
+
+.tob-summary-stars span {
+    font-size: 18px;
+}
+
+.tob-summary-stars span.filled,
+.tob-review-item-stars span.filled {
+    color: #c68b35;
+}
+
+.tob-rating-summary > p {
+    margin: 0 0 27px;
+    color: #88776c;
+    font-size: 11px;
+}
+
+.tob-rating-bars {
+    display: grid;
+    gap: 10px;
+}
+
+.tob-rating-bar-row {
+    display: grid;
+    grid-template-columns: 32px minmax(0, 1fr) 25px;
+    align-items: center;
+    gap: 10px;
+    color: #715e52;
+    font-size: 10px;
+}
+
+.tob-rating-bar-row strong {
+    font-weight: 500;
+    text-align: right;
+}
+
+.tob-rating-bar {
+    height: 5px;
+    overflow: hidden;
+    background: #e8ddd4;
+}
+
+.tob-rating-bar > span {
+    height: 100%;
+    display: block;
+    background: #c68b35;
+}
+
+
+/* =========================================================
+   REVIEW FORM
+========================================================= */
+
+.tob-review-form-card {
+    padding: 6px 0;
+}
+
+.tob-review-form-card h3 {
+    margin: 0 0 25px;
+    color: #32180e;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 29px;
+    font-weight: 400;
+}
+
+.tob-review-rating-field {
+    margin-bottom: 24px;
+}
+
+.tob-review-rating-field > label,
+.tob-review-text-field > label {
+    display: block;
+    margin-bottom: 9px;
+    color: #4d3629;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .3px;
+}
+
+.tob-review-star-input {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.tob-review-star {
+    width: 31px;
+    height: 31px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #d8ccc2;
+    font-size: 27px;
+    line-height: 1;
+    cursor: pointer;
+    transition:
+        color .15s ease,
+        transform .15s ease;
+}
+
+.tob-review-star:hover {
+    transform: translateY(-1px);
+}
+
+.tob-review-star.active,
+.tob-review-star.preview {
+    color: #c68b35;
+}
+
+.tob-selected-rating {
+    display: block;
+    min-height: 17px;
+    margin-top: 5px;
+    color: #8d7b70;
+    font-size: 10px;
+}
+
+.tob-review-text-field {
+    position: relative;
+    margin-bottom: 18px;
+}
+
+.tob-review-text-field textarea {
+    width: 100%;
+    min-height: 145px;
+    display: block;
+    resize: vertical;
+    padding: 15px 16px 30px;
+    border: 1px solid #ded2c8;
+    border-radius: 2px;
+    outline: none;
+    background: #fff;
+    color: #3f2b20;
+    font-family: inherit;
+    font-size: 12px;
+    line-height: 1.7;
+    transition:
+        border-color .2s ease,
+        box-shadow .2s ease;
+}
+
+.tob-review-text-field textarea:focus {
+    border-color: #8c6752;
+    box-shadow: 0 0 0 3px rgba(74, 40, 24, .06);
+}
+
+.tob-review-text-field textarea::placeholder {
+    color: #a9998f;
+}
+
+.tob-review-character-count {
+    position: absolute;
+    right: 12px;
+    bottom: 9px;
+    color: #a09187;
+    font-size: 9px;
+}
+
+.tob-submit-review,
+.tob-review-login-button {
+    min-height: 48px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 28px;
+    border: 1px solid #4a2818;
+    border-radius: 2px;
+    background: #4a2818;
+    color: #fff;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+        background .2s ease,
+        border-color .2s ease;
+}
+
+.tob-submit-review:hover,
+.tob-review-login-button:hover {
+    background: #32180e;
+    border-color: #32180e;
+}
+
+.tob-review-login-text {
+    max-width: 440px;
+    margin: 0 0 21px;
+    color: #7e6c61;
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+.tob-delete-review-form {
+    margin-top: 13px;
+}
+
+.tob-delete-review-form button {
+    padding: 0;
+    border: 0;
+    border-bottom: 1px solid currentColor;
+    background: transparent;
+    color: #9b574b;
+    font-size: 10px;
+    cursor: pointer;
+}
+
+
+/* =========================================================
+   CUSTOMER REVIEWS LIST
+========================================================= */
+
+.tob-customer-reviews {
+    padding-top: 48px;
+}
+
+.tob-customer-reviews-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding-bottom: 17px;
+    border-bottom: 1px solid #eee5de;
+}
+
+.tob-customer-reviews-head h3 {
+    margin: 0;
+    color: #32180e;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 25px;
+    font-weight: 400;
+}
+
+.tob-customer-reviews-head > span {
+    color: #8c7a6f;
+    font-size: 10px;
+}
+
+.tob-review-item {
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr);
+    gap: 17px;
+    padding: 28px 0;
+    border-bottom: 1px solid #eee5de;
+}
+
+.tob-review-avatar {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #f2e8df;
+    color: #573828;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 18px;
+}
+
+.tob-review-meta {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.tob-review-meta strong {
+    display: block;
+    margin-bottom: 5px;
+    color: #452e21;
+    font-size: 12px;
+}
+
+.tob-verified-customer {
+    display: block;
+    color: #688260;
+    font-size: 9px;
+}
+
+.tob-review-meta time {
+    flex: none;
+    color: #9c8d84;
+    font-size: 9px;
+}
+
+.tob-review-item-stars {
+    margin: 11px 0 9px;
+}
+
+.tob-review-item-stars span {
+    font-size: 13px;
+}
+
+.tob-review-content > p {
+    max-width: 850px;
+    margin: 0;
+    color: #6e5d53;
+    font-size: 12px;
+    line-height: 1.75;
+}
+
+.tob-no-reviews {
+    padding: 55px 20px 10px;
+    text-align: center;
+}
+
+.tob-no-review-stars {
+    margin-bottom: 12px;
+    color: #c68b35;
+    font-size: 21px;
+    letter-spacing: 4px;
+}
+
+.tob-no-reviews h3 {
+    margin: 0 0 8px;
+    color: #32180e;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 23px;
+    font-weight: 400;
+}
+
+.tob-no-reviews p {
+    margin: 0;
+    color: #8c7a70;
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 900px) {
+
+    .tob-reviews-layout {
+        grid-template-columns: 1fr;
+        gap: 38px;
+    }
+
+    .tob-rating-summary {
+        max-width: 600px;
+    }
+
+}
+
+
+@media (max-width: 640px) {
+
+    .tob-reviews-section {
+        padding: 50px 14px 58px;
+    }
+
+    .tob-reviews-heading {
+        margin-bottom: 27px;
+    }
+
+    .tob-reviews-layout {
+        gap: 31px;
+        padding-bottom: 39px;
+    }
+
+    .tob-rating-summary {
+        padding: 25px 20px;
+    }
+
+    .tob-rating-big {
+        font-size: 48px;
+    }
+
+    .tob-review-form-card h3 {
+        font-size: 25px;
+    }
+
+    .tob-review-star {
+        width: 29px;
+        height: 29px;
+        font-size: 25px;
+    }
+
+    .tob-submit-review,
+    .tob-review-login-button {
+        width: 100%;
+    }
+
+    .tob-customer-reviews {
+        padding-top: 38px;
+    }
+
+    .tob-review-item {
+        grid-template-columns: 40px minmax(0, 1fr);
+        gap: 12px;
+        padding: 23px 0;
+    }
+
+    .tob-review-avatar {
+        width: 40px;
+        height: 40px;
+        font-size: 15px;
+    }
+
+    .tob-review-meta {
+        gap: 10px;
+    }
+
+}
+
+
+@media (max-width: 420px) {
+
+    .tob-review-meta {
+        display: block;
+    }
+
+    .tob-review-meta time {
+        display: block;
+        margin-top: 7px;
+    }
+
+}
+
+/* =========================================================
+   VERIFIED PURCHASE
+========================================================= */
+
+.tob-verified-customer {
+    display: inline-flex;
+    align-items: center;
+
+    margin-top: 4px;
+
+    padding: 3px 8px;
+
+    border: 1px solid #c8d9c7;
+    border-radius: 20px;
+
+    background: #f2f8f1;
+
+    color: #496d48;
+
+    font-size: 9px;
+    font-weight: 700;
+
+    line-height: 1.3;
+
+    letter-spacing: 0.35px;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   REVIEW PURCHASE STATUS
+========================================================= */
+
+.tob-review-purchase-status {
+    display: flex;
+    align-items: flex-start;
+
+    gap: 10px;
+
+    margin: 0 0 20px;
+
+    padding: 12px 14px;
+
+    border: 1px solid #e8ddd4;
+    border-radius: 4px;
+
+    background: #fbf7f2;
+}
+
+
+.tob-review-purchase-icon {
+    width: 22px;
+    height: 22px;
+
+    flex: 0 0 22px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid #d8c8bb;
+    border-radius: 50%;
+
+    color: #7c6556;
+
+    font-size: 10px;
+    font-weight: 700;
+}
+
+
+.tob-review-purchase-status > div {
+    display: flex;
+    flex-direction: column;
+
+    gap: 2px;
+}
+
+
+.tob-review-purchase-status strong {
+    color: #4a2818;
+
+    font-size: 10px;
+    font-weight: 700;
+
+    letter-spacing: 0.4px;
+
+    text-transform: uppercase;
+}
+
+
+.tob-review-purchase-status > div > span {
+    color: #806f65;
+
+    font-size: 10px;
+    line-height: 1.5;
+}
+
+
+/* VERIFIED */
+
+.tob-review-purchase-status.verified {
+    border-color: #c8d9c7;
+
+    background: #f2f8f1;
+}
+
+
+.tob-review-purchase-status.verified
+.tob-review-purchase-icon {
+    border-color: #aac7a8;
+
+    background: #fff;
+
+    color: #496d48;
+}
+
+
+.tob-review-purchase-status.verified strong {
+    color: #496d48;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 640px) {
+
+    .tob-review-purchase-status {
+        padding: 11px 12px;
+    }
+
+    .tob-verified-customer {
+        margin-top: 5px;
+    }
+
+}

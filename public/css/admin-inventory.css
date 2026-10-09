@@ -1,0 +1,339 @@
+/* =========================================================
+   ADMIN INVENTORY
+========================================================= */
+
+.tob-admin-inventory-filter {
+    margin-bottom: 20px;
+}
+
+
+.tob-inventory-search-form {
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+}
+
+
+.tob-inventory-search-form input {
+    width: min(100%, 420px);
+    height: 42px;
+
+    padding: 0 13px;
+
+    border: 1px solid #ddd3cc;
+    border-radius: 3px;
+
+    background: #fff;
+
+    color: #503528;
+
+    outline: none;
+}
+
+
+.tob-inventory-search-form button {
+    min-height: 42px;
+
+    padding: 0 18px;
+
+    border: 0;
+    border-radius: 3px;
+
+    background: #543525;
+
+    color: #fff;
+
+    cursor: pointer;
+}
+
+
+.tob-inventory-search-form a {
+    color: #765f51;
+
+    font-size: 12px;
+
+    text-decoration: none;
+}
+
+
+/* =========================================================
+   TABLE
+========================================================= */
+
+.tob-inventory-table-wrap {
+    width: 100%;
+
+    overflow-x: auto;
+}
+
+
+.tob-inventory-table {
+    width: 100%;
+
+    border-collapse: collapse;
+}
+
+
+.tob-inventory-table th {
+    padding: 13px 12px;
+
+    border-bottom: 1px solid #e7ddd6;
+
+    color: #907b6d;
+
+    font-size: 10px;
+    font-weight: 700;
+
+    text-align: left;
+
+    text-transform: uppercase;
+    letter-spacing: .7px;
+}
+
+
+.tob-inventory-table td {
+    padding: 15px 12px;
+
+    border-bottom: 1px solid #eee6e0;
+
+    vertical-align: middle;
+}
+
+
+.tob-inventory-table tr:last-child td {
+    border-bottom: 0;
+}
+
+
+/* =========================================================
+   PRODUCT
+========================================================= */
+
+.tob-inventory-product {
+    min-width: 230px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+}
+
+
+.tob-inventory-product img {
+    width: 52px;
+    height: 52px;
+
+    flex: 0 0 52px;
+
+    border: 1px solid #e6dcd5;
+    border-radius: 3px;
+
+    object-fit: cover;
+}
+
+
+.tob-inventory-product div {
+    display: flex;
+    flex-direction: column;
+
+    gap: 4px;
+}
+
+
+.tob-inventory-product strong {
+    color: #503426;
+
+    font-size: 12px;
+}
+
+
+.tob-inventory-product span {
+    color: #a18e82;
+
+    font-size: 9px;
+}
+
+
+/* =========================================================
+   UPDATE FORM
+========================================================= */
+
+.tob-inventory-update-form {
+    display: grid;
+
+    grid-template-columns:
+        minmax(90px, 120px)
+        minmax(90px, 120px)
+        minmax(115px, 1fr)
+        auto;
+
+    align-items: center;
+
+    gap: 15px;
+}
+
+
+.tob-inventory-field input {
+    width: 100%;
+    height: 38px;
+
+    padding: 0 10px;
+
+    border: 1px solid #ded3cc;
+    border-radius: 3px;
+
+    background: #fff;
+
+    color: #4e3427;
+
+    outline: none;
+}
+
+
+.tob-mobile-field-label {
+    display: none;
+}
+
+
+.tob-inventory-update-form button {
+    min-height: 38px;
+
+    padding: 0 16px;
+
+    border: 1px solid #563727;
+    border-radius: 3px;
+
+    background: #563727;
+
+    color: #fff;
+
+    font-size: 10px;
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+.tob-inventory-status {
+    display: inline-flex;
+    align-items: center;
+
+    padding: 5px 9px;
+
+    border-radius: 20px;
+
+    font-size: 9px;
+    font-weight: 700;
+
+    white-space: nowrap;
+}
+
+
+.tob-inventory-status-available {
+    background: #eef7ed;
+
+    color: #4e744b;
+}
+
+
+.tob-inventory-status-low {
+    background: #fff7e5;
+
+    color: #987020;
+}
+
+
+.tob-inventory-status-out {
+    background: #fff0ee;
+
+    color: #97483f;
+}
+
+
+.tob-inventory-empty {
+    padding: 40px !important;
+
+    color: #8d7a6f;
+
+    text-align: center;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 800px) {
+
+    .tob-inventory-table thead {
+        display: none;
+    }
+
+
+    .tob-inventory-table,
+    .tob-inventory-table tbody,
+    .tob-inventory-table tr,
+    .tob-inventory-table td {
+        display: block;
+
+        width: 100%;
+    }
+
+
+    .tob-inventory-table tr {
+        padding: 17px 0;
+
+        border-bottom: 1px solid #e6dcd5;
+    }
+
+
+    .tob-inventory-table td {
+        padding: 7px 0;
+
+        border: 0;
+    }
+
+
+    .tob-inventory-update-form {
+        grid-template-columns: 1fr 1fr;
+    }
+
+
+    .tob-mobile-field-label {
+        display: block;
+
+        margin-bottom: 5px;
+
+        color: #968277;
+
+        font-size: 9px;
+
+        text-transform: uppercase;
+    }
+
+}
+
+
+@media (max-width: 520px) {
+
+    .tob-inventory-search-form {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+
+    .tob-inventory-search-form input {
+        width: 100%;
+    }
+
+
+    .tob-inventory-update-form {
+        grid-template-columns: 1fr;
+    }
+
+}

@@ -1,0 +1,1790 @@
+/* =========================================================
+   THE ONLY BAKER
+   SHOP / COOKIES PAGE
+========================================================= */
+
+.tob-shop-page {
+    --tob-brown: #3b180b;
+    --tob-brown-2: #54250f;
+    --tob-text: #24150f;
+    --tob-muted: #74645b;
+    --tob-cream: #fbf7f1;
+    --tob-soft: #f5ede3;
+    --tob-line: #e8ddd1;
+
+    width: 100%;
+    background: var(--tob-cream);
+    color: var(--tob-text);
+}
+
+.tob-shop-page *,
+.tob-shop-page *::before,
+.tob-shop-page *::after {
+    box-sizing: border-box;
+}
+
+.tob-shop-main-container {
+    width: calc(100% - 72px);
+    max-width: 1440px;
+    margin: 0 auto;
+}
+
+
+/* =========================================================
+   HERO
+========================================================= */
+
+.tob-cookie-hero {
+    position: relative;
+
+    width: 100%;
+    height: 405px;
+
+    overflow: hidden;
+
+    background: #f1e2cf;
+}
+
+
+/* =========================================================
+   HERO BACKGROUND
+========================================================= */
+
+.tob-cookie-hero-bg {
+    position: absolute;
+    inset: 0;
+
+    z-index: 0;
+
+    overflow: hidden;
+}
+
+.tob-cookie-hero-bg img {
+    position: absolute;
+
+    top: 0;
+    right: 0;
+
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+    object-position: right center;
+}
+
+.tob-cookie-hero-bg::after {
+    content: "";
+
+    position: absolute;
+    inset: 0;
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(245, 232, 216, 1) 0%,
+            rgba(245, 232, 216, .98) 22%,
+            rgba(245, 232, 216, .82) 37%,
+            rgba(245, 232, 216, .28) 52%,
+            rgba(245, 232, 216, 0) 66%
+        );
+
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   HERO CONTENT
+========================================================= */
+
+.tob-cookie-hero-content {
+    position: relative;
+
+    z-index: 5;
+
+    width: calc(100% - 150px);
+    max-width: 1440px;
+    height: 100%;
+
+    margin: 0 auto;
+
+    padding-left: 38px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.tob-cookie-hero-eyebrow {
+    display: block;
+
+    margin-bottom: 8px;
+
+    color: #2c1a12;
+
+    font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+    font-size: 12px;
+    font-weight: 600;
+
+    line-height: 1;
+
+    letter-spacing: 6px;
+}
+
+.tob-cookie-hero h1 {
+    margin: 0;
+
+    color: #28120a;
+
+    font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+    font-size: 58px;
+    font-weight: 500;
+
+    line-height: .98;
+
+    letter-spacing: -2.2px;
+}
+
+.tob-cookie-hero-description {
+    margin: 17px 0 0;
+
+    color: #34251e;
+
+    font-size: 15px;
+
+    line-height: 1.28;
+}
+
+
+/* =========================================================
+   HERO FEATURES
+========================================================= */
+
+.tob-cookie-hero-features {
+    display: flex;
+    align-items: center;
+
+    margin-top: 20px;
+}
+
+.tob-cookie-hero-feature {
+    display: flex;
+    align-items: center;
+
+    gap: 9px;
+
+    min-width: 140px;
+}
+
+.tob-cookie-feature-icon {
+    flex: 0 0 auto;
+
+    width: 40px;
+    height: 40px;
+
+    color: #27140d;
+}
+
+.tob-cookie-feature-icon svg {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+}
+
+.tob-cookie-hero-feature > span {
+    color: #2b1b14;
+
+    font-size: 11px;
+    font-weight: 500;
+
+    line-height: 1.45;
+}
+
+.tob-cookie-feature-divider {
+    width: 1px;
+    height: 36px;
+
+    margin: 0 15px;
+
+    background: rgba(59, 24, 11, .18);
+}
+
+
+/* =========================================================
+   LEFT BOTANICAL LEAF
+========================================================= */
+
+.tob-hero-leaf {
+    position: absolute;
+
+    left: -24px;
+    bottom: -62px;
+
+    z-index: 3;
+
+    width: 155px;
+    height: 310px;
+
+    color: rgba(89, 79, 48, .40);
+
+    pointer-events: none;
+}
+
+.tob-hero-leaf svg {
+    width: 100%;
+    height: 100%;
+
+    overflow: visible;
+}
+
+.tob-leaf-stem {
+    fill: none;
+
+    stroke: currentColor;
+    stroke-width: 1.4;
+    stroke-linecap: round;
+}
+
+.tob-leaf {
+    fill: rgba(112, 104, 66, .13);
+
+    stroke: currentColor;
+    stroke-width: 1.2;
+    stroke-linejoin: round;
+}
+
+
+/* =========================================================
+   RIGHT HANDWRITTEN MESSAGE
+========================================================= */
+
+.tob-cookie-hero-note {
+    position: absolute;
+
+    z-index: 6;
+
+    top: 74px;
+    right: 9%;
+
+    width: 190px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    color: #4e2b1a;
+
+    text-align: center;
+
+    transform: rotate(-5deg);
+
+    pointer-events: none;
+}
+
+.tob-cookie-hero-note span,
+.tob-cookie-hero-note strong {
+    display: block;
+
+    font-family:
+        "Brush Script MT",
+        "Segoe Script",
+        cursive;
+
+    font-weight: 400;
+
+    line-height: .9;
+}
+
+.tob-cookie-hero-note span {
+    font-size: 24px;
+}
+
+.tob-cookie-hero-note strong {
+    margin: 2px 0;
+
+    font-size: 31px;
+}
+
+.tob-cookie-hero-note svg {
+    width: 100px;
+
+    margin-top: 4px;
+
+    fill: none;
+
+    stroke: currentColor;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+}
+
+
+/* =========================================================
+   BREADCRUMB
+========================================================= */
+
+.tob-shop-breadcrumb-wrap {
+    width: 100%;
+
+    background: #fffdf9;
+
+    border-bottom: 1px solid #eee5db;
+}
+
+.tob-shop-breadcrumb {
+    height: 46px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    color: #7a6a61;
+
+    font-size: 11px;
+}
+
+.tob-shop-breadcrumb a {
+    color: #7a6a61;
+
+    text-decoration: none;
+}
+
+.tob-shop-breadcrumb a:hover {
+    color: var(--tob-brown);
+}
+
+.tob-shop-breadcrumb > span:last-child {
+    color: #33231b;
+
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   MAIN SHOP AREA
+========================================================= */
+
+.tob-shop-content {
+    padding: 0 0 22px;
+
+    background: #fffdf9;
+}
+
+.tob-shop-layout {
+    display: grid;
+
+    grid-template-columns:
+        245px minmax(0, 1fr);
+
+    gap: 43px;
+
+    align-items: start;
+}
+
+
+/* =========================================================
+   SIDEBAR
+========================================================= */
+
+.tob-shop-sidebar {
+    min-width: 0;
+}
+
+.tob-shop-sidebar-box {
+    margin-bottom: 15px;
+
+    overflow: hidden;
+
+    background: #f8f1e9;
+
+    border: 1px solid #eee3d7;
+    border-radius: 4px;
+}
+
+.tob-sidebar-title {
+    width: 100%;
+    height: 54px;
+
+    padding: 0 16px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    border: 0;
+
+    background: transparent;
+
+    color: #25150e;
+
+    cursor: pointer;
+}
+
+.tob-sidebar-title-left {
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.tob-sidebar-title-left > svg {
+    width: 27px;
+    height: 27px;
+}
+
+.tob-sidebar-chevron {
+    width: 12px;
+    height: 8px;
+
+    fill: none;
+
+    stroke: currentColor;
+    stroke-width: 1.5;
+
+    transition: transform .25s ease;
+}
+
+.tob-shop-sidebar-box.collapsed
+.tob-sidebar-chevron {
+    transform: rotate(180deg);
+}
+
+.tob-sidebar-body {
+    padding: 0 10px 13px;
+}
+
+.tob-shop-sidebar-box.collapsed
+.tob-sidebar-body {
+    display: none;
+}
+
+
+/* =========================================================
+   CATEGORY BUTTONS
+========================================================= */
+
+.tob-category-filter {
+    width: 100%;
+    min-height: 40px;
+
+    padding: 8px 12px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 9px;
+
+    border: 0;
+    border-radius: 6px;
+
+    background: transparent;
+
+    color: #3c2a20;
+
+    font-size: 13px;
+
+    text-align: left;
+
+    cursor: pointer;
+
+    transition:
+        background-color .2s ease,
+        color .2s ease;
+}
+
+.tob-category-filter +
+.tob-category-filter {
+    margin-top: 1px;
+}
+
+.tob-category-filter-icon {
+    width: 20px;
+    height: 20px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    flex: 0 0 20px;
+
+    color: #9d704f;
+
+    font-size: 16px;
+}
+
+.tob-category-filter.active {
+    background: var(--tob-brown-2);
+
+    color: #fff;
+}
+
+.tob-category-filter.active
+.tob-category-filter-icon {
+    color: #fff3e8;
+}
+
+
+/* =========================================================
+   FILTERS
+========================================================= */
+
+.tob-filter-box
+.tob-sidebar-body {
+    padding: 0 19px 14px;
+}
+
+.tob-filter-group {
+    padding: 5px 0 14px;
+}
+
+.tob-filter-group +
+.tob-filter-group {
+    padding-top: 16px;
+
+    border-top: 1px solid #e4d9ce;
+}
+
+.tob-filter-group h3 {
+    margin: 0 0 11px;
+
+    color: #28170f;
+
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.tob-filter-checkbox {
+    position: relative;
+
+    min-height: 28px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    color: #4f4037;
+
+    font-size: 12px;
+
+    cursor: pointer;
+}
+
+.tob-filter-checkbox input {
+    position: absolute;
+
+    width: 1px;
+    height: 1px;
+
+    opacity: 0;
+
+    pointer-events: none;
+}
+
+.tob-custom-checkbox {
+    position: relative;
+
+    width: 17px;
+    height: 17px;
+
+    flex: 0 0 17px;
+
+    border: 1px solid #b9aaa0;
+    border-radius: 2px;
+
+    background: #fff;
+}
+
+.tob-filter-checkbox input:checked +
+.tob-custom-checkbox {
+    background: var(--tob-brown-2);
+
+    border-color: var(--tob-brown-2);
+}
+
+.tob-filter-checkbox input:checked +
+.tob-custom-checkbox::after {
+    content: "";
+
+    position: absolute;
+
+    left: 5px;
+    top: 2px;
+
+    width: 4px;
+    height: 8px;
+
+    border: solid #fff;
+    border-width: 0 1.5px 1.5px 0;
+
+    transform: rotate(45deg);
+}
+
+
+/* =========================================================
+   GIFTING CARD
+========================================================= */
+
+.tob-gifting-card {
+    position: relative;
+
+    width: 100%;
+    height: 315px;
+
+    overflow: hidden;
+
+    border-radius: 5px;
+
+    background: #ead6be;
+}
+
+.tob-gifting-card::after {
+    content: "";
+
+    position: absolute;
+    inset: 0;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(0, 0, 0, 0) 42%,
+            rgba(43, 17, 6, .28) 100%
+        );
+
+    pointer-events: none;
+}
+
+.tob-gifting-card > img {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+}
+
+.tob-gifting-card-content {
+    position: absolute;
+    inset: 0;
+
+    z-index: 2;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 24px 14px 14px;
+
+    text-align: center;
+}
+
+.tob-gifting-card-content p {
+    margin: 0;
+
+    color: #2b180f;
+
+    font-family:
+        "Brush Script MT",
+        cursive;
+
+    font-size: 28px;
+    font-weight: 400;
+
+    line-height: 1.15;
+
+    transform: rotate(-5deg);
+}
+
+.tob-gifting-card-content a {
+    width: 100%;
+    min-height: 42px;
+
+    padding: 0 18px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    border: 1px solid rgba(255,255,255,.8);
+    border-radius: 22px;
+
+    background: rgba(54, 22, 9, .92);
+
+    color: #fff;
+
+    font-size: 10px;
+    font-weight: 600;
+
+    letter-spacing: .6px;
+
+    text-decoration: none;
+}
+
+
+/* =========================================================
+   PRODUCTS AREA
+========================================================= */
+
+.tob-products-area {
+    min-width: 0;
+}
+
+.tob-products-header {
+    min-height: 66px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 25px;
+}
+
+.tob-products-header h2 {
+    margin: 0;
+
+    color: #28140c;
+
+    font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+    font-size: 35px;
+    font-weight: 700;
+
+    line-height: 1;
+}
+
+.tob-products-header p {
+    margin: 4px 0 0;
+
+    color: #6e5d54;
+
+    font-size: 12px;
+}
+
+.tob-sort-wrap {
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    color: #2f211a;
+
+    font-size: 11px;
+}
+
+.tob-sort-wrap label {
+    white-space: nowrap;
+}
+
+.tob-sort-wrap select {
+    width: 190px;
+    height: 41px;
+
+    padding: 0 36px 0 14px;
+
+    border: 1px solid #ddd4ca;
+    border-radius: 6px;
+
+    outline: none;
+
+    background: #fff;
+
+    color: #382920;
+
+    font-size: 12px;
+
+    cursor: pointer;
+}
+
+
+/* =========================================================
+   PRODUCT GRID
+========================================================= */
+
+.tob-products-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    gap: 20px 14px;
+}
+
+
+/* =========================================================
+   PRODUCT CARD
+========================================================= */
+
+.tob-product-card {
+    position: relative;
+
+    min-width: 0;
+
+    overflow: hidden;
+
+    background: #fff;
+
+    border: 1px solid #eadfd5;
+    border-radius: 6px;
+
+    box-shadow:
+        0 3px 9px rgba(62, 35, 20, .08);
+
+    transition:
+        transform .22s ease,
+        box-shadow .22s ease,
+        border-color .22s ease;
+}
+
+.tob-product-card:hover {
+    transform: translateY(-2px);
+
+    border-color: #dfd0c3;
+
+    box-shadow:
+        0 8px 18px rgba(62, 35, 20, .12);
+}
+
+.tob-product-card.tob-product-hidden {
+    display: none;
+}
+
+
+/* =========================================================
+   PRODUCT IMAGE
+========================================================= */
+
+.tob-product-image {
+    position: relative;
+
+    width: 100%;
+
+    aspect-ratio: 1.52 / 1;
+
+    overflow: hidden;
+
+    background: #f1e3d2;
+}
+
+.tob-product-image-link {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    overflow: hidden;
+}
+
+.tob-product-image-link img {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+    object-position: center;
+
+    transition: transform .35s ease;
+}
+
+.tob-product-card:hover
+.tob-product-image-link img {
+    transform: scale(1.025);
+}
+
+
+/* =========================================================
+   WISHLIST
+========================================================= */
+
+.tob-product-wishlist {
+    position: absolute;
+
+    z-index: 5;
+
+    top: 7px;
+    right: 7px;
+
+    width: 28px;
+    height: 28px;
+
+    padding: 5px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 0;
+    border-radius: 50%;
+
+    background: rgba(255, 253, 248, .94);
+
+    color: #382118;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 1px 5px rgba(47, 25, 14, .10);
+
+    transition:
+        color .2s ease,
+        background-color .2s ease,
+        transform .2s ease;
+}
+
+.tob-product-wishlist svg {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    fill: transparent;
+
+    stroke: currentColor;
+    stroke-width: 1.5;
+
+    transition:
+        fill .2s ease,
+        color .2s ease,
+        transform .2s ease;
+}
+
+.tob-product-wishlist:hover {
+    transform: scale(1.05);
+}
+
+.tob-product-wishlist:hover svg {
+    transform: scale(1.08);
+}
+
+.tob-product-wishlist.active {
+    color: var(--tob-brown-2);
+}
+
+.tob-product-wishlist.active svg {
+    fill: currentColor;
+}
+
+
+/* =========================================================
+   PRODUCT INFO
+   IMPORTANT:
+   NAME + PRICE + BUTTON IMAGE KE NEECHAY
+========================================================= */
+
+.tob-product-info {
+    position: relative;
+
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+
+    padding: 10px 10px 11px;
+
+    background: #fff;
+}
+
+.tob-product-info h3,
+.tob-product-name {
+    min-height: 34px;
+
+    margin: 0;
+
+    color: #20140e;
+
+    font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    line-height: 1.2;
+}
+
+.tob-product-info h3 a,
+.tob-product-name a {
+    color: inherit;
+
+    text-decoration: none;
+}
+
+.tob-product-info h3 a:hover,
+.tob-product-name a:hover {
+    color: #54250f;
+}
+
+
+/* =========================================================
+   PRODUCT PRICE
+========================================================= */
+
+.tob-product-price {
+    display: block;
+
+    position: relative;
+
+    z-index: 2;
+
+    margin-top: 3px;
+
+    color: #1d120d;
+
+    font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+    font-size: 16px;
+    font-weight: 800;
+
+    line-height: 1.2;
+}
+
+
+/* =========================================================
+   ADD TO CART
+========================================================= */
+
+.tob-add-cart {
+    width: 100%;
+    height: 36px;
+
+    margin-top: 9px;
+
+    padding: 0 10px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 7px;
+
+    border: 0;
+    border-radius: 4px;
+
+    background: var(--tob-brown-2);
+
+    color: #fff;
+
+    font-family: inherit;
+
+    font-size: 10px;
+    font-weight: 600;
+
+    letter-spacing: .5px;
+
+    cursor: pointer;
+
+    transition:
+        background-color .2s ease,
+        transform .2s ease;
+}
+
+.tob-add-cart:hover {
+    background: #351407;
+}
+
+.tob-add-cart:active {
+    transform: scale(.985);
+}
+
+.tob-add-cart svg {
+    width: 17px;
+    height: 17px;
+
+    flex: 0 0 17px;
+}
+
+.tob-add-cart.added {
+    background: #2f4c2f;
+}
+
+
+/* =========================================================
+   NO PRODUCTS
+========================================================= */
+
+.tob-no-products {
+    padding: 80px 20px;
+
+    color: #6f5c50;
+
+    font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+    font-size: 24px;
+
+    text-align: center;
+}
+
+
+/* =========================================================
+   BENEFITS STRIP
+========================================================= */
+
+.tob-shop-benefits {
+    width: 100%;
+
+    padding: 18px 0;
+
+    background: #f7ead8;
+
+    border-top: 1px solid #e8d5bf;
+    border-bottom: 1px solid #e8d5bf;
+}
+
+.tob-benefits-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    align-items: center;
+}
+
+.tob-benefit-item {
+    min-height: 66px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 14px;
+
+    padding: 0 20px;
+}
+
+.tob-benefit-item +
+.tob-benefit-item {
+    border-left:
+        1px solid rgba(80, 42, 20, .12);
+}
+
+.tob-benefit-icon {
+    flex: 0 0 52px;
+
+    width: 52px;
+    height: 52px;
+
+    color: #63351e;
+}
+
+.tob-benefit-icon svg {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+}
+
+.tob-benefit-item h3 {
+    margin: 0 0 3px;
+
+    color: #2b180e;
+
+    font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.tob-benefit-item p {
+    margin: 0;
+
+    color: #5e493c;
+
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   LARGE DESKTOP
+========================================================= */
+
+@media (min-width: 1500px) {
+
+    .tob-cookie-hero {
+        height: 430px;
+    }
+
+    .tob-cookie-hero-content {
+        max-width: 1440px;
+    }
+
+}
+
+
+/* =========================================================
+   SMALL DESKTOP / LAPTOP
+========================================================= */
+
+@media (max-width: 1180px) {
+
+    .tob-shop-main-container {
+        width: calc(100% - 40px);
+    }
+
+    .tob-cookie-hero-content {
+        width: calc(100% - 80px);
+    }
+
+    .tob-shop-layout {
+        grid-template-columns:
+            220px minmax(0, 1fr);
+
+        gap: 25px;
+    }
+
+    .tob-products-grid {
+        gap: 16px 12px;
+    }
+
+    .tob-product-info h3,
+    .tob-product-name {
+        font-size: 12px;
+    }
+
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 980px) {
+
+    .tob-cookie-hero {
+        height: 390px;
+    }
+
+    .tob-cookie-hero h1 {
+        font-size: 50px;
+    }
+
+    .tob-cookie-hero-bg img {
+        object-position: 58% center;
+    }
+
+    .tob-cookie-hero-note {
+        right: 3%;
+
+        transform:
+            scale(.85)
+            rotate(-5deg);
+    }
+
+    .tob-shop-layout {
+        grid-template-columns:
+            190px minmax(0, 1fr);
+
+        gap: 20px;
+    }
+
+    .tob-products-grid {
+        grid-template-columns:
+            repeat(3, minmax(0, 1fr));
+    }
+
+    .tob-benefits-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+        row-gap: 15px;
+    }
+
+    .tob-benefit-item:nth-child(3) {
+        border-left: none;
+    }
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 760px) {
+
+    .tob-shop-main-container {
+        width: calc(100% - 28px);
+    }
+
+
+    /* HERO */
+
+    .tob-cookie-hero {
+        height: auto;
+        min-height: 500px;
+    }
+
+    .tob-cookie-hero-bg img {
+        width: 100%;
+        height: 100%;
+
+        object-fit: cover;
+        object-position: 67% center;
+    }
+
+    .tob-cookie-hero-bg::after {
+        background:
+            linear-gradient(
+                90deg,
+                rgba(249, 238, 224, .98) 0%,
+                rgba(249, 238, 224, .92) 48%,
+                rgba(249, 238, 224, .30) 100%
+            );
+    }
+
+    .tob-cookie-hero-content {
+        width: calc(100% - 36px);
+        min-height: 500px;
+
+        padding:
+            55px 0
+            45px 25px;
+
+        justify-content: flex-end;
+    }
+
+    .tob-cookie-hero-eyebrow {
+        font-size: 9px;
+
+        letter-spacing: 4px;
+    }
+
+    .tob-cookie-hero h1 {
+        font-size: 43px;
+    }
+
+    .tob-cookie-hero-description {
+        max-width: 340px;
+
+        font-size: 12px;
+    }
+
+    .tob-desktop-break {
+        display: none;
+    }
+
+    .tob-cookie-hero-features {
+        width: 100%;
+
+        margin-top: 20px;
+
+        align-items: flex-start;
+    }
+
+    .tob-cookie-hero-feature {
+        min-width: 0;
+
+        flex: 1;
+
+        gap: 5px;
+    }
+
+    .tob-cookie-feature-icon {
+        width: 31px;
+        height: 31px;
+    }
+
+    .tob-cookie-hero-feature > span {
+        font-size: 9px;
+    }
+
+    .tob-cookie-feature-divider {
+        height: 30px;
+
+        margin: 0 7px;
+    }
+
+    .tob-hero-leaf {
+        left: -48px;
+        bottom: -80px;
+
+        width: 135px;
+
+        opacity: .5;
+    }
+
+    .tob-cookie-hero-note {
+        top: 38px;
+        right: 12px;
+
+        transform:
+            scale(.66)
+            rotate(-5deg);
+
+        transform-origin: top right;
+    }
+
+
+    /* MAIN */
+
+    .tob-shop-breadcrumb {
+        height: 40px;
+    }
+
+    .tob-shop-layout {
+        display: block;
+    }
+
+    .tob-shop-sidebar {
+        margin-bottom: 20px;
+    }
+
+    .tob-shop-sidebar-box {
+        margin-bottom: 10px;
+    }
+
+    .tob-gifting-card {
+        display: none;
+    }
+
+
+    /* PRODUCTS HEADER */
+
+    .tob-products-header {
+        min-height: 85px;
+
+        align-items: flex-start;
+        flex-direction: column;
+
+        gap: 12px;
+
+        padding: 10px 0 14px;
+    }
+
+    .tob-products-header h2 {
+        font-size: 31px;
+    }
+
+    .tob-sort-wrap {
+        width: 100%;
+    }
+
+    .tob-sort-wrap select {
+        flex: 1;
+
+        width: auto;
+    }
+
+
+    /* PRODUCT GRID */
+
+    .tob-products-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+        gap: 14px 10px;
+    }
+
+    .tob-product-image {
+        aspect-ratio: 1.25 / 1;
+    }
+
+    .tob-product-info {
+        padding: 8px;
+    }
+
+    .tob-product-info h3,
+    .tob-product-name {
+        min-height: 31px;
+
+        font-size: 11px;
+
+        line-height: 1.2;
+    }
+
+    .tob-product-price {
+        margin-top: 3px;
+
+        font-size: 14px;
+    }
+
+    .tob-add-cart {
+        height: 34px;
+
+        margin-top: 8px;
+
+        font-size: 9px;
+    }
+
+    .tob-product-wishlist {
+        width: 28px;
+        height: 28px;
+
+        top: 6px;
+        right: 6px;
+    }
+
+
+    /* BENEFITS */
+
+    .tob-shop-benefits {
+        padding: 20px 0;
+    }
+
+    .tob-benefits-grid {
+        grid-template-columns: 1fr;
+
+        row-gap: 0;
+    }
+
+    .tob-benefit-item {
+        justify-content: flex-start;
+
+        min-height: 72px;
+
+        padding: 10px 5px;
+    }
+
+    .tob-benefit-item +
+    .tob-benefit-item {
+        border-left: none;
+
+        border-top:
+            1px solid rgba(80, 42, 20, .10);
+    }
+
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 420px) {
+
+    .tob-cookie-hero h1 {
+        font-size: 38px;
+    }
+
+    .tob-cookie-hero-content {
+        width: calc(100% - 28px);
+    }
+
+    .tob-products-grid {
+        gap: 12px 8px;
+    }
+
+    .tob-product-image {
+        aspect-ratio: 1.25 / 1;
+    }
+
+    .tob-product-info {
+        padding: 7px;
+    }
+
+    .tob-product-info h3,
+    .tob-product-name {
+        min-height: 29px;
+
+        font-size: 10.5px;
+    }
+
+    .tob-product-price {
+        font-size: 13px;
+    }
+
+    .tob-product-wishlist {
+        width: 26px;
+        height: 26px;
+
+        top: 5px;
+        right: 5px;
+    }
+
+    .tob-add-cart {
+        height: 32px;
+
+        padding: 0 6px;
+
+        font-size: 8.5px;
+
+        gap: 5px;
+    }
+
+    .tob-add-cart svg {
+        width: 15px;
+        height: 15px;
+
+        flex-basis: 15px;
+    }
+
+}
+
+/* =========================================================
+   PRODUCT INVENTORY
+========================================================= */
+
+.tob-shop-stock-badge {
+    position: absolute;
+    z-index: 5;
+
+    top: 12px;
+    left: 12px;
+
+    padding: 6px 10px;
+
+    border-radius: 3px;
+
+    background: #8b4338;
+
+    color: #fff;
+
+    font-size: 9px;
+    font-weight: 700;
+
+    line-height: 1;
+
+    letter-spacing: .7px;
+
+    text-transform: uppercase;
+
+    pointer-events: none;
+}
+
+
+.tob-shop-stock-badge.tob-low-stock-badge {
+    background: #9a7040;
+}
+
+
+/* =========================================================
+   STOCK STATUS
+========================================================= */
+
+.tob-shop-stock-status {
+    min-height: 16px;
+
+    margin-top: 5px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 5px;
+
+    color: #557550;
+
+    font-size: 9px;
+    font-weight: 600;
+
+    line-height: 1.3;
+
+    letter-spacing: .2px;
+}
+
+
+.tob-shop-stock-dot {
+    width: 5px;
+    height: 5px;
+
+    flex: 0 0 5px;
+
+    border-radius: 50%;
+
+    background: #557550;
+}
+
+
+.tob-shop-stock-status.tob-shop-out-of-stock {
+    color: #9a4a41;
+}
+
+
+.tob-shop-stock-status.tob-shop-out-of-stock
+.tob-shop-stock-dot {
+    background: #9a4a41;
+}
+
+
+/* =========================================================
+   OUT OF STOCK CARD
+========================================================= */
+
+.tob-product-card.tob-product-out-of-stock
+.tob-product-image img {
+    opacity: .68;
+}
+
+
+/* =========================================================
+   DISABLED ADD TO CART
+========================================================= */
+
+.tob-add-cart:disabled {
+    background: #b8aaa1;
+
+    color: #fff;
+
+    opacity: .75;
+
+    cursor: not-allowed;
+
+    pointer-events: none;
+
+    transform: none;
+}
+
+
+.tob-add-cart:disabled:hover,
+.tob-add-cart:disabled:active {
+    background: #b8aaa1;
+
+    transform: none;
+}
+
+
+/* =========================================================
+   STOCK LIMIT
+========================================================= */
+
+.tob-add-cart.stock-limit {
+    background: #8b4338;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 640px) {
+
+    .tob-shop-stock-badge {
+        top: 8px;
+        left: 8px;
+
+        padding: 5px 7px;
+
+        font-size: 8px;
+    }
+
+
+    .tob-shop-stock-status {
+        font-size: 8px;
+    }
+}

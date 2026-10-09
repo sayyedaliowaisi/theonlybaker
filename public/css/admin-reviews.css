@@ -1,0 +1,436 @@
+/* =========================================================
+   THE ONLY BAKER
+   ADMIN REVIEWS
+========================================================= */
+
+
+/* =========================================================
+   STARS
+========================================================= */
+
+.tob-admin-review-stars {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    white-space: nowrap;
+}
+
+.tob-admin-review-stars span {
+    color: #d8cec6;
+    font-size: 13px;
+}
+
+.tob-admin-review-stars span.active {
+    color: #c48a35;
+}
+
+
+/* =========================================================
+   VERIFIED PURCHASE
+========================================================= */
+
+.tob-admin-verified-badge,
+.tob-admin-unverified-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 25px;
+
+    padding: 0 9px;
+
+    border-radius: 20px;
+
+    font-size: 8px;
+    font-weight: 700;
+
+    letter-spacing: .55px;
+
+    white-space: nowrap;
+
+    text-transform: uppercase;
+}
+
+.tob-admin-verified-badge {
+    border: 1px solid #b8d5bc;
+
+    background: #eef8ef;
+
+    color: #397143;
+}
+
+.tob-admin-unverified-badge {
+    border: 1px solid #e1d5cc;
+
+    background: #f8f3ef;
+
+    color: #8b7567;
+}
+
+.tob-admin-review-status-row {
+    margin-bottom: 18px;
+}
+
+
+/* =========================================================
+   REVIEW PREVIEW
+========================================================= */
+
+.tob-admin-review-preview {
+    display: block;
+
+    max-width: 290px;
+
+    color: #69584e;
+
+    font-size: 11px;
+    line-height: 1.55;
+}
+
+
+/* =========================================================
+   LARGE RATING
+========================================================= */
+
+.tob-admin-review-large-rating {
+    min-width: 82px;
+    height: 70px;
+
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+
+    padding: 13px 16px;
+
+    border: 1px solid #e4d8cf;
+    border-radius: 4px;
+
+    background: #fffaf5;
+
+    color: #4a2818;
+}
+
+.tob-admin-review-large-rating span {
+    font-family: Georgia, "Times New Roman", serif;
+
+    font-size: 30px;
+    line-height: 1;
+}
+
+.tob-admin-review-large-rating small {
+    margin-left: 4px;
+
+    color: #917f73;
+
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   REVIEW DETAIL LAYOUT
+========================================================= */
+
+.tob-admin-review-layout {
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1.45fr)
+        minmax(280px, .55fr);
+
+    gap: 24px;
+
+    align-items: start;
+}
+
+.tob-admin-review-main,
+.tob-admin-review-side {
+    display: grid;
+    gap: 24px;
+}
+
+
+/* =========================================================
+   FULL REVIEW
+========================================================= */
+
+.tob-admin-review-full {
+    padding: 4px 0;
+}
+
+.tob-admin-review-full p {
+    margin: 0;
+
+    color: #5f4d43;
+
+    font-size: 13px;
+    line-height: 1.85;
+
+    white-space: pre-line;
+}
+
+.tob-admin-review-full
+.tob-admin-review-empty-text {
+    color: #9b8b81;
+
+    font-style: italic;
+}
+
+
+/* =========================================================
+   PRODUCT
+========================================================= */
+
+.tob-admin-review-product {
+    display: flex;
+    align-items: center;
+
+    gap: 18px;
+}
+
+.tob-admin-review-product-image {
+    width: 92px;
+    height: 92px;
+
+    flex: 0 0 92px;
+
+    overflow: hidden;
+
+    border: 1px solid #eadfd7;
+    border-radius: 4px;
+
+    background: #f5eee8;
+}
+
+.tob-admin-review-product-image img {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+}
+
+.tob-admin-review-product > div:last-child {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: flex-start;
+}
+
+.tob-admin-review-product
+> div:last-child
+> span {
+    margin-bottom: 5px;
+
+    color: #9b887b;
+
+    font-size: 8px;
+    font-weight: 700;
+
+    letter-spacing: 1.4px;
+}
+
+.tob-admin-review-product strong {
+    margin-bottom: 5px;
+
+    color: #40291d;
+
+    font-family: Georgia, "Times New Roman", serif;
+
+    font-size: 18px;
+    font-weight: 400;
+}
+
+.tob-admin-review-product small {
+    margin-bottom: 11px;
+
+    color: #71594a;
+
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.tob-admin-review-product a {
+    color: #563725;
+
+    font-size: 9px;
+    font-weight: 700;
+
+    letter-spacing: .7px;
+
+    text-decoration: none;
+
+    border-bottom:
+        1px solid currentColor;
+
+    padding-bottom: 2px;
+}
+
+
+/* =========================================================
+   DELETE
+========================================================= */
+
+.tob-admin-review-delete-text {
+    margin: 0 0 17px;
+
+    color: #806d61;
+
+    font-size: 11px;
+    line-height: 1.65;
+}
+
+.tob-admin-delete-review {
+    width: 100%;
+    min-height: 43px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0 18px;
+
+    border: 1px solid #a44f43;
+    border-radius: 3px;
+
+    background: #fff;
+
+    color: #9a453b;
+
+    font-size: 9px;
+    font-weight: 700;
+
+    letter-spacing: 1.2px;
+
+    text-transform: uppercase;
+
+    cursor: pointer;
+
+    transition:
+        background .2s ease,
+        color .2s ease,
+        border-color .2s ease;
+}
+
+.tob-admin-delete-review:hover {
+    background: #9a453b;
+
+    border-color: #9a453b;
+
+    color: #fff;
+}
+
+
+/* =========================================================
+   FILTERS
+========================================================= */
+
+.tob-admin-filters select {
+    min-height: 42px;
+
+    padding:
+        0
+        35px
+        0
+        13px;
+
+    border: 1px solid #dfd3ca;
+    border-radius: 3px;
+
+    outline: none;
+
+    background: #fff;
+
+    color: #5c4639;
+
+    font-size: 11px;
+}
+
+.tob-admin-filters select:focus {
+    border-color: #8a6753;
+}
+
+
+/* =========================================================
+   TABLE
+========================================================= */
+
+.tob-admin-table td {
+    vertical-align: middle;
+}
+
+.tob-admin-table td small {
+    display: block;
+
+    margin-top: 4px;
+
+    color: #9b8a80;
+
+    font-size: 9px;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1050px) {
+
+    .tob-admin-review-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .tob-admin-review-side {
+        grid-template-columns:
+            repeat(
+                2,
+                minmax(0, 1fr)
+            );
+    }
+
+    .tob-admin-review-side
+    > section:last-child {
+        grid-column: 1 / -1;
+    }
+
+}
+
+
+@media (max-width: 760px) {
+
+    .tob-admin-review-side {
+        grid-template-columns: 1fr;
+    }
+
+    .tob-admin-review-side
+    > section:last-child {
+        grid-column: auto;
+    }
+
+    .tob-admin-review-large-rating {
+        margin-top: 15px;
+    }
+
+    .tob-admin-review-preview {
+        max-width: 220px;
+    }
+
+}
+
+
+@media (max-width: 520px) {
+
+    .tob-admin-review-product {
+        align-items: flex-start;
+    }
+
+    .tob-admin-review-product-image {
+        width: 70px;
+        height: 70px;
+
+        flex-basis: 70px;
+    }
+
+}

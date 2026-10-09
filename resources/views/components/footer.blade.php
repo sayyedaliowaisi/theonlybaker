@@ -1,10 +1,14 @@
 {{-- =========================================================
-     THE ONLY BAKER - FOOTER
+     THE ONLY BAKER - PREMIUM FOOTER
 ========================================================= --}}
 
 <footer class="tob-footer">
 
     <div class="tob-footer-container">
+
+        {{-- =====================================================
+             MAIN FOOTER
+        ====================================================== --}}
 
         <div class="tob-footer-main">
 
@@ -15,26 +19,54 @@
             <div class="tob-footer-brand tob-footer-animate">
 
                 <a href="{{ route('home') }}" class="tob-footer-logo">
+
                     <img
-                        src="{{ asset('images/logo/logo.png') }}"
+                        src="{{ asset('images/logo/footer-logo.png') }}"
                         alt="The Only Baker"
                     >
+
                 </a>
 
-                <p class="tob-footer-tagline">
-                    Small Bites. Big Happiness.
-                </p>
+
+                <div class="tob-footer-tagline-wrap">
+
+                    <p class="tob-footer-tagline">
+                        Small Bites. Big Happiness.
+                    </p>
+
+                    <svg
+                        class="tob-footer-tagline-heart"
+                        viewBox="0 0 35 32"
+                        aria-hidden="true"
+                    >
+                        <path
+                            d="
+                                M17 28
+                                C14 24 5 18 5 11
+                                C5 6 11 4 15 8
+                                L17 11
+                                L20 8
+                                C24 4 30 6 30 11
+                                C30 18 21 24 17 28
+                            "
+                        />
+                    </svg>
+
+                </div>
+
+
+                <span class="tob-footer-tagline-line"></span>
 
 
                 {{-- SOCIAL ICONS --}}
 
                 <div class="tob-footer-socials">
 
-                    {{-- Instagram --}}
-                    <a href="#"
-                       aria-label="Instagram">
+                    {{-- INSTAGRAM --}}
+                    <a href="#" aria-label="Instagram">
 
                         <svg viewBox="0 0 24 24">
+
                             <rect
                                 x="3"
                                 y="3"
@@ -54,87 +86,44 @@
                                 cy="6.5"
                                 r="1"
                             ></circle>
-                        </svg>
-
-                    </a>
-
-
-                    {{-- Facebook --}}
-                    <a href="#"
-                       aria-label="Facebook">
-
-                        <svg viewBox="0 0 24 24">
-                            <path
-                                d="
-                                    M14.5 8H17V4.5
-                                    C16.2 4.4 14.9 4.3 13.5 4.3
-                                    C10.7 4.3 8.8 6 8.8 9.1
-                                    V12H6V15.9H8.8V22
-                                    H12.8V15.9H16.1
-                                    L16.6 12H12.8V9.5
-                                    C12.8 8.4 13.1 8 14.5 8Z
-                                "
-                            ></path>
-                        </svg>
-
-                    </a>
-
-
-                    {{-- Pinterest --}}
-                    <a href="#"
-                       aria-label="Pinterest">
-
-                        <svg viewBox="0 0 24 24">
-
-                            <circle
-                                cx="12"
-                                cy="12"
-                                r="9"
-                            ></circle>
-
-                            <path
-                                d="
-                                    M10.3 18
-                                    C11 16 11.3 15 11.7 13.3
-                                    C11.2 12.4 11.5 10.5 12.5 10.5
-                                    C13.3 10.5 13.6 11.1 13.6 11.8
-                                    C13.6 12.7 13 14 12.7 15
-                                    C12.4 15.8 13.1 16.5 14 16.5
-                                    C15.7 16.5 16.8 14.4 16.8 12
-                                    C16.8 9.9 15 8.3 12.5 8.3
-                                    C9.6 8.3 7.9 10.3 7.9 12.5
-                                    C7.9 13.5 8.3 14.4 9 14.9
-                                "
-                            ></path>
 
                         </svg>
 
                     </a>
 
 
-                    {{-- YouTube --}}
-                    <a href="#"
-                       aria-label="YouTube">
+                    {{-- FACEBOOK --}}
+                    <a href="#" aria-label="Facebook">
+
+                        <span class="tob-footer-facebook">
+                            f
+                        </span>
+
+                    </a>
+
+
+                    {{-- PINTEREST --}}
+                    <a href="#" aria-label="Pinterest">
+
+                        <span class="tob-footer-pinterest">
+                            p
+                        </span>
+
+                    </a>
+
+
+                    {{-- YOUTUBE --}}
+                    <a href="#" aria-label="YouTube">
 
                         <svg viewBox="0 0 24 24">
 
-                            <path
-                                d="
-                                    M21 8
-                                    C20.8 6.8 20 6 18.8 5.8
-                                    C17.2 5.5 14.4 5.4 12 5.4
-                                    C9.6 5.4 6.8 5.5 5.2 5.8
-                                    C4 6 3.2 6.8 3 8
-                                    C2.8 9.2 2.7 10.6 2.7 12
-                                    C2.7 13.4 2.8 14.8 3 16
-                                    C3.2 17.2 4 18 5.2 18.2
-                                    C6.8 18.5 9.6 18.6 12 18.6
-                                    C14.4 18.6 17.2 18.5 18.8 18.2
-                                    C20 18 20.8 17.2 21 16
-                                    C21.2 14.8 21.3 13.4 21.3 12
-                                    C21.3 10.6 21.2 9.2 21 8Z
-                                "
-                            ></path>
+                            <rect
+                                x="3"
+                                y="6"
+                                width="18"
+                                height="12"
+                                rx="4"
+                            ></rect>
 
                             <path d="M10 9L15 12L10 15Z"></path>
 
@@ -153,34 +142,54 @@
 
             <div class="tob-footer-column tob-footer-animate">
 
-                <h3>
-                    Quick Links
-                </h3>
+                <h3>Quick Links</h3>
+
+                <span class="tob-footer-heading-line"></span>
 
                 <ul>
+
                     <li>
-                        <a href="{{ route('home') }}">Home</a>
+                        <a href="{{ route('home') }}">
+                            <span>Home</span>
+                            <span class="tob-footer-link-arrow">›</span>
+                        </a>
                     </li>
 
                     <li>
-                        <a href="#">Shop</a>
+                        <a href="#">
+                            <span>Shop</span>
+                            <span class="tob-footer-link-arrow">›</span>
+                        </a>
                     </li>
 
                     <li>
-                        <a href="#">Collections</a>
+                        <a href="#">
+                            <span>Collections</span>
+                            <span class="tob-footer-link-arrow">›</span>
+                        </a>
                     </li>
 
                     <li>
-                        <a href="#">Gifting</a>
+                        <a href="#">
+                            <span>Gifting</span>
+                            <span class="tob-footer-link-arrow">›</span>
+                        </a>
                     </li>
 
                     <li>
-                        <a href="#our-story">Our Story</a>
+                        <a href="#our-story">
+                            <span>Our Story</span>
+                            <span class="tob-footer-link-arrow">›</span>
+                        </a>
                     </li>
 
                     <li>
-                        <a href="#">Contact</a>
+                        <a href="#">
+                            <span>Contact</span>
+                            <span class="tob-footer-link-arrow">›</span>
+                        </a>
                     </li>
+
                 </ul>
 
             </div>
@@ -192,30 +201,47 @@
 
             <div class="tob-footer-column tob-footer-animate">
 
-                <h3>
-                    Help
-                </h3>
+                <h3>Help</h3>
+
+                <span class="tob-footer-heading-line"></span>
 
                 <ul>
+
                     <li>
-                        <a href="#">FAQ</a>
+                        <a href="#">
+                            <span>FAQ</span>
+                            <span class="tob-footer-link-arrow">›</span>
+                        </a>
                     </li>
 
                     <li>
-                        <a href="#">Shipping Policy</a>
+                        <a href="#">
+                            <span>Shipping Policy</span>
+                            <span class="tob-footer-link-arrow">›</span>
+                        </a>
                     </li>
 
                     <li>
-                        <a href="#">Return &amp; Refund</a>
+                        <a href="#">
+                            <span>Return &amp; Refund</span>
+                            <span class="tob-footer-link-arrow">›</span>
+                        </a>
                     </li>
 
                     <li>
-                        <a href="#">Terms &amp; Conditions</a>
+                        <a href="#">
+                            <span>Terms &amp; Conditions</span>
+                            <span class="tob-footer-link-arrow">›</span>
+                        </a>
                     </li>
 
                     <li>
-                        <a href="#">Privacy Policy</a>
+                        <a href="#">
+                            <span>Privacy Policy</span>
+                            <span class="tob-footer-link-arrow">›</span>
+                        </a>
                     </li>
+
                 </ul>
 
             </div>
@@ -227,17 +253,20 @@
 
             <div class="tob-footer-contact tob-footer-animate">
 
-                <h3>
-                    Get in Touch
-                </h3>
+                <h3>Get in Touch</h3>
+
+                <span class="tob-footer-heading-line"></span>
 
 
                 {{-- PHONE --}}
 
-                <a href="tel:+916206490079"
-                   class="tob-footer-contact-item">
+                <a
+                    href="tel:+916206490079"
+                    class="tob-footer-contact-item"
+                >
 
                     <svg viewBox="0 0 24 24">
+
                         <path
                             d="
                                 M7 3H4.5
@@ -252,6 +281,7 @@
                                 L7 3Z
                             "
                         ></path>
+
                     </svg>
 
                     <span>
@@ -263,8 +293,10 @@
 
                 {{-- EMAIL --}}
 
-                <a href="mailto:theonlybaker@gmail.com"
-                   class="tob-footer-contact-item">
+                <a
+                    href="mailto:theonlybaker@gmail.com"
+                    class="tob-footer-contact-item"
+                >
 
                     <svg viewBox="0 0 24 24">
 
@@ -311,47 +343,74 @@
 
                     </svg>
 
-                    <span>
-                        India
-                    </span>
+                    <span>India</span>
 
                 </div>
 
 
-                {{-- SOCIAL ROW --}}
+                <div class="tob-footer-connect">
 
-                <div class="tob-footer-contact-social">
+                    <span class="tob-footer-connect-line"></span>
 
-                    <a href="#"
-                       aria-label="Facebook">
-                        f
-                    </a>
+                    <p>
+                        Let's Stay Connected
+                    </p>
 
-                    <a href="#"
-                       aria-label="Twitter">
-                        ♥
-                    </a>
 
-                    <a href="#"
-                       aria-label="Instagram">
+                    <div class="tob-footer-contact-social">
 
-                        <svg viewBox="0 0 24 24">
-                            <rect
-                                x="3"
-                                y="3"
-                                width="18"
-                                height="18"
-                                rx="5"
-                            ></rect>
+                        <a href="#" aria-label="Instagram">
 
-                            <circle
-                                cx="12"
-                                cy="12"
-                                r="4"
-                            ></circle>
-                        </svg>
+                            <svg viewBox="0 0 24 24">
 
-                    </a>
+                                <rect
+                                    x="3"
+                                    y="3"
+                                    width="18"
+                                    height="18"
+                                    rx="5"
+                                ></rect>
+
+                                <circle
+                                    cx="12"
+                                    cy="12"
+                                    r="4"
+                                ></circle>
+
+                            </svg>
+
+                        </a>
+
+
+                        <a href="#" aria-label="Facebook">
+                            <span>f</span>
+                        </a>
+
+
+                        <a href="#" aria-label="Pinterest">
+                            <span>p</span>
+                        </a>
+
+
+                        <a href="#" aria-label="YouTube">
+
+                            <svg viewBox="0 0 24 24">
+
+                                <rect
+                                    x="3"
+                                    y="6"
+                                    width="18"
+                                    height="12"
+                                    rx="4"
+                                ></rect>
+
+                                <path d="M10 9L15 12L10 15Z"></path>
+
+                            </svg>
+
+                        </a>
+
+                    </div>
 
                 </div>
 
@@ -368,9 +427,12 @@
                     Subscribe to Our Newsletter
                 </h3>
 
-                <p>
+                <span class="tob-footer-heading-line"></span>
+
+                <p class="tob-footer-newsletter-description">
                     Get updates on new flavours, offers, and more.
                 </p>
+
 
                 <form
                     class="tob-footer-newsletter-form"
@@ -391,22 +453,186 @@
                     >
 
                         <svg viewBox="0 0 30 20">
+
                             <path d="M2 10H25"></path>
-                            <path d="M19 4L25 10L19 16"></path>
+
+                            <path
+                                d="M19 4L25 10L19 16"
+                            ></path>
+
                         </svg>
 
                     </button>
 
                 </form>
 
+
+                {{-- =================================================
+                     NEWSLETTER FEATURES
+                ================================================== --}}
+
+                <div class="tob-footer-benefits">
+
+                    {{-- EXCLUSIVE OFFERS --}}
+
+                    <div class="tob-footer-benefit">
+
+                        <svg viewBox="0 0 40 40">
+
+                            <rect
+                                x="8"
+                                y="15"
+                                width="24"
+                                height="19"
+                                rx="1"
+                            ></rect>
+
+                            <path d="M20 15V34"></path>
+
+                            <path d="M6 15H34V21H6Z"></path>
+
+                            <path
+                                d="
+                                    M20 15
+                                    C16 14 12 12 12 9
+                                    C12 7 14 6 16 7
+                                    C19 8 20 12 20 15
+                                "
+                            ></path>
+
+                            <path
+                                d="
+                                    M20 15
+                                    C24 14 28 12 28 9
+                                    C28 7 26 6 24 7
+                                    C21 8 20 12 20 15
+                                "
+                            ></path>
+
+                        </svg>
+
+                        <span>
+                            Exclusive<br>
+                            Offers
+                        </span>
+
+                    </div>
+
+
+                    <span class="tob-footer-benefit-divider"></span>
+
+
+                    {{-- NEW LAUNCHES --}}
+
+                    <div class="tob-footer-benefit">
+
+                        <svg viewBox="0 0 40 40">
+
+                            <circle
+                                cx="20"
+                                cy="20"
+                                r="13"
+                            ></circle>
+
+                            <circle
+                                cx="16"
+                                cy="14"
+                                r="2"
+                            ></circle>
+
+                            <circle
+                                cx="25"
+                                cy="19"
+                                r="2"
+                            ></circle>
+
+                            <circle
+                                cx="18"
+                                cy="26"
+                                r="2"
+                            ></circle>
+
+                            <path
+                                d="
+                                    M27 10
+                                    C25 13 26 16 30 17
+                                "
+                            ></path>
+
+                        </svg>
+
+                        <span>
+                            New<br>
+                            Launches
+                        </span>
+
+                    </div>
+
+
+                    <span class="tob-footer-benefit-divider"></span>
+
+
+                    {{-- SPECIAL DISCOUNTS --}}
+
+                    <div class="tob-footer-benefit">
+
+                        <svg viewBox="0 0 40 40">
+
+                            <path
+                                d="
+                                    M20 5
+                                    L24 9
+                                    L30 8
+                                    L32 14
+                                    L36 18
+                                    L32 23
+                                    L31 29
+                                    L25 30
+                                    L20 35
+                                    L15 31
+                                    L9 32
+                                    L7 26
+                                    L3 21
+                                    L7 16
+                                    L8 10
+                                    L14 9
+                                    Z
+                                "
+                            ></path>
+
+                            <path d="M15 25L25 15"></path>
+
+                            <circle
+                                cx="15"
+                                cy="15"
+                                r="2"
+                            ></circle>
+
+                            <circle
+                                cx="25"
+                                cy="25"
+                                r="2"
+                            ></circle>
+
+                        </svg>
+
+                        <span>
+                            Special<br>
+                            Discounts
+                        </span>
+
+                    </div>
+
+                </div>
+
             </div>
 
         </div>
 
 
-        {{-- =================================================
+        {{-- =====================================================
              BOTTOM FOOTER
-        ================================================== --}}
+        ====================================================== --}}
 
         <div class="tob-footer-bottom">
 
@@ -421,10 +647,12 @@
                     Baked to make you smile
                 </span>
 
+
                 <svg
                     viewBox="0 0 35 32"
                     aria-hidden="true"
                 >
+
                     <path
                         d="
                             M17 28
@@ -436,7 +664,11 @@
                             C30 18 21 24 17 28
                         "
                     />
+
                 </svg>
+
+
+                <span class="tob-footer-handwritten-line"></span>
 
             </div>
 

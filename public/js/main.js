@@ -1,3 +1,13 @@
+/* =========================================================
+   THE ONLY BAKER
+   COMPLETE MAIN JAVASCRIPT
+========================================================= */
+
+
+/* =========================================================
+   MOBILE NAVIGATION
+========================================================= */
+
 document.addEventListener("DOMContentLoaded", function () {
 
     const toggle = document.getElementById("tobMobileToggle");
@@ -19,6 +29,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
 });
+
 
 /* =========================================================
    OUR COOKIES
@@ -67,9 +78,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
                                 setTimeout(
                                     function () {
+
                                         item.classList.add(
                                             "tob-cookie-visible"
                                         );
+
                                     },
                                     index * 100
                                 );
@@ -121,7 +134,10 @@ document.addEventListener("DOMContentLoaded", function () {
             const gap =
                 parseFloat(sliderStyle.gap) || 0;
 
-            return card.getBoundingClientRect().width + gap;
+            return (
+                card.getBoundingClientRect().width +
+                gap
+            );
 
         }
 
@@ -155,6 +171,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 });
 
+
 /* =========================================================
    EXPLORE BY CATEGORY ANIMATION
 ========================================================= */
@@ -169,14 +186,11 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    /* =====================================================
-       REDUCED MOTION
-    ====================================================== */
-
     const reducedMotion =
         window.matchMedia(
             "(prefers-reduced-motion: reduce)"
         ).matches;
+
 
     if (reducedMotion) {
 
@@ -187,10 +201,6 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
     }
 
-
-    /* =====================================================
-       SCROLL REVEAL
-    ====================================================== */
 
     const categoryObserver =
         new IntersectionObserver(
@@ -228,6 +238,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 });
 
+
 /* =========================================================
    OUR STORY ANIMATION
 ========================================================= */
@@ -241,10 +252,6 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
     }
 
-
-    /* =====================================================
-       REDUCED MOTION
-    ====================================================== */
 
     const prefersReducedMotion =
         window.matchMedia(
@@ -261,10 +268,6 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
     }
 
-
-    /* =====================================================
-       SCROLL REVEAL
-    ====================================================== */
 
     const storyObserver =
         new IntersectionObserver(
@@ -302,6 +305,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 });
 
+
 /* =========================================================
    PREMIUM INGREDIENTS ANIMATION
 ========================================================= */
@@ -318,10 +322,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    /* =====================================================
-       REDUCED MOTION
-    ====================================================== */
-
     const reducedMotion =
         window.matchMedia(
             "(prefers-reduced-motion: reduce)"
@@ -337,10 +337,6 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
     }
 
-
-    /* =====================================================
-       SCROLL REVEAL
-    ====================================================== */
 
     const ingredientsObserver =
         new IntersectionObserver(
@@ -378,6 +374,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 });
 
+
 /* =========================================================
    GIFTING SECTION ANIMATION
 ========================================================= */
@@ -389,15 +386,10 @@ document.addEventListener("DOMContentLoaded", function () {
             ".tob-gifting-section"
         );
 
-
     if (!giftingSection) {
         return;
     }
 
-
-    /* =====================================================
-       REDUCED MOTION
-    ====================================================== */
 
     const reducedMotion =
         window.matchMedia(
@@ -415,10 +407,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    /* =====================================================
-       SCROLL REVEAL
-    ====================================================== */
-
     const giftingObserver =
         new IntersectionObserver(
 
@@ -430,11 +418,9 @@ document.addEventListener("DOMContentLoaded", function () {
                         return;
                     }
 
-
                     entry.target.classList.add(
                         "tob-gifting-visible"
                     );
-
 
                     observer.unobserve(
                         entry.target
@@ -457,6 +443,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 });
 
+
 /* =========================================================
    TESTIMONIALS ANIMATION
 ========================================================= */
@@ -468,15 +455,10 @@ document.addEventListener("DOMContentLoaded", function () {
             ".tob-testimonials-section"
         );
 
-
     if (!testimonialsSection) {
         return;
     }
 
-
-    /* =====================================================
-       REDUCED MOTION
-    ====================================================== */
 
     const reducedMotion =
         window.matchMedia(
@@ -494,10 +476,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    /* =====================================================
-       SCROLL REVEAL
-    ====================================================== */
-
     const testimonialsObserver =
         new IntersectionObserver(
 
@@ -509,11 +487,9 @@ document.addEventListener("DOMContentLoaded", function () {
                         return;
                     }
 
-
                     entry.target.classList.add(
                         "tob-testimonials-visible"
                     );
-
 
                     observer.unobserve(
                         entry.target
@@ -536,6 +512,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 });
 
+
 /* =========================================================
    FOLLOW OUR JOURNEY ANIMATION
 ========================================================= */
@@ -546,7 +523,6 @@ document.addEventListener("DOMContentLoaded", function () {
         document.querySelector(
             ".tob-journey-section"
         );
-
 
     if (!journeySection) {
         return;
@@ -580,11 +556,9 @@ document.addEventListener("DOMContentLoaded", function () {
                         return;
                     }
 
-
                     entry.target.classList.add(
                         "tob-journey-visible"
                     );
-
 
                     observer.unobserve(
                         entry.target
@@ -607,6 +581,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 });
 
+
 /* =========================================================
    FOOTER SCROLL ANIMATION
 ========================================================= */
@@ -615,7 +590,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const footer =
         document.querySelector(".tob-footer");
-
 
     if (!footer) {
         return;
@@ -649,11 +623,9 @@ document.addEventListener("DOMContentLoaded", function () {
                         return;
                     }
 
-
                     entry.target.classList.add(
                         "tob-footer-visible"
                     );
-
 
                     observer.unobserve(
                         entry.target
@@ -671,5 +643,1032 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     footerObserver.observe(footer);
+
+});
+
+
+/* =========================================================
+   THE ONLY BAKER - HERO BACKGROUND SLIDER
+========================================================= */
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const slider =
+        document.getElementById("tobHeroSlider");
+
+    if (!slider) {
+        return;
+    }
+
+
+    const slides = Array.from(
+        slider.querySelectorAll(
+            ".tob-hero-slide"
+        )
+    );
+
+
+    if (slides.length <= 1) {
+        return;
+    }
+
+
+    /* =====================================================
+       SETTINGS
+    ====================================================== */
+
+    let currentSlide = 0;
+
+    let autoSlideTimer = null;
+
+    const autoSlideDelay = 5000;
+
+    const swipeThreshold = 45;
+
+
+    /* =====================================================
+       DRAG / SWIPE VALUES
+    ====================================================== */
+
+    let pointerStartX = 0;
+
+    let pointerCurrentX = 0;
+
+    let isDragging = false;
+
+
+    /* =====================================================
+       SHOW SLIDE
+    ====================================================== */
+
+    function showSlide(index) {
+
+        if (index < 0) {
+            index = slides.length - 1;
+        }
+
+        if (index >= slides.length) {
+            index = 0;
+        }
+
+        slides.forEach(function (slide) {
+
+            slide.classList.remove(
+                "active"
+            );
+
+        });
+
+        slides[index].classList.add(
+            "active"
+        );
+
+        currentSlide = index;
+
+    }
+
+
+    /* =====================================================
+       NEXT
+    ====================================================== */
+
+    function nextSlide() {
+
+        showSlide(
+            currentSlide + 1
+        );
+
+    }
+
+
+    /* =====================================================
+       PREVIOUS
+    ====================================================== */
+
+    function previousSlide() {
+
+        showSlide(
+            currentSlide - 1
+        );
+
+    }
+
+
+    /* =====================================================
+       AUTO PLAY
+    ====================================================== */
+
+    function startAutoSlide() {
+
+        stopAutoSlide();
+
+        autoSlideTimer =
+            setInterval(
+                function () {
+
+                    nextSlide();
+
+                },
+                autoSlideDelay
+            );
+
+    }
+
+
+    function stopAutoSlide() {
+
+        if (autoSlideTimer) {
+
+            clearInterval(
+                autoSlideTimer
+            );
+
+            autoSlideTimer = null;
+
+        }
+
+    }
+
+
+    function restartAutoSlide() {
+
+        stopAutoSlide();
+
+        startAutoSlide();
+
+    }
+
+
+    /* =====================================================
+       POINTER DOWN
+    ====================================================== */
+
+    slider.addEventListener(
+        "pointerdown",
+        function (event) {
+
+            if (
+                event.pointerType === "mouse" &&
+                event.button !== 0
+            ) {
+                return;
+            }
+
+
+            isDragging = true;
+
+            pointerStartX =
+                event.clientX;
+
+            pointerCurrentX =
+                event.clientX;
+
+
+            slider.classList.add(
+                "tob-slider-dragging"
+            );
+
+
+            stopAutoSlide();
+
+
+            try {
+
+                slider.setPointerCapture(
+                    event.pointerId
+                );
+
+            } catch (error) {
+                // Nothing required.
+            }
+
+        }
+    );
+
+
+    /* =====================================================
+       POINTER MOVE
+    ====================================================== */
+
+    slider.addEventListener(
+        "pointermove",
+        function (event) {
+
+            if (!isDragging) {
+                return;
+            }
+
+            pointerCurrentX =
+                event.clientX;
+
+        }
+    );
+
+
+    /* =====================================================
+       END SWIPE / DRAG
+    ====================================================== */
+
+    function finishSwipe(event) {
+
+        if (!isDragging) {
+            return;
+        }
+
+
+        isDragging = false;
+
+
+        slider.classList.remove(
+            "tob-slider-dragging"
+        );
+
+
+        const difference =
+            pointerCurrentX -
+            pointerStartX;
+
+
+        if (
+            difference <
+            -swipeThreshold
+        ) {
+
+            nextSlide();
+
+        }
+
+        else if (
+            difference >
+            swipeThreshold
+        ) {
+
+            previousSlide();
+
+        }
+
+
+        try {
+
+            slider.releasePointerCapture(
+                event.pointerId
+            );
+
+        } catch (error) {
+            // Nothing required.
+        }
+
+
+        restartAutoSlide();
+
+    }
+
+
+    slider.addEventListener(
+        "pointerup",
+        finishSwipe
+    );
+
+
+    slider.addEventListener(
+        "pointercancel",
+        finishSwipe
+    );
+
+
+    /* =====================================================
+       PAUSE WHEN TAB IS HIDDEN
+    ====================================================== */
+
+    document.addEventListener(
+        "visibilitychange",
+        function () {
+
+            if (document.hidden) {
+
+                stopAutoSlide();
+
+            } else {
+
+                startAutoSlide();
+
+            }
+
+        }
+    );
+
+
+    /* =====================================================
+       INITIALIZE
+    ====================================================== */
+
+    showSlide(0);
+
+    startAutoSlide();
+
+});
+
+
+/* =========================================================
+   MOBILE SHOP ACCORDION
+========================================================= */
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const shopToggle =
+        document.getElementById(
+            "tobMobileShopToggle"
+        );
+
+    const shopCategories =
+        document.getElementById(
+            "tobMobileShopCategories"
+        );
+
+
+    if (!shopToggle || !shopCategories) {
+        return;
+    }
+
+
+    shopToggle.addEventListener(
+        "click",
+        function () {
+
+            const isOpen =
+                shopCategories.classList.toggle(
+                    "show"
+                );
+
+
+            shopToggle.classList.toggle(
+                "active",
+                isOpen
+            );
+
+
+            shopToggle.setAttribute(
+                "aria-expanded",
+                isOpen ? "true" : "false"
+            );
+
+        }
+    );
+
+});
+
+
+/* =========================================================
+   GLOBAL PRODUCT SEARCH
+========================================================= */
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    /* =====================================================
+       ELEMENTS / DATA
+    ====================================================== */
+
+    const searchButtons =
+        document.querySelectorAll(
+            '.tob-actions > button[aria-label="Search"], [data-tob-search-open]'
+        );
+
+
+    if (!searchButtons.length) {
+        return;
+    }
+
+
+    const products =
+        Array.isArray(
+            window.TheOnlyBakerSearchProducts
+        )
+            ? window.TheOnlyBakerSearchProducts
+            : [];
+
+
+    const shopUrl =
+        window.TheOnlyBakerSearchConfig &&
+        window.TheOnlyBakerSearchConfig.shopUrl
+
+            ? window.TheOnlyBakerSearchConfig.shopUrl
+
+            : "/shop";
+
+
+    /* =====================================================
+       HELPERS
+    ====================================================== */
+
+    function escapeHtml(value) {
+
+        return String(value ?? "")
+            .replaceAll("&", "&amp;")
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;")
+            .replaceAll('"', "&quot;")
+            .replaceAll("'", "&#039;");
+
+    }
+
+
+    function escapeAttribute(value) {
+
+        return escapeHtml(value);
+
+    }
+
+
+    function normalize(value) {
+
+        return String(value ?? "")
+            .toLowerCase()
+            .trim();
+
+    }
+
+
+    function categoryLabel(category) {
+
+        const labels = {
+
+            "dry-fruit":
+                "Dry Fruit Cookies",
+
+            "chocolate":
+                "Chocolate Cookies",
+
+            "classic":
+                "Classic Cookies"
+
+        };
+
+
+        return (
+            labels[category] ||
+            "Cookies"
+        );
+
+    }
+
+
+    /* =====================================================
+       CREATE SEARCH OVERLAY
+    ====================================================== */
+
+    const overlay =
+        document.createElement("div");
+
+
+    overlay.className =
+        "tob-search-overlay";
+
+
+    overlay.id =
+        "tobSearchOverlay";
+
+
+    overlay.setAttribute(
+        "aria-hidden",
+        "true"
+    );
+
+
+    overlay.innerHTML = `
+
+        <section
+            class="tob-search-panel"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Search products"
+        >
+
+            <div class="tob-search-head">
+
+                <svg
+                    class="tob-search-head-icon"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                >
+                    <circle
+                        cx="11"
+                        cy="11"
+                        r="7"
+                    ></circle>
+
+                    <path
+                        d="M20 20l-4.1-4.1"
+                    ></path>
+                </svg>
+
+
+                <input
+                    type="search"
+                    class="tob-search-input"
+                    id="tobSearchInput"
+                    placeholder="Search cookies..."
+                    autocomplete="off"
+                    spellcheck="false"
+                    aria-label="Search products"
+                >
+
+
+                <button
+                    type="button"
+                    class="tob-search-close"
+                    id="tobSearchClose"
+                    aria-label="Close search"
+                >
+
+                    <svg
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                    >
+                        <path
+                            d="M5 5l14 14"
+                        ></path>
+
+                        <path
+                            d="M19 5L5 19"
+                        ></path>
+                    </svg>
+
+                </button>
+
+            </div>
+
+
+            <div class="tob-search-body">
+
+                <p
+                    class="tob-search-kicker"
+                    id="tobSearchKicker"
+                >
+                    Our Cookies
+                </p>
+
+
+                <div
+                    class="tob-search-results"
+                    id="tobSearchResults"
+                    aria-live="polite"
+                ></div>
+
+            </div>
+
+
+            <div class="tob-search-footer">
+
+                <a
+                    class="tob-search-view-all"
+                    href="${escapeAttribute(shopUrl)}"
+                >
+                    View All Products
+                </a>
+
+            </div>
+
+        </section>
+
+    `;
+
+
+    document.body.appendChild(
+        overlay
+    );
+
+
+    /* =====================================================
+       SEARCH ELEMENTS
+    ====================================================== */
+
+    const input =
+        document.getElementById(
+            "tobSearchInput"
+        );
+
+
+    const closeButton =
+        document.getElementById(
+            "tobSearchClose"
+        );
+
+
+    const results =
+        document.getElementById(
+            "tobSearchResults"
+        );
+
+
+    const kicker =
+        document.getElementById(
+            "tobSearchKicker"
+        );
+
+
+    let lastFocusedElement = null;
+
+
+    /* =====================================================
+       RENDER SEARCH PRODUCTS
+    ====================================================== */
+
+    function renderProducts(
+        productList,
+        query
+    ) {
+
+        results.innerHTML = "";
+
+
+        /* NO PRODUCT DATA */
+
+        if (!products.length) {
+
+            kicker.textContent =
+                "Search";
+
+
+            results.innerHTML = `
+
+                <div class="tob-search-empty">
+
+                    <h3
+                        class="tob-search-empty-title"
+                    >
+                        Products unavailable
+                    </h3>
+
+                    <p
+                        class="tob-search-empty-text"
+                    >
+                        Please refresh the page
+                        and try again.
+                    </p>
+
+                </div>
+
+            `;
+
+
+            return;
+
+        }
+
+
+        /* NO SEARCH RESULT */
+
+        if (!productList.length) {
+
+            kicker.textContent =
+                "Search Results";
+
+
+            results.innerHTML = `
+
+                <div class="tob-search-empty">
+
+                    <h3
+                        class="tob-search-empty-title"
+                    >
+                        No cookies found
+                    </h3>
+
+                    <p
+                        class="tob-search-empty-text"
+                    >
+                        We couldn't find a product
+                        matching
+                        “${escapeHtml(query)}”.
+                    </p>
+
+                </div>
+
+            `;
+
+
+            return;
+
+        }
+
+
+        /* RESULT COUNT */
+
+        kicker.textContent =
+            query
+
+                ? `${productList.length} Result${
+                    productList.length === 1
+                        ? ""
+                        : "s"
+                }`
+
+                : "Our Cookies";
+
+
+        /* PRODUCTS */
+
+        productList.forEach(
+            function (product) {
+
+                const item =
+                    document.createElement(
+                        "a"
+                    );
+
+
+                item.className =
+                    "tob-search-result";
+
+
+                item.href =
+                    product.url;
+
+
+                item.innerHTML = `
+
+                    <img
+                        class="tob-search-result-image"
+                        src="${escapeAttribute(
+                            product.image
+                        )}"
+                        alt="${escapeAttribute(
+                            product.name
+                        )}"
+                        loading="lazy"
+                    >
+
+
+                    <span
+                        class="tob-search-result-copy"
+                    >
+
+                        <span
+                            class="tob-search-result-name"
+                        >
+                            ${escapeHtml(
+                                product.name
+                            )}
+                        </span>
+
+
+                        <span
+                            class="tob-search-result-category"
+                        >
+                            ${escapeHtml(
+                                categoryLabel(
+                                    product.category
+                                )
+                            )}
+                        </span>
+
+                    </span>
+
+
+                    <span
+                        class="tob-search-result-price"
+                    >
+                        ₹${Number(
+                            product.price
+                        ).toLocaleString(
+                            "en-IN"
+                        )}
+                    </span>
+
+                `;
+
+
+                results.appendChild(
+                    item
+                );
+
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+       FILTER PRODUCTS
+    ====================================================== */
+
+    function filterProducts(query) {
+
+        const term =
+            normalize(query);
+
+
+        if (!term) {
+
+            return products.slice(
+                0,
+                6
+            );
+
+        }
+
+
+        return products.filter(
+            function (product) {
+
+                const searchableText = [
+
+                    product.name,
+
+                    product.slug,
+
+                    product.category
+
+                ]
+                    .map(normalize)
+                    .join(" ");
+
+
+                return searchableText.includes(
+                    term
+                );
+
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+       OPEN SEARCH
+    ====================================================== */
+
+    function openSearch() {
+
+        lastFocusedElement =
+            document.activeElement;
+
+
+        overlay.classList.add(
+            "show"
+        );
+
+
+        overlay.setAttribute(
+            "aria-hidden",
+            "false"
+        );
+
+
+        document.body.classList.add(
+            "tob-search-lock"
+        );
+
+
+        input.value = "";
+
+
+        renderProducts(
+            products.slice(0, 6),
+            ""
+        );
+
+
+        window.setTimeout(
+            function () {
+
+                input.focus();
+
+            },
+            50
+        );
+
+    }
+
+
+    /* =====================================================
+       CLOSE SEARCH
+    ====================================================== */
+
+    function closeSearch() {
+
+        overlay.classList.remove(
+            "show"
+        );
+
+
+        overlay.setAttribute(
+            "aria-hidden",
+            "true"
+        );
+
+
+        document.body.classList.remove(
+            "tob-search-lock"
+        );
+
+
+        if (
+            lastFocusedElement &&
+            typeof lastFocusedElement.focus
+                === "function"
+        ) {
+
+            lastFocusedElement.focus();
+
+        }
+
+    }
+
+
+    /* =====================================================
+       SEARCH ICON CLICK
+    ====================================================== */
+
+    searchButtons.forEach(
+        function (button) {
+
+            button.addEventListener(
+                "click",
+                function (event) {
+
+                    event.preventDefault();
+
+                    openSearch();
+
+                }
+            );
+
+        }
+    );
+
+
+    /* =====================================================
+       LIVE SEARCH
+    ====================================================== */
+
+    input.addEventListener(
+        "input",
+        function () {
+
+            const query =
+                input.value;
+
+
+            renderProducts(
+                filterProducts(query),
+                query.trim()
+            );
+
+        }
+    );
+
+
+    /* =====================================================
+       CLOSE BUTTON
+    ====================================================== */
+
+    closeButton.addEventListener(
+        "click",
+        closeSearch
+    );
+
+
+    /* =====================================================
+       OUTSIDE CLICK CLOSE
+    ====================================================== */
+
+    overlay.addEventListener(
+        "mousedown",
+        function (event) {
+
+            if (
+                event.target === overlay
+            ) {
+
+                closeSearch();
+
+            }
+
+        }
+    );
+
+
+    /* =====================================================
+       ESCAPE KEY CLOSE
+    ====================================================== */
+
+    document.addEventListener(
+        "keydown",
+        function (event) {
+
+            if (
+                event.key === "Escape" &&
+                overlay.classList.contains(
+                    "show"
+                )
+            ) {
+
+                closeSearch();
+
+            }
+
+        }
+    );
 
 });

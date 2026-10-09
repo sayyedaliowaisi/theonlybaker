@@ -1,0 +1,2407 @@
+/* =========================================================
+
+   THE ONLY BAKER
+
+   CUSTOMER ACCOUNT
+
+========================================================= */
+
+
+
+.tob-account-page {
+
+    background: #fffaf5;
+
+    min-height: 70vh;
+
+    color: #3b2118;
+
+}
+
+
+
+.tob-account-container {
+
+    width: min(1180px, calc(100% - 40px));
+
+    margin: 0 auto;
+
+}
+
+
+
+
+
+/* =========================================================
+
+   BREADCRUMB
+
+========================================================= */
+
+
+
+.tob-account-breadcrumb {
+
+    padding: 22px 0;
+
+    font-size: 13px;
+
+    color: #8d756b;
+
+}
+
+
+
+.tob-account-breadcrumb a {
+
+    color: #5d3023;
+
+    text-decoration: none;
+
+}
+
+
+
+.tob-account-breadcrumb a:hover {
+
+    text-decoration: underline;
+
+}
+
+
+
+.tob-account-breadcrumb span {
+
+    margin: 0 8px;
+
+}
+
+
+
+
+
+/* =========================================================
+
+   AUTH SECTION
+
+========================================================= */
+
+
+
+.tob-auth-section {
+
+    padding: 35px 0 90px;
+
+}
+
+
+
+.tob-auth-header {
+
+    text-align: center;
+
+    margin-bottom: 34px;
+
+}
+
+
+
+.tob-auth-eyebrow {
+
+    margin: 0 0 7px;
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    letter-spacing: 2.2px;
+
+    text-transform: uppercase;
+
+    color: #a66d55;
+
+}
+
+
+
+.tob-auth-header h1 {
+
+    margin: 0;
+
+    font-size: clamp(32px, 4vw, 48px);
+
+    line-height: 1.1;
+
+    color: #3b2118;
+
+}
+
+
+
+.tob-auth-header p {
+
+    max-width: 520px;
+
+    margin: 13px auto 0;
+
+    color: #816b62;
+
+    line-height: 1.7;
+
+}
+
+
+
+
+
+/* =========================================================
+
+   CARD
+
+========================================================= */
+
+
+
+.tob-auth-card {
+
+    width: min(500px, 100%);
+
+    margin: 0 auto;
+
+    padding: 38px;
+
+    background: #ffffff;
+
+    border: 1px solid #eaded7;
+
+    border-radius: 18px;
+
+    box-shadow: 0 14px 45px rgba(75, 42, 31, 0.08);
+
+}
+
+
+
+
+
+/* =========================================================
+
+   FORM
+
+========================================================= */
+
+
+
+.tob-auth-field {
+
+    margin-bottom: 20px;
+
+}
+
+
+
+.tob-auth-field label {
+
+    display: block;
+
+    margin-bottom: 8px;
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+    color: #4d2c21;
+
+}
+
+
+
+.tob-auth-field input {
+
+    width: 100%;
+
+    height: 50px;
+
+    padding: 0 15px;
+
+    border: 1px solid #ddcec6;
+
+    border-radius: 10px;
+
+    background: #ffffff;
+
+    color: #3b2118;
+
+    font: inherit;
+
+    outline: none;
+
+    transition:
+
+        border-color 0.2s ease,
+
+        box-shadow 0.2s ease;
+
+    box-sizing: border-box;
+
+}
+
+
+
+.tob-auth-field input:focus {
+
+    border-color: #7c4633;
+
+    box-shadow: 0 0 0 3px rgba(124, 70, 51, 0.08);
+
+}
+
+
+
+.tob-auth-field input::placeholder {
+
+    color: #b09d94;
+
+}
+
+
+
+
+
+/* =========================================================
+
+   PASSWORD
+
+========================================================= */
+
+
+
+.tob-password-wrap {
+
+    position: relative;
+
+}
+
+
+
+.tob-password-wrap input {
+
+    padding-right: 70px;
+
+}
+
+
+
+.tob-password-toggle {
+
+    position: absolute;
+
+    top: 50%;
+
+    right: 14px;
+
+    transform: translateY(-50%);
+
+    padding: 0;
+
+    border: 0;
+
+    background: transparent;
+
+    color: #7c4633;
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+}
+
+
+
+
+
+/* =========================================================
+
+   REMEMBER
+
+========================================================= */
+
+
+
+.tob-auth-options {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 20px;
+
+    margin: 4px 0 24px;
+
+}
+
+
+
+.tob-remember {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    color: #6f5a51;
+
+    font-size: 13px;
+
+    cursor: pointer;
+
+}
+
+
+
+.tob-remember input {
+
+    width: 16px;
+
+    height: 16px;
+
+    accent-color: #5b2e20;
+
+}
+
+
+
+
+
+/* =========================================================
+
+   ERRORS
+
+========================================================= */
+
+
+
+.tob-auth-error {
+
+    display: block;
+
+    margin-top: 6px;
+
+    color: #b42318;
+
+    font-size: 12px;
+
+}
+
+
+
+.tob-auth-errors {
+
+    margin-bottom: 22px;
+
+    padding: 13px 15px;
+
+    border: 1px solid #f0c9c5;
+
+    border-radius: 10px;
+
+    background: #fff4f2;
+
+    color: #a52b20;
+
+    font-size: 13px;
+
+    line-height: 1.6;
+
+}
+
+
+
+
+
+/* =========================================================
+
+   BUTTON
+
+========================================================= */
+
+
+
+.tob-auth-submit {
+
+    width: 100%;
+
+    min-height: 52px;
+
+    border: 1px solid #4b261b;
+
+    border-radius: 10px;
+
+    background: #4b261b;
+
+    color: #ffffff;
+
+    font: inherit;
+
+    font-size: 13px;
+
+    font-weight: 800;
+
+    letter-spacing: 1.2px;
+
+    text-transform: uppercase;
+
+    cursor: pointer;
+
+    transition:
+
+        background 0.2s ease,
+
+        color 0.2s ease,
+
+        transform 0.2s ease;
+
+}
+
+
+
+.tob-auth-submit:hover {
+
+    background: #ffffff;
+
+    color: #4b261b;
+
+    transform: translateY(-1px);
+
+}
+
+
+
+
+
+/* =========================================================
+
+   SWITCH
+
+========================================================= */
+
+
+
+.tob-auth-switch {
+
+    margin: 25px 0 0;
+
+    padding-top: 23px;
+
+    border-top: 1px solid #eee3dc;
+
+    text-align: center;
+
+    color: #806b62;
+
+    font-size: 13px;
+
+}
+
+
+
+.tob-auth-switch a {
+
+    color: #4b261b;
+
+    font-weight: 800;
+
+    text-decoration: none;
+
+}
+
+
+
+.tob-auth-switch a:hover {
+
+    text-decoration: underline;
+
+}
+
+
+
+
+
+/* =========================================================
+
+   DASHBOARD
+
+========================================================= */
+
+
+
+.tob-dashboard-section {
+
+    padding: 35px 0 90px;
+
+}
+
+
+
+.tob-dashboard-heading {
+
+    margin-bottom: 32px;
+
+}
+
+
+
+.tob-dashboard-heading p {
+
+    margin: 0 0 6px;
+
+    color: #a66d55;
+
+    font-size: 12px;
+
+    font-weight: 800;
+
+    letter-spacing: 2px;
+
+    text-transform: uppercase;
+
+}
+
+
+
+.tob-dashboard-heading h1 {
+
+    margin: 0;
+
+    color: #3b2118;
+
+    font-size: clamp(32px, 4vw, 46px);
+
+}
+
+
+
+.tob-dashboard-grid {
+
+    display: grid;
+
+    grid-template-columns: 280px minmax(0, 1fr);
+
+    gap: 30px;
+
+}
+
+
+
+
+
+/* =========================================================
+
+   SIDEBAR
+
+========================================================= */
+
+
+
+.tob-account-sidebar {
+
+    align-self: start;
+
+    overflow: hidden;
+
+    border: 1px solid #eaded7;
+
+    border-radius: 16px;
+
+    background: #ffffff;
+
+}
+
+
+
+.tob-account-user {
+
+    padding: 24px;
+
+    border-bottom: 1px solid #eee3dc;
+
+}
+
+
+
+.tob-account-user strong {
+
+    display: block;
+
+    margin-bottom: 5px;
+
+    color: #3b2118;
+
+    font-size: 17px;
+
+}
+
+
+
+.tob-account-user span {
+
+    display: block;
+
+    overflow: hidden;
+
+    color: #8a746a;
+
+    font-size: 12px;
+
+    text-overflow: ellipsis;
+
+}
+
+
+
+.tob-account-nav a,
+
+.tob-account-nav button {
+
+    display: flex;
+
+    width: 100%;
+
+    min-height: 49px;
+
+    align-items: center;
+
+    padding: 0 22px;
+
+    border: 0;
+
+    border-bottom: 1px solid #f2e9e4;
+
+    background: transparent;
+
+    color: #62473d;
+
+    font: inherit;
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+    text-align: left;
+
+    text-decoration: none;
+
+    cursor: pointer;
+
+    box-sizing: border-box;
+
+}
+
+
+
+.tob-account-nav a:hover,
+
+.tob-account-nav button:hover,
+
+.tob-account-nav .active {
+
+    background: #fbf2ec;
+
+    color: #4b261b;
+
+}
+
+
+
+
+
+/* =========================================================
+
+   DASHBOARD CONTENT
+
+========================================================= */
+
+
+
+.tob-dashboard-content {
+
+    padding: 32px;
+
+    border: 1px solid #eaded7;
+
+    border-radius: 16px;
+
+    background: #ffffff;
+
+}
+
+
+
+.tob-dashboard-content h2 {
+
+    margin: 0 0 10px;
+
+    color: #3b2118;
+
+    font-size: 25px;
+
+}
+
+
+
+.tob-dashboard-content > p {
+
+    margin: 0 0 28px;
+
+    color: #806c63;
+
+    line-height: 1.7;
+
+}
+
+
+
+.tob-dashboard-cards {
+
+    display: grid;
+
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    gap: 18px;
+
+}
+
+
+
+.tob-dashboard-card {
+
+    padding: 25px;
+
+    border: 1px solid #eee1da;
+
+    border-radius: 14px;
+
+    background: #fffaf7;
+
+}
+
+
+
+.tob-dashboard-card span {
+
+    display: block;
+
+    margin-bottom: 8px;
+
+    color: #9b7565;
+
+    font-size: 11px;
+
+    font-weight: 800;
+
+    letter-spacing: 1.5px;
+
+    text-transform: uppercase;
+
+}
+
+
+
+.tob-dashboard-card strong {
+
+    display: block;
+
+    color: #3b2118;
+
+    font-size: 17px;
+
+    word-break: break-word;
+
+}
+
+
+
+
+
+/* =========================================================
+
+   RESPONSIVE
+
+========================================================= */
+
+
+
+@media (max-width: 800px) {
+
+
+
+    .tob-account-container {
+
+        width: min(100% - 28px, 1180px);
+
+    }
+
+
+
+    .tob-dashboard-grid {
+
+        grid-template-columns: 1fr;
+
+    }
+
+
+
+    .tob-dashboard-cards {
+
+        grid-template-columns: 1fr;
+
+    }
+
+}
+
+
+
+
+
+@media (max-width: 520px) {
+
+
+
+    .tob-auth-section,
+
+    .tob-dashboard-section {
+
+        padding-top: 22px;
+
+        padding-bottom: 65px;
+
+    }
+
+
+
+    .tob-auth-card {
+
+        padding: 26px 20px;
+
+        border-radius: 14px;
+
+    }
+
+
+
+    .tob-auth-options {
+
+        align-items: flex-start;
+
+        flex-direction: column;
+
+        gap: 12px;
+
+    }
+
+
+
+    .tob-dashboard-content {
+
+        padding: 24px 19px;
+
+    }
+
+}
+
+
+
+/* =========================================================
+
+   ACCOUNT ACTION
+
+========================================================= */
+
+
+
+.tob-account-dashboard-action {
+
+    margin-top: 28px;
+
+}
+
+
+
+.tob-account-primary-link {
+
+    display: inline-flex;
+
+    min-height: 48px;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 0 25px;
+
+    border: 1px solid #4b261b;
+
+    border-radius: 10px;
+
+    background: #4b261b;
+
+    color: #ffffff;
+
+    font-size: 12px;
+
+    font-weight: 800;
+
+    letter-spacing: 1px;
+
+    text-decoration: none;
+
+    text-transform: uppercase;
+
+    transition: 0.2s ease;
+
+}
+
+
+
+.tob-account-primary-link:hover {
+
+    background: #ffffff;
+
+    color: #4b261b;
+
+}
+
+
+
+
+
+/* =========================================================
+
+   ORDER LIST
+
+========================================================= */
+
+
+
+.tob-orders-list {
+
+    display: grid;
+
+    gap: 18px;
+
+}
+
+
+
+.tob-order-card {
+
+    overflow: hidden;
+
+    border: 1px solid #eaded7;
+
+    border-radius: 14px;
+
+    background: #ffffff;
+
+}
+
+
+
+.tob-order-card-top {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    padding: 20px 22px;
+
+    border-bottom: 1px solid #f0e5df;
+
+    background: #fffaf7;
+
+}
+
+
+
+.tob-order-label {
+
+    display: block;
+
+    margin-bottom: 5px;
+
+    color: #9a7d70;
+
+    font-size: 11px;
+
+    font-weight: 800;
+
+    letter-spacing: 1.2px;
+
+    text-transform: uppercase;
+
+}
+
+
+
+.tob-order-card-top strong {
+
+    color: #3b2118;
+
+    font-size: 15px;
+
+}
+
+
+
+.tob-order-status {
+
+    display: inline-flex;
+
+    min-height: 30px;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 0 12px;
+
+    border-radius: 999px;
+
+    background: #f1ebe7;
+
+    color: #644b40;
+
+    font-size: 11px;
+
+    font-weight: 800;
+
+    letter-spacing: 0.6px;
+
+    text-transform: uppercase;
+
+}
+
+
+
+.tob-status-pending {
+
+    background: #fff4d8;
+
+    color: #8a6100;
+
+}
+
+
+
+.tob-status-confirmed {
+
+    background: #eaf4ff;
+
+    color: #245b91;
+
+}
+
+
+
+.tob-status-shipped {
+
+    background: #eeeaff;
+
+    color: #55449a;
+
+}
+
+
+
+.tob-status-delivered {
+
+    background: #e7f6eb;
+
+    color: #28743b;
+
+}
+
+
+
+.tob-status-cancelled {
+
+    background: #fde9e7;
+
+    color: #a13228;
+
+}
+
+
+
+.tob-order-meta {
+
+    display: grid;
+
+    grid-template-columns: repeat(3, 1fr);
+
+    gap: 20px;
+
+    padding: 21px 22px;
+
+}
+
+
+
+.tob-order-meta span {
+
+    display: block;
+
+    margin-bottom: 5px;
+
+    color: #967d72;
+
+    font-size: 11px;
+
+    text-transform: uppercase;
+
+}
+
+
+
+.tob-order-meta strong {
+
+    color: #4b3026;
+
+    font-size: 13px;
+
+}
+
+
+
+.tob-order-card-bottom {
+
+    display: flex;
+
+    justify-content: flex-end;
+
+    padding: 0 22px 20px;
+
+}
+
+
+
+.tob-order-view {
+
+    color: #4b261b;
+
+    font-size: 12px;
+
+    font-weight: 800;
+
+    letter-spacing: 0.7px;
+
+    text-decoration: none;
+
+    text-transform: uppercase;
+
+}
+
+
+
+.tob-order-view:hover {
+
+    text-decoration: underline;
+
+}
+
+
+
+.tob-order-shipping-note {
+
+    margin: 0 22px 18px;
+
+    color: #876f64;
+
+    font-size: 12px;
+
+    line-height: 1.6;
+
+}
+
+
+
+
+
+/* =========================================================
+
+   EMPTY ORDERS
+
+========================================================= */
+
+
+
+.tob-account-empty {
+
+    padding: 55px 20px;
+
+    text-align: center;
+
+}
+
+
+
+.tob-account-empty-icon {
+
+    margin-bottom: 14px;
+
+    color: #8d5b47;
+
+    font-size: 36px;
+
+}
+
+
+
+.tob-account-empty h2 {
+
+    margin-bottom: 8px;
+
+}
+
+
+
+.tob-account-empty p {
+
+    margin: 0 auto 25px;
+
+    color: #806c63;
+
+}
+
+
+
+
+
+/* =========================================================
+
+   ORDER DETAILS
+
+========================================================= */
+
+
+
+.tob-order-detail-header {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    margin-bottom: 26px;
+
+    padding-bottom: 22px;
+
+    border-bottom: 1px solid #eee3dc;
+
+}
+
+
+
+.tob-order-detail-header span:not(.tob-order-status) {
+
+    display: block;
+
+    margin-bottom: 5px;
+
+    color: #92786d;
+
+    font-size: 11px;
+
+    text-transform: uppercase;
+
+}
+
+
+
+.tob-order-detail-header strong {
+
+    color: #4a3026;
+
+    font-size: 13px;
+
+}
+
+
+
+.tob-order-items {
+
+    border-top: 1px solid #eee3dc;
+
+}
+
+
+
+.tob-order-item {
+
+    display: grid;
+
+    grid-template-columns: 90px minmax(0, 1fr) auto;
+
+    gap: 18px;
+
+    align-items: center;
+
+    padding: 20px 0;
+
+    border-bottom: 1px solid #eee3dc;
+
+}
+
+
+
+.tob-order-item-image {
+
+    width: 90px;
+
+    height: 90px;
+
+    overflow: hidden;
+
+    border-radius: 10px;
+
+    background: #f8f2ee;
+
+}
+
+
+
+.tob-order-item-image img {
+
+    width: 100%;
+
+    height: 100%;
+
+    object-fit: cover;
+
+}
+
+
+
+.tob-order-item-info h3 {
+
+    margin: 0 0 7px;
+
+    color: #3b2118;
+
+    font-size: 16px;
+
+}
+
+
+
+.tob-order-item-info p,
+
+.tob-order-item-info span {
+
+    display: block;
+
+    margin: 3px 0;
+
+    color: #8a746a;
+
+    font-size: 12px;
+
+}
+
+
+
+.tob-order-item-total {
+
+    color: #3b2118;
+
+    font-size: 14px;
+
+}
+
+
+
+.tob-order-details-grid {
+
+    display: grid;
+
+    grid-template-columns: repeat(2, 1fr);
+
+    gap: 18px;
+
+    margin-top: 28px;
+
+}
+
+
+
+.tob-order-info-box {
+
+    padding: 22px;
+
+    border: 1px solid #eee1da;
+
+    border-radius: 12px;
+
+    background: #fffaf7;
+
+}
+
+
+
+.tob-order-info-box h3 {
+
+    margin: 0 0 16px;
+
+    color: #3b2118;
+
+    font-size: 16px;
+
+}
+
+
+
+.tob-order-info-box p {
+
+    margin: 5px 0;
+
+    color: #7c675e;
+
+    font-size: 13px;
+
+    line-height: 1.6;
+
+}
+
+
+
+.tob-order-info-box strong {
+
+    color: #4a3026;
+
+    font-size: 13px;
+
+}
+
+
+
+.tob-order-payment-status-label {
+
+    margin-top: 18px !important;
+
+}
+
+
+
+.tob-order-totals {
+
+    width: min(430px, 100%);
+
+    margin: 30px 0 0 auto;
+
+}
+
+
+
+.tob-order-totals > div {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    padding: 10px 0;
+
+    color: #715b51;
+
+    font-size: 13px;
+
+}
+
+
+
+.tob-order-grand-total {
+
+    margin-top: 5px;
+
+    padding-top: 16px !important;
+
+    border-top: 1px solid #ddcec6;
+
+    color: #3b2118 !important;
+
+    font-size: 16px !important;
+
+}
+
+
+
+.tob-order-back {
+
+    margin-top: 30px;
+
+}
+
+
+
+.tob-account-pagination {
+
+    margin-top: 28px;
+
+}
+
+
+
+
+
+/* =========================================================
+
+   MOBILE ORDERS
+
+========================================================= */
+
+
+
+@media (max-width: 650px) {
+
+
+
+    .tob-order-card-top,
+
+    .tob-order-detail-header {
+
+        align-items: flex-start;
+
+        flex-direction: column;
+
+    }
+
+
+
+    .tob-order-meta {
+
+        grid-template-columns: 1fr;
+
+        gap: 14px;
+
+    }
+
+
+
+    .tob-order-item {
+
+        grid-template-columns: 72px minmax(0, 1fr);
+
+    }
+
+
+
+    .tob-order-item-image {
+
+        width: 72px;
+
+        height: 72px;
+
+    }
+
+
+
+    .tob-order-item-total {
+
+        grid-column: 2;
+
+    }
+
+
+
+    .tob-order-details-grid {
+
+        grid-template-columns: 1fr;
+
+    }
+
+}
+
+
+
+/* =========================================================
+
+   ACCOUNT PROFILE
+
+========================================================= */
+
+
+
+.tob-account-profile-content {
+
+    display: grid;
+
+    gap: 24px;
+
+}
+
+
+
+.tob-profile-card {
+
+    padding: 30px;
+
+    border: 1px solid #eaded7;
+
+    border-radius: 16px;
+
+    background: #ffffff;
+
+}
+
+
+
+.tob-profile-card-heading {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    justify-content: space-between;
+
+    gap: 30px;
+
+    margin-bottom: 26px;
+
+    padding-bottom: 20px;
+
+    border-bottom: 1px solid #eee3dc;
+
+}
+
+
+
+.tob-profile-card-heading span {
+
+    display: block;
+
+    margin-bottom: 6px;
+
+    color: #a66d55;
+
+    font-size: 10px;
+
+    font-weight: 800;
+
+    letter-spacing: 1.7px;
+
+    text-transform: uppercase;
+
+}
+
+
+
+.tob-profile-card-heading h2 {
+
+    margin: 0;
+
+    color: #3b2118;
+
+    font-size: 22px;
+
+}
+
+
+
+.tob-profile-card-heading p {
+
+    max-width: 340px;
+
+    margin: 0;
+
+    color: #88736a;
+
+    font-size: 12px;
+
+    line-height: 1.7;
+
+}
+
+
+
+.tob-profile-fields {
+
+    display: grid;
+
+    grid-template-columns:
+
+        repeat(2, minmax(0, 1fr));
+
+    gap: 0 18px;
+
+}
+
+
+
+.tob-profile-full {
+
+    grid-column: 1 / -1;
+
+}
+
+
+
+.tob-profile-submit {
+
+    min-height: 48px;
+
+    padding: 0 25px;
+
+    border: 1px solid #4b261b;
+
+    border-radius: 10px;
+
+    background: #4b261b;
+
+    color: #ffffff;
+
+    font: inherit;
+
+    font-size: 12px;
+
+    font-weight: 800;
+
+    letter-spacing: 1px;
+
+    text-transform: uppercase;
+
+    cursor: pointer;
+
+    transition:
+
+        background 0.2s ease,
+
+        color 0.2s ease,
+
+        transform 0.2s ease;
+
+}
+
+
+
+.tob-profile-submit:hover {
+
+    background: #ffffff;
+
+    color: #4b261b;
+
+    transform: translateY(-1px);
+
+}
+
+
+
+.tob-account-success {
+
+    margin-bottom: 22px;
+
+    padding: 13px 15px;
+
+    border: 1px solid #c8e4ce;
+
+    border-radius: 10px;
+
+    background: #effaf2;
+
+    color: #286638;
+
+    font-size: 13px;
+
+    line-height: 1.6;
+
+}
+
+
+
+
+
+/* =========================================================
+
+   PROFILE RESPONSIVE
+
+========================================================= */
+
+
+
+@media (max-width: 700px) {
+
+
+
+    .tob-profile-card {
+
+        padding: 23px 18px;
+
+    }
+
+
+
+    .tob-profile-card-heading {
+
+        flex-direction: column;
+
+        gap: 10px;
+
+    }
+
+
+
+    .tob-profile-fields {
+
+        grid-template-columns: 1fr;
+
+    }
+
+
+
+    .tob-profile-full {
+
+        grid-column: auto;
+
+    }
+
+
+
+    .tob-profile-submit {
+
+        width: 100%;
+
+    }
+
+}
+
+
+
+/* =========================================================
+
+   FORGOT PASSWORD
+
+========================================================= */
+
+
+
+.tob-forgot-password {
+
+    color: #4b261b;
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    text-decoration: none;
+
+}
+
+
+
+.tob-forgot-password:hover {
+
+    text-decoration: underline;
+
+}
+
+
+
+/* =========================================================
+
+   EMAIL VERIFICATION
+
+========================================================= */
+
+
+
+.tob-verification-card {
+
+    text-align: center;
+
+}
+
+
+
+.tob-verification-icon {
+
+    display: flex;
+
+    width: 68px;
+
+    height: 68px;
+
+    align-items: center;
+
+    justify-content: center;
+
+    margin: 0 auto 20px;
+
+    border-radius: 50%;
+
+    background: #fff3eb;
+
+    color: #5b3023;
+
+    font-size: 29px;
+
+}
+
+
+
+.tob-verification-card h2 {
+
+    margin: 0 0 12px;
+
+    color: #3b2118;
+
+    font-size: 25px;
+
+}
+
+
+
+.tob-verification-text {
+
+    margin: 0 auto 25px;
+
+    color: #806b62;
+
+    font-size: 13px;
+
+    line-height: 1.8;
+
+}
+
+
+
+.tob-verification-text strong {
+
+    display: block;
+
+    margin-top: 5px;
+
+    color: #4b261b;
+
+    word-break: break-word;
+
+}
+
+
+
+.tob-verification-actions {
+
+    display: flex;
+
+    justify-content: center;
+
+    gap: 22px;
+
+    margin-top: 23px;
+
+}
+
+
+
+.tob-verification-actions a {
+
+    color: #4b261b;
+
+    font-size: 12px;
+
+    font-weight: 800;
+
+    text-decoration: none;
+
+}
+
+
+
+.tob-verification-actions a:hover {
+
+    text-decoration: underline;
+
+}
+
+
+
+.tob-verification-logout {
+
+    margin-top: 24px;
+
+    padding-top: 20px;
+
+    border-top: 1px solid #eee3dc;
+
+}
+
+
+
+.tob-verification-logout button {
+
+    padding: 0;
+
+    border: 0;
+
+    background: transparent;
+
+    color: #92766a;
+
+    font: inherit;
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+}
+
+
+
+.tob-verification-logout button:hover {
+
+    color: #4b261b;
+
+}
+
+
+
+
+
+/* =========================================================
+
+   VERIFICATION BADGES
+
+========================================================= */
+
+
+
+.tob-email-status {
+
+    display: inline-flex;
+
+    min-height: 26px;
+
+    align-items: center;
+
+    padding: 0 10px;
+
+    margin-top: 8px;
+
+    border-radius: 999px;
+
+    font-size: 10px;
+
+    font-weight: 800;
+
+    letter-spacing: .6px;
+
+    text-transform: uppercase;
+
+}
+
+
+
+.tob-email-verified {
+
+    background: #e7f6eb;
+
+    color: #28743b;
+
+}
+
+
+
+.tob-email-unverified {
+
+    background: #fff4d8;
+
+    color: #8a6100;
+
+}
+
+
+
+.tob-verification-warning {
+
+    margin-bottom: 25px;
+
+    padding: 16px 18px;
+
+    border: 1px solid #ecd9a5;
+
+    border-radius: 11px;
+
+    background: #fff9e8;
+
+    color: #735b1b;
+
+    font-size: 13px;
+
+    line-height: 1.7;
+
+}
+
+
+
+.tob-verification-warning a {
+
+    color: #4b261b;
+
+    font-weight: 800;
+
+}
+
+
+
+
+
+@media (max-width: 520px) {
+
+
+
+    .tob-verification-actions {
+
+        align-items: center;
+
+        flex-direction: column;
+
+        gap: 13px;
+
+    }
+
+}
+
+/* =========================================================
+   EMAIL VERIFICATION - FINAL UPDATE
+========================================================= */
+
+.tob-email-status {
+    display: inline-flex;
+    width: fit-content;
+    min-height: 26px;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 10px;
+    margin-top: 9px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+}
+
+.tob-email-verified {
+    border: 1px solid #cbe7d1;
+    background: #e7f6eb;
+    color: #28743b;
+}
+
+.tob-email-unverified {
+    border: 1px solid #f0dda6;
+    background: #fff4d8;
+    color: #8a6100;
+}
+
+.tob-dashboard-card .tob-email-status {
+    margin-top: 10px;
+}
+
+.tob-verification-warning {
+    margin-bottom: 25px;
+    padding: 16px 18px;
+    border: 1px solid #ecd9a5;
+    border-radius: 11px;
+    background: #fff9e8;
+    color: #735b1b;
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.tob-verification-warning a {
+    color: #4b261b;
+    font-weight: 800;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    transition: opacity 0.2s ease;
+}
+
+.tob-verification-warning a:hover {
+    opacity: 0.75;
+}
+
+.tob-auth-field .tob-email-status {
+    margin-top: 9px;
+}
+
+.tob-profile-verification-link {
+    margin-top: 8px;
+}
+
+.tob-profile-verification-link a {
+    color: #4b261b;
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    transition: opacity 0.2s ease;
+}
+
+.tob-profile-verification-link a:hover {
+    opacity: 0.75;
+}
+
+.tob-verification-card {
+    text-align: center;
+}
+
+.tob-verification-icon {
+    display: flex;
+    width: 68px;
+    height: 68px;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    background: #fff3eb;
+    color: #5b3023;
+    font-size: 29px;
+    line-height: 1;
+}
+
+.tob-verification-card h2 {
+    margin: 0 0 12px;
+    color: #3b2118;
+    font-size: 25px;
+    font-weight: 700;
+}
+
+.tob-verification-text {
+    max-width: 500px;
+    margin: 0 auto 25px;
+    color: #806b62;
+    font-size: 13px;
+    line-height: 1.8;
+}
+
+.tob-verification-text strong {
+    display: block;
+    margin-top: 5px;
+    color: #4b261b;
+    font-weight: 700;
+    word-break: break-word;
+}
+
+.tob-verification-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 22px;
+    margin-top: 23px;
+}
+
+.tob-verification-actions a {
+    color: #4b261b;
+    font-size: 12px;
+    font-weight: 800;
+    text-decoration: none;
+    transition: color 0.2s ease, opacity 0.2s ease;
+}
+
+.tob-verification-actions a:hover {
+    opacity: 0.75;
+    text-decoration: underline;
+}
+
+.tob-verification-logout {
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid #eee3dc;
+}
+
+.tob-verification-logout button {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #92766a;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.tob-verification-logout button:hover {
+    color: #4b261b;
+}
+
+.tob-account-success {
+    margin-bottom: 22px;
+    padding: 13px 15px;
+    border: 1px solid #c8e4ce;
+    border-radius: 10px;
+    background: #effaf2;
+    color: #286638;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+@media (max-width: 700px) {
+    .tob-verification-card h2 {
+        font-size: 22px;
+    }
+
+    .tob-verification-text {
+        font-size: 12px;
+    }
+
+    .tob-verification-warning {
+        padding: 14px 15px;
+        font-size: 12px;
+    }
+
+    .tob-verification-actions {
+        gap: 16px;
+    }
+}
+
+@media (max-width: 520px) {
+    .tob-verification-icon {
+        width: 60px;
+        height: 60px;
+        margin-bottom: 17px;
+        font-size: 25px;
+    }
+
+    .tob-verification-card h2 {
+        font-size: 20px;
+    }
+
+    .tob-verification-actions {
+        flex-direction: column;
+        gap: 13px;
+    }
+
+    .tob-email-status {
+        min-height: 24px;
+        padding: 4px 9px;
+        font-size: 9px;
+    }
+
+    .tob-verification-warning {
+        margin-bottom: 20px;
+    }
+}

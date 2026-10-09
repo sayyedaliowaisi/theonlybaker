@@ -1,0 +1,730 @@
+/* =========================================================
+   THE ONLY BAKER
+   CUSTOMER ORDER DETAIL
+========================================================= */
+
+
+/* =========================================================
+   HEADING
+========================================================= */
+
+.tob-order-detail-heading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 25px;
+
+    margin-bottom: 34px;
+}
+
+.tob-order-detail-heading > div > p {
+    margin: 0 0 7px;
+
+    color: #a88770;
+
+    font-size: 9px;
+    font-weight: 700;
+
+    letter-spacing: 2px;
+}
+
+.tob-order-detail-heading h1 {
+    margin: 0 0 8px;
+
+    color: #452719;
+
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(27px, 3vw, 40px);
+    font-weight: 400;
+    line-height: 1.1;
+}
+
+.tob-order-detail-heading > div > span {
+    color: #8d796c;
+
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   CARD
+========================================================= */
+
+.tob-order-detail-card {
+    margin-bottom: 22px;
+    padding: 25px;
+
+    border: 1px solid #eadfd7;
+    border-radius: 4px;
+
+    background: #fff;
+}
+
+.tob-order-detail-card-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+
+    margin-bottom: 23px;
+    padding-bottom: 17px;
+
+    border-bottom: 1px solid #eee4dd;
+}
+
+.tob-order-detail-card-heading span {
+    display: block;
+
+    margin-bottom: 5px;
+
+    color: #a28c7e;
+
+    font-size: 8px;
+    font-weight: 700;
+
+    letter-spacing: 1.5px;
+}
+
+.tob-order-detail-card-heading h2 {
+    margin: 0;
+
+    color: #452719;
+
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 20px;
+    font-weight: 400;
+}
+
+.tob-order-item-count {
+    color: #816b5e;
+
+    font-size: 10px;
+    font-weight: 600;
+
+    text-transform: uppercase;
+    letter-spacing: .6px;
+}
+
+
+/* =========================================================
+   ORDER TRACKER
+========================================================= */
+
+.tob-order-tracker {
+    position: relative;
+
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+
+    padding: 10px 0 5px;
+}
+
+.tob-order-tracker::before {
+    content: "";
+
+    position: absolute;
+
+    top: 26px;
+    left: 12.5%;
+    right: 12.5%;
+
+    height: 1px;
+
+    background: #e3d7ce;
+}
+
+.tob-order-track-step {
+    position: relative;
+    z-index: 1;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    text-align: center;
+}
+
+.tob-order-track-marker {
+    width: 34px;
+    height: 34px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin-bottom: 12px;
+
+    border: 1px solid #d9cbc1;
+    border-radius: 50%;
+
+    background: #fff;
+
+    color: #a18e82;
+
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.tob-order-track-step.completed
+.tob-order-track-marker {
+    border-color: #60402d;
+
+    background: #60402d;
+
+    color: #fff;
+}
+
+.tob-order-track-text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    gap: 4px;
+}
+
+.tob-order-track-text strong {
+    color: #4f3425;
+
+    font-size: 10px;
+    font-weight: 700;
+
+    letter-spacing: .3px;
+}
+
+.tob-order-track-text span {
+    max-width: 135px;
+
+    color: #99877b;
+
+    font-size: 9px;
+    line-height: 1.45;
+}
+
+
+/* =========================================================
+   CANCELLED
+========================================================= */
+
+.tob-order-cancelled {
+    display: flex;
+    align-items: center;
+
+    gap: 14px;
+
+    padding: 16px;
+
+    border: 1px solid #e4c9c4;
+    border-radius: 4px;
+
+    background: #fff7f5;
+}
+
+.tob-order-cancelled-icon {
+    width: 35px;
+    height: 35px;
+
+    flex: 0 0 35px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #9a4b42;
+
+    color: #fff;
+
+    font-size: 18px;
+}
+
+.tob-order-cancelled strong {
+    display: block;
+
+    margin-bottom: 3px;
+
+    color: #813e36;
+
+    font-size: 11px;
+}
+
+.tob-order-cancelled p {
+    margin: 0;
+
+    color: #96756f;
+
+    font-size: 10px;
+}
+
+
+/* =========================================================
+   ORDER ITEMS
+========================================================= */
+
+.tob-order-detail-items {
+    display: grid;
+}
+
+.tob-order-detail-item {
+    display: grid;
+
+    grid-template-columns:
+        85px
+        minmax(0, 1fr)
+        auto;
+
+    align-items: center;
+
+    gap: 17px;
+
+    padding: 17px 0;
+
+    border-bottom: 1px solid #eee5de;
+}
+
+.tob-order-detail-item:first-child {
+    padding-top: 0;
+}
+
+.tob-order-detail-item:last-child {
+    padding-bottom: 0;
+
+    border-bottom: 0;
+}
+
+.tob-order-detail-product-image {
+    width: 85px;
+    height: 85px;
+
+    overflow: hidden;
+
+    border: 1px solid #eadfd7;
+    border-radius: 4px;
+
+    background: #f7f1ec;
+}
+
+.tob-order-detail-product-image a {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+}
+
+.tob-order-detail-product-image img {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+}
+
+.tob-order-image-placeholder {
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #9b8577;
+
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 13px;
+}
+
+.tob-order-detail-product-info {
+    min-width: 0;
+}
+
+.tob-order-detail-product-info > span {
+    display: block;
+
+    margin-bottom: 5px;
+
+    color: #a08c7e;
+
+    font-size: 7px;
+    font-weight: 700;
+
+    letter-spacing: 1.3px;
+}
+
+.tob-order-detail-product-info h3 {
+    margin: 0 0 7px;
+
+    color: #43291b;
+
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 16px;
+    font-weight: 400;
+}
+
+.tob-order-detail-product-info h3 a {
+    color: inherit;
+
+    text-decoration: none;
+}
+
+.tob-order-detail-product-info h3 a:hover {
+    text-decoration: underline;
+}
+
+.tob-order-product-meta {
+    display: flex;
+    align-items: center;
+
+    gap: 7px;
+
+    color: #887367;
+
+    font-size: 9px;
+}
+
+.tob-order-review-product {
+    display: inline-block;
+
+    margin-top: 11px;
+    padding-bottom: 2px;
+
+    border-bottom: 1px solid currentColor;
+
+    color: #573726;
+
+    font-size: 8px;
+    font-weight: 700;
+
+    letter-spacing: 1px;
+
+    text-decoration: none;
+}
+
+.tob-order-detail-item-total {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+
+    gap: 4px;
+}
+
+.tob-order-detail-item-total span {
+    color: #9d8a7e;
+
+    font-size: 8px;
+
+    text-transform: uppercase;
+    letter-spacing: .8px;
+}
+
+.tob-order-detail-item-total strong {
+    color: #4c3021;
+
+    font-size: 12px;
+}
+
+
+/* =========================================================
+   INFORMATION GRID
+========================================================= */
+
+.tob-order-information-grid {
+    display: grid;
+
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    gap: 22px;
+}
+
+.tob-order-address strong {
+    display: block;
+
+    margin-bottom: 9px;
+
+    color: #4c3021;
+
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 15px;
+    font-weight: 400;
+}
+
+.tob-order-address p {
+    margin: 0 0 4px;
+
+    color: #776459;
+
+    font-size: 10px;
+    line-height: 1.6;
+}
+
+.tob-order-contact {
+    display: flex;
+    flex-direction: column;
+
+    gap: 3px;
+
+    margin-top: 15px;
+    padding-top: 14px;
+
+    border-top: 1px solid #eee5de;
+}
+
+.tob-order-contact span {
+    color: #9b897d;
+
+    font-size: 8px;
+
+    text-transform: uppercase;
+    letter-spacing: .8px;
+}
+
+.tob-order-contact strong {
+    margin: 0;
+
+    color: #523728;
+
+    font-family: inherit;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   PAYMENT
+========================================================= */
+
+.tob-order-payment-details {
+    display: grid;
+
+    gap: 14px;
+}
+
+.tob-order-payment-details > div {
+    display: flex;
+    flex-direction: column;
+
+    gap: 4px;
+}
+
+.tob-order-payment-details span {
+    color: #9b897d;
+
+    font-size: 8px;
+
+    text-transform: uppercase;
+    letter-spacing: .8px;
+}
+
+.tob-order-payment-details strong {
+    color: #523728;
+
+    font-size: 10px;
+    font-weight: 600;
+
+    overflow-wrap: anywhere;
+}
+
+
+/* =========================================================
+   SUMMARY
+========================================================= */
+
+.tob-order-summary {
+    width: min(100%, 420px);
+
+    margin-left: auto;
+}
+
+.tob-order-summary > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 20px;
+
+    padding: 9px 0;
+
+    color: #756156;
+
+    font-size: 10px;
+}
+
+.tob-order-summary > div strong {
+    color: #4b3021;
+}
+
+.tob-order-summary
+.tob-order-summary-total {
+    margin-top: 6px;
+    padding-top: 15px;
+
+    border-top: 1px solid #dfd2c8;
+}
+
+.tob-order-summary-total span {
+    color: #4b3021;
+
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 16px;
+}
+
+.tob-order-summary-total strong {
+    color: #4b3021;
+
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 19px;
+    font-weight: 400;
+}
+
+
+/* =========================================================
+   BOTTOM BUTTONS
+========================================================= */
+
+.tob-order-detail-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 15px;
+
+    margin-top: 6px;
+}
+
+.tob-order-back-button,
+.tob-order-shop-button {
+    min-height: 43px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0 19px;
+
+    border-radius: 2px;
+
+    font-size: 8px;
+    font-weight: 700;
+
+    letter-spacing: 1.1px;
+
+    text-decoration: none;
+}
+
+.tob-order-back-button {
+    border: 1px solid #d9ccc3;
+
+    background: #fff;
+
+    color: #5a4031;
+}
+
+.tob-order-shop-button {
+    border: 1px solid #563625;
+
+    background: #563625;
+
+    color: #fff;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 900px) {
+
+    .tob-order-information-grid {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+
+@media (max-width: 700px) {
+
+    .tob-order-detail-heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .tob-order-tracker {
+        grid-template-columns: 1fr;
+
+        gap: 0;
+
+        padding-left: 3px;
+    }
+
+    .tob-order-tracker::before {
+        top: 17px;
+        bottom: 17px;
+        left: 17px;
+        right: auto;
+
+        width: 1px;
+        height: auto;
+    }
+
+    .tob-order-track-step {
+        min-height: 70px;
+
+        flex-direction: row;
+        align-items: flex-start;
+
+        text-align: left;
+    }
+
+    .tob-order-track-marker {
+        flex: 0 0 34px;
+
+        margin: 0 13px 0 0;
+    }
+
+    .tob-order-track-text {
+        align-items: flex-start;
+
+        padding-top: 2px;
+    }
+
+    .tob-order-track-text span {
+        max-width: none;
+    }
+
+}
+
+
+@media (max-width: 560px) {
+
+    .tob-order-detail-card {
+        padding: 18px 15px;
+    }
+
+    .tob-order-detail-item {
+        grid-template-columns:
+            70px
+            minmax(0, 1fr);
+    }
+
+    .tob-order-detail-product-image {
+        width: 70px;
+        height: 70px;
+    }
+
+    .tob-order-detail-item-total {
+        grid-column: 2;
+
+        align-items: flex-start;
+    }
+
+    .tob-order-detail-bottom {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .tob-order-back-button,
+    .tob-order-shop-button {
+        width: 100%;
+    }
+
+}

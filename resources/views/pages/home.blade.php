@@ -13,15 +13,60 @@
     {{-- =====================================================
          BACKGROUND IMAGE
     ====================================================== --}}
-    <div class="tob-hero-background">
+    {{-- =====================================================
+     HERO BACKGROUND SLIDER
+====================================================== --}}
 
-        <img
-            src="{{ asset('images/hero/hero-bg.jpg') }}"
-            alt="The Only Baker Cookies"
-            class="tob-hero-background-image"
-        >
+<div class="tob-hero-background" id="tobHeroSlider">
+
+    <div class="tob-hero-slides">
+
+        {{-- SLIDE 01 --}}
+        <div class="tob-hero-slide active">
+            <img
+                src="{{ asset('images/hero/hero-bg.jpg') }}"
+                alt="The Only Baker Cookies"
+                class="tob-hero-background-image"
+                draggable="false"
+            >
+        </div>
+
+
+        {{-- SLIDE 02 --}}
+        <div class="tob-hero-slide">
+            <img
+                src="{{ asset('images/hero/hero-bg-2.jpg') }}"
+                alt="The Only Baker Cookies"
+                class="tob-hero-background-image"
+                draggable="false"
+            >
+        </div>
+
+
+        {{-- SLIDE 03 --}}
+        <div class="tob-hero-slide">
+            <img
+                src="{{ asset('images/hero/hero-bg-3.jpg') }}"
+                alt="The Only Baker Cookies"
+                class="tob-hero-background-image"
+                draggable="false"
+            >
+        </div>
+
+
+        {{-- SLIDE 04 --}}
+        <div class="tob-hero-slide">
+            <img
+                src="{{ asset('images/hero/hero-bg-4.jpg') }}"
+                alt="The Only Baker Cookies"
+                class="tob-hero-background-image"
+                draggable="false"
+            >
+        </div>
 
     </div>
+
+</div>
 
 
     {{-- =====================================================
