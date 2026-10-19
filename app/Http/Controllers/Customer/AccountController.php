@@ -24,28 +24,21 @@ class AccountController extends Controller
             ->whereIn('order_status', [
                 'pending',
                 'confirmed',
+                'processing',
                 'shipped',
             ])
             ->count();
 
         return view(
             'customer.account.dashboard',
-            compact(
-                'user',
-                'totalOrders',
-                'pendingOrders'
-            )
+            compact('user', 'totalOrders', 'pendingOrders')
         );
     }
-
 
     public function orders(Request $request)
     {
         $orders = Order::query()
-            ->where(
-                'user_id',
-                $request->user()->id
-            )
+            ->where('user_id', $request->user()->id)
             ->latest()
             ->paginate(10);
 
@@ -55,20 +48,16 @@ class AccountController extends Controller
         );
     }
 
-
     public function orderShow(
         Request $request,
         string $orderNumber
     ) {
-        $order = Order::with('items')
-            ->where(
-                'user_id',
-                $request->user()->id
-            )
-            ->where(
-                'order_number',
-                $orderNumber
-            )
+        $order = Order::with([
+            'items',
+            'statusHistory',
+        ])
+            ->where('user_id', $request->user()->id)
+            ->where('order_number', $orderNumber)
             ->firstOrFail();
 
         return view(
@@ -76,7 +65,6 @@ class AccountController extends Controller
             compact('order')
         );
     }
-
 
     public function profile(Request $request)
     {
@@ -88,7 +76,6 @@ class AccountController extends Controller
         );
     }
 
-
     public function updateProfile(Request $request)
     {
         $user = $request->user();
@@ -99,18 +86,13 @@ class AccountController extends Controller
                 'string',
                 'max:100',
             ],
-
             'email' => [
                 'required',
                 'email',
                 'max:150',
-
-                Rule::unique(
-                    'users',
-                    'email'
-                )->ignore($user->id),
+                Rule::unique('users', 'email')
+                    ->ignore($user->id),
             ],
-
             'phone' => [
                 'nullable',
                 'string',
@@ -118,10 +100,7 @@ class AccountController extends Controller
             ],
         ]);
 
-
-        $emailChanged =
-            $user->email !== $validated['email'];
-
+        $emailChanged = $user->email !== $validated['email'];
 
         $user->update([
             'name' => $validated['name'],
@@ -129,20 +108,17 @@ class AccountController extends Controller
             'phone' => $validated['phone'] ?? null,
         ]);
 
-
         if ($emailChanged) {
             $user->forceFill([
                 'email_verified_at' => null,
             ])->save();
         }
 
-
         return back()->with(
             'profile_success',
             'Your account details have been updated successfully.'
         );
     }
-
 
     public function updatePassword(Request $request)
     {
@@ -155,7 +131,6 @@ class AccountController extends Controller
                     'required',
                     'current_password',
                 ],
-
                 'password' => [
                     'required',
                     'confirmed',
@@ -164,13 +139,9 @@ class AccountController extends Controller
             ]
         );
 
-
         $user->update([
-            'password' => Hash::make(
-                $validated['password']
-            ),
+            'password' => Hash::make($validated['password']),
         ]);
-
 
         return back()->with(
             'password_success',

@@ -1,3 +1,4 @@
+
 <?php
 
 use Illuminate\Foundation\Application;
@@ -12,15 +13,16 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
 
-    $middleware->redirectGuestsTo(
-        fn ($request) =>
-            $request->is('admin/*') ||
-            $request->is('admin')
-                ? route('admin.login')
-                : route('home')
-    );
+        $middleware->redirectGuestsTo(
+            fn ($request) =>
+                $request->is('admin/*') ||
+                $request->is('admin')
+                    ? route('admin.login')
+                    : route('login')
+        );
 
-})
+    })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
-    })->create();
+    })
+    ->create();

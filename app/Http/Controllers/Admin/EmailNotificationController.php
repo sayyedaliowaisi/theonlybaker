@@ -11,13 +11,41 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
+use Throwable;
 
 class EmailNotificationController extends Controller
 {
+    /*
+    |--------------------------------------------------------------------------
+    | SUPPORTED NOTIFICATION TYPES
+    |--------------------------------------------------------------------------
+    */
+
+    private const NOTIFICATION_TYPES = [
+        'customer',
+        'admin',
+        'order_confirmed',
+        'order_shipped',
+        'order_delivered',
+        'order_cancelled',
+        'payment_received',
+    ];
+
+    /*
+    |--------------------------------------------------------------------------
+    | NOTIFICATION LIST
+    |--------------------------------------------------------------------------
+    */
+
     public function index(Request $request)
     {
         $validated = $request->validate([
-            'search' => ['nullable', 'string', 'max:150'],
+            'search' => [
+                'nullable',
+                'string',
+                'max:150',
+            ],
+
             'status' => [
                 'nullable',
                 Rule::in([
@@ -28,15 +56,22 @@ class EmailNotificationController extends Controller
                     'delivery_uncertain',
                 ]),
             ],
+
             'type' => [
                 'nullable',
-                Rule::in(['customer', 'admin']),
+                Rule::in(self::NOTIFICATION_TYPES),
             ],
         ]);
 
         $query = OrderEmailNotification::query()
             ->with('order:id,order_number,name,email')
             ->latest();
+
+        /*
+        |--------------------------------------------------------------------------
+        | SEARCH
+        |--------------------------------------------------------------------------
+        */
 
         if (!empty($validated['search'])) {
             $search = trim($validated['search']);
@@ -46,26 +81,65 @@ class EmailNotificationController extends Controller
                     'recipient_email',
                     'like',
                     "%{$search}%"
-                )->orWhereHas('order', function ($orderQuery) use ($search) {
-                    $orderQuery
-                        ->where('order_number', 'like', "%{$search}%")
-                        ->orWhere('name', 'like', "%{$search}%")
-                        ->orWhere('email', 'like', "%{$search}%");
-                });
+                )->orWhereHas(
+                    'order',
+                    function ($orderQuery) use ($search) {
+                        $orderQuery
+                            ->where(
+                                'order_number',
+                                'like',
+                                "%{$search}%"
+                            )
+                            ->orWhere(
+                                'name',
+                                'like',
+                                "%{$search}%"
+                            )
+                            ->orWhere(
+                                'email',
+                                'like',
+                                "%{$search}%"
+                            );
+                    }
+                );
             });
         }
 
+        /*
+        |--------------------------------------------------------------------------
+        | STATUS FILTER
+        |--------------------------------------------------------------------------
+        */
+
         if (!empty($validated['status'])) {
-            $query->where('status', $validated['status']);
+            $query->where(
+                'status',
+                $validated['status']
+            );
         }
 
+        /*
+        |--------------------------------------------------------------------------
+        | TYPE FILTER
+        |--------------------------------------------------------------------------
+        */
+
         if (!empty($validated['type'])) {
-            $query->where('type', $validated['type']);
+            $query->where(
+                'type',
+                $validated['type']
+            );
         }
 
         $notifications = $query
             ->paginate(15)
             ->withQueryString();
+
+        /*
+        |--------------------------------------------------------------------------
+        | DASHBOARD COUNTS
+        |--------------------------------------------------------------------------
+        */
 
         $stats = [];
 
@@ -83,9 +157,16 @@ class EmailNotificationController extends Controller
 
         $stats['total'] = OrderEmailNotification::count();
 
+        /*
+        |--------------------------------------------------------------------------
+        | STUCK PROCESSING COUNT
+        |--------------------------------------------------------------------------
+        */
+
         $stuckCount = OrderEmailNotification::query()
             ->where('status', 'processing')
             ->whereNull('sent_at')
+            ->whereNotNull('processing_started_at')
             ->where(
                 'processing_started_at',
                 '<=',
@@ -95,12 +176,23 @@ class EmailNotificationController extends Controller
 
         return view(
             'admin.email-notifications.index',
-            compact('notifications', 'stats', 'stuckCount')
+            compact(
+                'notifications',
+                'stats',
+                'stuckCount'
+            )
         );
     }
 
-    public function show(OrderEmailNotification $notification)
-    {
+    /*
+    |--------------------------------------------------------------------------
+    | NOTIFICATION DETAILS
+    |--------------------------------------------------------------------------
+    */
+
+    public function show(
+        OrderEmailNotification $notification
+    ) {
         $notification->load([
             'order.items',
             'recoveryLogs',
@@ -112,19 +204,45 @@ class EmailNotificationController extends Controller
         );
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | RETRY FAILED NOTIFICATION
+    |--------------------------------------------------------------------------
+    */
+
     public function retry(
         Request $request,
         OrderEmailNotification $notification
     ): RedirectResponse {
-        return $this->recover($request, $notification, 'failed');
+        return $this->recover(
+            $request,
+            $notification,
+            'failed'
+        );
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | RECOVER STUCK PROCESSING NOTIFICATION
+    |--------------------------------------------------------------------------
+    */
 
     public function recoverProcessing(
         Request $request,
         OrderEmailNotification $notification
     ): RedirectResponse {
-        return $this->recover($request, $notification, 'processing');
+        return $this->recover(
+            $request,
+            $notification,
+            'processing'
+        );
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | RECOVER UNCERTAIN DELIVERY
+    |--------------------------------------------------------------------------
+    */
 
     public function recoverUncertain(
         Request $request,
@@ -136,6 +254,24 @@ class EmailNotificationController extends Controller
             'delivery_uncertain'
         );
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | SECURE RECOVERY
+    |--------------------------------------------------------------------------
+    |
+    | Recovery requires:
+    |
+    | 1. A documented reason.
+    | 2. Confirmation of non-delivery.
+    | 3. Confirmation that the worker has been stopped.
+    | 4. A matching notification status.
+    | 5. A notification that has not already been sent.
+    |
+    | Note: worker_stopped is an administrator attestation,
+    | not an automated check of running worker processes.
+    |
+    */
 
     private function recover(
         Request $request,
@@ -149,6 +285,7 @@ class EmailNotificationController extends Controller
                 'min:10',
                 'max:2000',
             ],
+
             'delivery_verification' => [
                 'required',
                 Rule::in([
@@ -156,11 +293,18 @@ class EmailNotificationController extends Controller
                     'delivery_uncertain',
                 ]),
             ],
+
             'worker_stopped' => [
                 'required',
                 'accepted',
             ],
         ]);
+
+        /*
+        |--------------------------------------------------------------------------
+        | BLOCK UNVERIFIED DELIVERY
+        |--------------------------------------------------------------------------
+        */
 
         if (
             $validated['delivery_verification']
@@ -172,6 +316,12 @@ class EmailNotificationController extends Controller
             ]);
         }
 
+        /*
+        |--------------------------------------------------------------------------
+        | ATOMIC RECOVERY AND AUDIT LOG
+        |--------------------------------------------------------------------------
+        */
+
         DB::transaction(function () use (
             $notification,
             $expectedStatus,
@@ -182,15 +332,27 @@ class EmailNotificationController extends Controller
                 ->lockForUpdate()
                 ->firstOrFail();
 
+            /*
+            |--------------------------------------------------------------------------
+            | CHECK CURRENT STATE
+            |--------------------------------------------------------------------------
+            */
+
             if (
-                $locked->status !== $expectedStatus ||
-                $locked->sent_at !== null
+                $locked->status !== $expectedStatus
+                || $locked->sent_at !== null
             ) {
                 throw ValidationException::withMessages([
                     'notification' =>
                         'Notification status changed. Refresh and investigate again.',
                 ]);
             }
+
+            /*
+            |--------------------------------------------------------------------------
+            | CHECK STUCK PROCESSING ELIGIBILITY
+            |--------------------------------------------------------------------------
+            */
 
             if (
                 $expectedStatus === 'processing'
@@ -202,6 +364,12 @@ class EmailNotificationController extends Controller
                 ]);
             }
 
+            /*
+            |--------------------------------------------------------------------------
+            | RESET NOTIFICATION FOR A NEW ATTEMPT
+            |--------------------------------------------------------------------------
+            */
+
             $locked->update([
                 'status' => 'pending',
                 'attempts' => 0,
@@ -212,33 +380,54 @@ class EmailNotificationController extends Controller
                 'last_error' => null,
             ]);
 
+            /*
+            |--------------------------------------------------------------------------
+            | RECORD ADMIN RECOVERY ACTION
+            |--------------------------------------------------------------------------
+            */
+
             OrderEmailRecoveryLog::create([
                 'notification_id' => $locked->id,
+
                 'admin_id' => auth('admin')->id(),
+
                 'action' => match ($expectedStatus) {
                     'processing' => 'recover_processing',
+
                     'delivery_uncertain' => 'recover_uncertain',
+
                     default => 'retry_failed',
                 },
+
                 'previous_status' => $expectedStatus,
+
                 'new_status' => 'pending',
+
                 'reason' => $validated['reason'],
+
                 'delivery_verification' =>
                     $validated['delivery_verification'],
+
                 'created_at' => now(),
             ]);
         }, 3);
 
+        /*
+        |--------------------------------------------------------------------------
+        | DISPATCH AFTER SUCCESSFUL RECOVERY
+        |--------------------------------------------------------------------------
+        */
+
         try {
             SendOrderEmailNotification::dispatch(
-                $notification->id
+                (int) $notification->id
             )->afterCommit();
 
             $message = 'Recovery recorded and email queued.';
-        } catch (\Throwable $exception) {
+        } catch (Throwable $exception) {
             report($exception);
 
-            $message = 'Recovery recorded. Scheduler will queue the pending email.';
+            $message = 'Recovery recorded. Notification is pending and requires dispatch.';
         }
 
         return redirect()

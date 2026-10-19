@@ -18,9 +18,9 @@
     </title>
 
     <meta
-        name="description"
-        content="The Only Baker - Freshly baked cakes, cookies and desserts."
-    >
+    name="description"
+    content="@yield('meta_description', 'The Only Baker - Freshly baked cakes, cookies and desserts.')"
+>
 
     <link
         rel="stylesheet"

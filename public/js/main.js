@@ -3,28 +3,69 @@
    COMPLETE MAIN JAVASCRIPT
 ========================================================= */
 
-
-/* =========================================================
-   MOBILE NAVIGATION
-========================================================= */
+/* ==========================================
+   MOBILE NAVIGATION + SCROLL LOCK
+========================================== */
 
 document.addEventListener("DOMContentLoaded", function () {
 
     const toggle = document.getElementById("tobMobileToggle");
     const menu = document.getElementById("tobMobileMenu");
 
-    if (!toggle || !menu) {
-        return;
+    if (!toggle || !menu) return;
+
+    function setMenuState(isOpen) {
+
+        menu.classList.toggle("show", isOpen);
+
+        toggle.setAttribute(
+            "aria-expanded",
+            String(isOpen)
+        );
+
+        toggle.setAttribute(
+            "aria-label",
+            isOpen ? "Close menu" : "Open menu"
+        );
+
+        document.documentElement.classList.toggle(
+            "tob-mobile-menu-locked",
+            isOpen
+        );
+
+        document.body.classList.toggle(
+            "tob-mobile-menu-locked",
+            isOpen
+        );
     }
 
     toggle.addEventListener("click", function () {
 
-        const isOpen = menu.classList.toggle("show");
+        const isOpen = !menu.classList.contains("show");
 
-        toggle.setAttribute(
-            "aria-expanded",
-            isOpen ? "true" : "false"
-        );
+        setMenuState(isOpen);
+
+    });
+
+    // Close with Escape key
+    document.addEventListener("keydown", function (event) {
+
+        if (
+            event.key === "Escape" &&
+            menu.classList.contains("show")
+        ) {
+            setMenuState(false);
+            toggle.focus();
+        }
+
+    });
+
+    // Reset when switching to desktop
+    window.addEventListener("resize", function () {
+
+        if (window.innerWidth > 900) {
+            setMenuState(false);
+        }
 
     });
 
@@ -969,52 +1010,34 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 
+
 /* =========================================================
    MOBILE SHOP ACCORDION
 ========================================================= */
 
 document.addEventListener("DOMContentLoaded", function () {
+    const shopToggle = document.getElementById("tobMobileShopToggle");
+    const shopCategories = document.getElementById("tobMobileShopCategories");
+    const shopRow = document.querySelector(".tob-mobile-shop-row");
 
-    const shopToggle =
-        document.getElementById(
-            "tobMobileShopToggle"
+    if (!shopToggle || !shopCategories) return;
+
+    function toggleShop() {
+        const isOpen = shopCategories.classList.toggle("show");
+
+        shopToggle.classList.toggle("active", isOpen);
+
+        // Keep existing CSS + icon animation working.
+        shopRow?.classList.toggle("active", isOpen);
+
+        shopToggle.setAttribute("aria-expanded", String(isOpen));
+        shopToggle.setAttribute(
+            "aria-label",
+            isOpen ? "Close Shop Categories" : "Open Shop Categories"
         );
-
-    const shopCategories =
-        document.getElementById(
-            "tobMobileShopCategories"
-        );
-
-
-    if (!shopToggle || !shopCategories) {
-        return;
     }
 
-
-    shopToggle.addEventListener(
-        "click",
-        function () {
-
-            const isOpen =
-                shopCategories.classList.toggle(
-                    "show"
-                );
-
-
-            shopToggle.classList.toggle(
-                "active",
-                isOpen
-            );
-
-
-            shopToggle.setAttribute(
-                "aria-expanded",
-                isOpen ? "true" : "false"
-            );
-
-        }
-    );
-
+    shopToggle.addEventListener("click", toggleShop);
 });
 
 
@@ -1670,5 +1693,41 @@ document.addEventListener("DOMContentLoaded", function () {
 
         }
     );
+
+});
+
+
+
+/* ==========================================
+   DESKTOP SHOP DROPDOWN
+========================================== */
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const dropdown = document.getElementById("tobDesktopShopDropdown");
+    const toggle = document.getElementById("tobDesktopShopToggle");
+
+    if (!dropdown || !toggle) return;
+
+    function setDropdownState(isOpen) {
+        dropdown.classList.toggle("is-open", isOpen);
+        toggle.setAttribute("aria-expanded", String(isOpen));
+    }
+
+    toggle.addEventListener("click", function () {
+        setDropdownState(!dropdown.classList.contains("is-open"));
+    });
+
+    document.addEventListener("click", function (event) {
+        if (!dropdown.contains(event.target)) {
+            setDropdownState(false);
+        }
+    });
+
+    document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape") {
+            setDropdownState(false);
+        }
+    });
 
 });

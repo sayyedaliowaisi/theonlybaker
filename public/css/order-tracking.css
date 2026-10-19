@@ -1,0 +1,94 @@
+
+.tob-order-tracking-list {
+    list-style: none;
+    padding: 6px 0 0;
+    margin: 0;
+    display: grid;
+    gap: 0;
+}
+
+.tob-order-tracking-step {
+    display: grid;
+    grid-template-columns: 42px minmax(0, 1fr);
+    gap: 14px;
+    position: relative;
+    min-height: 83px;
+    color: #93867d;
+}
+
+.tob-order-tracking-step:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    top: 35px;
+    bottom: 5px;
+    left: 17px;
+    width: 2px;
+    background: #e9ddd4;
+}
+
+.tob-order-tracking-step.is-complete:not(:last-child)::after {
+    background: #8c6448;
+}
+
+.tob-order-tracking-marker {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #f3ede8;
+    border: 1px solid #e1d4c9;
+    font-weight: 700;
+    z-index: 1;
+}
+
+.tob-order-tracking-step.is-complete .tob-order-tracking-marker {
+    background: #69412f;
+    border-color: #69412f;
+    color: white;
+}
+
+.tob-order-tracking-step strong {
+    display: block;
+    font-size: 15px;
+    color: #5b493f;
+    padding-top: 2px;
+}
+
+.tob-order-tracking-step small {
+    display: block;
+    font-size: 12px;
+    margin-top: 5px;
+    color: #84756b;
+}
+
+.tob-order-tracking-step p {
+    margin: 7px 0 0;
+    font-size: 13px;
+}
+
+.tob-order-tracking-cancelled {
+    padding: 17px;
+    border: 1px solid #efc9c2;
+    border-radius: 10px;
+    background: #fff4f2;
+    color: #983b31;
+    font-weight: 600;
+}
+
+@media (max-width: 600px) {
+    .tob-order-tracking-step {
+        grid-template-columns: 38px minmax(0, 1fr);
+        gap: 11px;
+        min-height: 76px;
+    }
+
+    .tob-order-tracking-marker {
+        width: 34px;
+        height: 34px;
+    }
+
+    .tob-order-tracking-step:not(:last-child)::after {
+        left: 16px;
+    }
+}

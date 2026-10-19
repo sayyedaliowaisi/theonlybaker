@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Product;
 use App\Models\ProductReview;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -9,16 +10,22 @@ use Illuminate\Validation\Rule;
 
 class ProductReviewController extends Controller
 {
+    /*
+    |--------------------------------------------------------------------------
+    | STORE OR UPDATE REVIEW
+    |--------------------------------------------------------------------------
+    */
+
     public function store(
         Request $request,
         string $slug
     ): RedirectResponse {
-        $products = config('products', []);
 
-        abort_unless(
-            isset($products[$slug]),
-            404
-        );
+        // Only active database products can receive reviews.
+        $product = Product::query()
+            ->where('slug', $slug)
+            ->where('is_active', true)
+            ->firstOrFail();
 
         $validated = $request->validate([
             'rating' => [
@@ -34,10 +41,10 @@ class ProductReviewController extends Controller
             ],
         ]);
 
-        ProductReview::updateOrCreate(
+        ProductReview::query()->updateOrCreate(
             [
                 'user_id' => $request->user()->id,
-                'product_slug' => $slug,
+                'product_slug' => $product->slug,
             ],
             [
                 'rating' => $validated['rating'],
@@ -48,7 +55,7 @@ class ProductReviewController extends Controller
         );
 
         return redirect()
-            ->route('product.show', $slug)
+            ->route('product.show', $product->slug)
             ->with(
                 'review_success',
                 'Thank you! Your review has been saved.'
@@ -56,16 +63,39 @@ class ProductReviewController extends Controller
             ->withFragment('reviews');
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | DELETE OWN REVIEW
+    |--------------------------------------------------------------------------
+    */
+
     public function destroy(
         Request $request,
         string $slug
     ): RedirectResponse {
+
         $review = ProductReview::query()
             ->where('user_id', $request->user()->id)
             ->where('product_slug', $slug)
             ->firstOrFail();
 
         $review->delete();
+
+        // Product may be inactive or removed from public catalog.
+        // Redirect safely without requiring product visibility.
+        $productIsActive = Product::query()
+            ->where('slug', $slug)
+            ->where('is_active', true)
+            ->exists();
+
+        if (!$productIsActive) {
+            return redirect()
+                ->route('account.dashboard')
+                ->with(
+                    'review_success',
+                    'Your review has been removed.'
+                );
+        }
 
         return redirect()
             ->route('product.show', $slug)

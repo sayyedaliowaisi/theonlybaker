@@ -1,25 +1,23 @@
 <?php
 
-
-
 use Illuminate\Support\Facades\Route;
 
+use App\Services\ProductCatalog;
 
+use App\Http\Controllers\ContactController;
 
 use App\Http\Controllers\CheckoutController;
+
 use App\Http\Controllers\CartStockController;
-
-
 
 use App\Http\Controllers\Admin\AuthController;
 
 use App\Http\Controllers\Admin\OrderController;
 
-
-
 use App\Http\Controllers\Customer\AuthController as CustomerAuthController;
 
 use App\Http\Controllers\Customer\AccountController;
+use App\Http\Controllers\Customer\AddressController;
 
 use App\Http\Controllers\Customer\EmailVerificationController;
 
@@ -31,13 +29,17 @@ use App\Models\ProductReview;
 
 use App\Http\Controllers\Admin\ProductReviewController as AdminProductReviewController;
 
+use App\Http\Controllers\Admin\ProductController as AdminProductController;
+
 use App\Http\Controllers\Admin\ProductInventoryController;
 
 use App\Http\Controllers\Admin\EmailNotificationController;
 
+use App\Http\Controllers\RetailerRegistrationController;
 
+use App\Http\Controllers\Admin\RetailerController as AdminRetailerController;
 
-
+use App\Http\Controllers\Admin\ContactEnquiryController as AdminContactEnquiryController;
 
 /*
 
@@ -49,21 +51,11 @@ use App\Http\Controllers\Admin\EmailNotificationController;
 
 */
 
-
-
 Route::get('/', function () {
-
-
 
     return view('pages.home');
 
-
-
 })->name('home');
-
-
-
-
 
 /*
 
@@ -75,120 +67,272 @@ Route::get('/', function () {
 
 |
 
-| All products config/products.php se load honge.
+| Active products database se load honge.
 
 |
 
 */
 
+Route::get('/shop', function (ProductCatalog $catalog) {
 
-
-Route::get('/shop', function () {
-
-    $products = config('products', []);
+    $products = $catalog->all();
 
     $inventoryStocks = \App\Models\ProductInventory::query()
+
+        ->whereIn('product_slug', array_keys($products))
+
         ->pluck('stock', 'product_slug');
 
     foreach ($products as $slug => &$product) {
 
-        $product['slug'] = $slug;
-
         $product['stock'] = max(
+
             0,
+
             (int) ($inventoryStocks[$slug] ?? 0)
+
         );
+
     }
 
     unset($product);
 
-    return view(
-        'pages.shop',
-        compact('products')
-    );
+    return view('pages.shop', compact('products'));
 
 })->name('shop');
 
 
-
 /*
-
 |--------------------------------------------------------------------------
-
-| PRODUCT DETAILS
-
+| COLLECTIONS
 |--------------------------------------------------------------------------
-
+|
+| Public collections page.
+| Existing cookie categories and curated collections.
+|
 */
 
 
 
-Route::get('/product/{slug}', function (string $slug) {
+Route::get('/collections', function (ProductCatalog $catalog) {
 
-    $products = config('products', []);
+    $featuredProducts = \App\Models\Product::query()
+        ->where('is_active', true)
+        ->where('is_featured', true)
+        ->orderBy('sort_order')
+        ->orderBy('id')
+        ->limit(4)
+        ->get();
 
-    abort_unless(
-        isset($products[$slug]),
-        404
+    // Fetch inventory for all featured products in one query.
+    $inventoryStocks = \App\Models\ProductInventory::query()
+        ->whereIn(
+            'product_slug',
+            $featuredProducts->pluck('slug')->all()
+        )
+        ->pluck('stock', 'product_slug');
+
+    // Preserve existing B2C/B2B pricing logic.
+    $bestSellingCookies = $featuredProducts
+        ->map(function ($product) use ($catalog, $inventoryStocks) {
+
+            $data = $catalog->toArray($product);
+
+            $data['stock'] = max(
+                0,
+                (int) ($inventoryStocks[$product->slug] ?? 0)
+            );
+
+            return $data;
+
+        })
+        ->all();
+
+    return view(
+        'pages.collections',
+        compact('bestSellingCookies')
     );
 
-    $product = $products[$slug];
-    $product['slug'] = $slug;
+})->name('collections');
+
+
+Route::view('/gifting', 'pages.gifting')
+    ->name('gifting');
+
+
+Route::view('/faq', 'pages.faq')->name('faq');
+
+Route::view('/shipping-delivery', 'pages.shipping-delivery')
+    ->name('shipping.delivery');
+
+
+Route::view(
+    '/return-refund-cancellation',
+    'pages.return-refund-cancellation'
+)->name('refund.policy');
+
+
+Route::view('/privacy-policy', 'pages.privacy-policy')
+    ->name('privacy.policy');
+
+ 
+Route::view('/terms-and-conditions', 'pages.terms-and-conditions')
+    ->name('terms.conditions');  
+
+Route::view('/custom-orders', 'pages.custom-orders')
+    ->name('custom.orders');
+
+
+use App\Http\Controllers\OrderTrackingController;
+
+Route::middleware(['auth'])->group(function () {
+
+    Route::get('/track-order', [OrderTrackingController::class, 'index'])
+        ->name('orders.track');
+
+    Route::post('/track-order', [OrderTrackingController::class, 'search'])
+        ->middleware('throttle:10,1')
+        ->name('orders.track.search');
+
+});
+
+/*
+|--------------------------------------------------------------------------
+| ABOUT US
+|--------------------------------------------------------------------------
+| Public About Us page for The Only Baker.
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/about-us', function () {
+    return view('pages.about');
+})->name('about');
+
+
+
+
+/*
+|--------------------------------------------------------------------------
+| CONTACT US
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/contact-us', [ContactController::class, 'index'])
+    ->name('contact');
+
+Route::post('/contact-us', [ContactController::class, 'store'])
+    ->middleware('throttle:5,1')
+    ->name('contact.store');
+
+
+
+
+
+/*
+|--------------------------------------------------------------------------
+| PRODUCT DETAILS
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/product/{slug}', function (string $slug) {
+
+    $product = app(ProductCatalog::class)->find($slug);
+
+    abort_if($product === null, 404);
 
     $stock = max(
+
         0,
+
         (int) (\App\Models\ProductInventory::query()
+
             ->where('product_slug', $slug)
+
             ->value('stock') ?? 0)
+
     );
 
     $reviews = ProductReview::query()
+
         ->with('user:id,name')
+
         ->where('product_slug', $slug)
+
         ->latest()
+
         ->get();
 
     $reviewCount = $reviews->count();
 
     $averageRating = $reviewCount > 0
+
         ? round((float) $reviews->avg('rating'), 1)
+
         : 0;
 
     $ratingBreakdown = [];
 
     for ($rating = 5; $rating >= 1; $rating--) {
+
         $ratingBreakdown[$rating] = $reviews
+
             ->where('rating', $rating)
+
             ->count();
+
     }
 
     $userReview = auth()->check()
+
         ? $reviews->firstWhere(
+
             'user_id',
+
             auth()->id()
+
         )
+
         : null;
 
+    // Active related products from the same category.
+    $relatedProducts = \App\Models\Product::query()
+        ->where('is_active', true)
+        ->where('slug', '!=', $slug)
+        ->where('category', $product['category'])
+        ->orderBy('sort_order')
+        ->limit(4)
+        ->get()
+        ->map(fn ($related) => app(ProductCatalog::class)->toArray($related))
+        ->all();
+
     return view(
+
         'pages.product',
+
         compact(
+
             'product',
+
             'reviews',
+
             'reviewCount',
+
             'averageRating',
+
             'ratingBreakdown',
+
             'userReview',
+
+            'relatedProducts',
             'stock'
+
         )
+
     );
 
 })->name('product.show');
 
-
-
 Route::middleware('auth')->group(function () {
-
-
 
     Route::post(
 
@@ -198,8 +342,6 @@ Route::middleware('auth')->group(function () {
 
     )->name('product.review.store');
 
-
-
     Route::delete(
 
         '/product/{slug}/review',
@@ -208,13 +350,7 @@ Route::middleware('auth')->group(function () {
 
     )->name('product.review.destroy');
 
-
-
 });
-
-
-
-
 
 /*
 
@@ -226,70 +362,48 @@ Route::middleware('auth')->group(function () {
 
 */
 
-
-
 Route::get('/cart', function () {
-
-
 
     return view('pages.cart');
 
-
-
 })->name('cart');
 
-
 Route::post('/cart/check-stock', [
+
     CartStockController::class,
+
     'check',
+
 ])
+
     ->middleware('throttle:60,1')
+
     ->name('cart.check-stock');
 
 
-
-
-
 /*
-
 |--------------------------------------------------------------------------
-
-| CHECKOUT
-
+| CHECKOUT - CUSTOMER LOGIN REQUIRED
 |--------------------------------------------------------------------------
-
 |
-
-| Guest aur logged-in customer dono checkout kar sakte hain.
-
+| Guest customers can add products to cart.
+| Login is compulsory to access checkout and place orders.
 |
-
 */
 
+Route::middleware(['web', 'auth'])->group(function () {
 
+    Route::get(
+        '/checkout',
+        [CheckoutController::class, 'index']
+    )->name('checkout');
 
-Route::get(
+    Route::post(
+        '/checkout',
+        [CheckoutController::class, 'store']
+    )->name('checkout.store');
 
-    '/checkout',
-
-    [CheckoutController::class, 'index']
-
-)->name('checkout');
-
-
-
-
-
-Route::post(
-
-    '/checkout',
-
-    [CheckoutController::class, 'store']
-
-)->name('checkout.store');
-
-
-
+});
 
 
 /*
@@ -310,8 +424,6 @@ Route::post(
 
 */
 
-
-
 Route::get(
 
     '/order-success/{orderNumber}',
@@ -323,10 +435,6 @@ Route::get(
     ->middleware('signed')
 
     ->name('order.success');
-
-
-
-
 
 /*
 
@@ -344,13 +452,9 @@ Route::get(
 
 */
 
-
-
 Route::middleware('guest')
 
     ->group(function () {
-
-
 
         /*
 
@@ -362,8 +466,6 @@ Route::middleware('guest')
 
         */
 
-
-
         Route::get(
 
             '/login',
@@ -372,10 +474,6 @@ Route::middleware('guest')
 
         )->name('login');
 
-
-
-
-
         Route::post(
 
             '/login',
@@ -383,10 +481,6 @@ Route::middleware('guest')
             [CustomerAuthController::class, 'login']
 
         )->name('login.store');
-
-
-
-
 
         /*
 
@@ -398,8 +492,6 @@ Route::middleware('guest')
 
         */
 
-
-
         Route::get(
 
             '/register',
@@ -408,10 +500,6 @@ Route::middleware('guest')
 
         )->name('register');
 
-
-
-
-
         Route::post(
 
             '/register',
@@ -419,10 +507,6 @@ Route::middleware('guest')
             [CustomerAuthController::class, 'register']
 
         )->name('register.store');
-
-
-
-
 
         /*
 
@@ -434,8 +518,6 @@ Route::middleware('guest')
 
         */
 
-
-
         Route::get(
 
             '/forgot-password',
@@ -443,10 +525,6 @@ Route::middleware('guest')
             [CustomerAuthController::class, 'showForgotPassword']
 
         )->name('password.request');
-
-
-
-
 
         Route::post(
 
@@ -460,10 +538,6 @@ Route::middleware('guest')
 
             ->name('password.email');
 
-
-
-
-
         /*
 
         |--------------------------------------------------------------------------
@@ -474,8 +548,6 @@ Route::middleware('guest')
 
         */
 
-
-
         Route::get(
 
             '/reset-password/{token}',
@@ -483,10 +555,6 @@ Route::middleware('guest')
             [CustomerAuthController::class, 'showResetPassword']
 
         )->name('password.reset');
-
-
-
-
 
         Route::post(
 
@@ -496,13 +564,7 @@ Route::middleware('guest')
 
         )->name('password.update');
 
-
-
     });
-
-
-
-
 
 /*
 
@@ -522,13 +584,9 @@ Route::middleware('guest')
 
 */
 
-
-
 Route::middleware('auth')
 
     ->group(function () {
-
-
 
         /*
 
@@ -540,8 +598,6 @@ Route::middleware('auth')
 
         */
 
-
-
         Route::get(
 
             '/email/verify',
@@ -549,10 +605,6 @@ Route::middleware('auth')
             [EmailVerificationController::class, 'notice']
 
         )->name('verification.notice');
-
-
-
-
 
         /*
 
@@ -570,8 +622,6 @@ Route::middleware('auth')
 
         */
 
-
-
         Route::get(
 
             '/email/verify/{id}/{hash}',
@@ -584,10 +634,6 @@ Route::middleware('auth')
 
             ->name('verification.verify');
 
-
-
-
-
         /*
 
         |--------------------------------------------------------------------------
@@ -597,8 +643,6 @@ Route::middleware('auth')
         |--------------------------------------------------------------------------
 
         */
-
-
 
         Route::post(
 
@@ -612,8 +656,6 @@ Route::middleware('auth')
 
             ->name('verification.send');
 
-
-
             Route::get(
 
     '/account/wishlist',
@@ -621,8 +663,6 @@ Route::middleware('auth')
     [WishlistController::class, 'index']
 
 )->name('wishlist.index');
-
-
 
 Route::post(
 
@@ -632,8 +672,6 @@ Route::post(
 
 )->name('wishlist.toggle');
 
-
-
 Route::delete(
 
     '/account/wishlist/{slug}',
@@ -642,13 +680,7 @@ Route::delete(
 
 )->name('wishlist.remove');
 
-
-
     });
-
-
-
-
 
 /*
 
@@ -668,13 +700,34 @@ Route::delete(
 
 */
 
-
-
 Route::middleware('auth')
 
     ->group(function () {
 
+        /*
+        |--------------------------------------------------------------------------
+        | SAVED CUSTOMER ADDRESSES
+        |--------------------------------------------------------------------------
+        */
 
+        Route::prefix('account/addresses')
+            ->name('account.addresses.')
+            ->group(function () {
+                Route::get('/', [AddressController::class, 'index'])
+                    ->name('index');
+
+                Route::post('/', [AddressController::class, 'store'])
+                    ->name('store');
+
+                Route::put('/{address}', [AddressController::class, 'update'])
+                    ->name('update');
+
+                Route::delete('/{address}', [AddressController::class, 'destroy'])
+                    ->name('destroy');
+
+                Route::patch('/{address}/default', [AddressController::class, 'makeDefault'])
+                    ->name('default');
+            });
 
         /*
 
@@ -686,8 +739,6 @@ Route::middleware('auth')
 
         */
 
-
-
         Route::get(
 
             '/account',
@@ -695,10 +746,6 @@ Route::middleware('auth')
             [AccountController::class, 'dashboard']
 
         )->name('account.dashboard');
-
-
-
-
 
         /*
 
@@ -710,8 +757,6 @@ Route::middleware('auth')
 
         */
 
-
-
         Route::get(
 
             '/account/orders',
@@ -719,10 +764,6 @@ Route::middleware('auth')
             [AccountController::class, 'orders']
 
         )->name('account.orders');
-
-
-
-
 
         /*
 
@@ -740,8 +781,6 @@ Route::middleware('auth')
 
         */
 
-
-
         Route::get(
 
             '/account/orders/{orderNumber}',
@@ -749,10 +788,6 @@ Route::middleware('auth')
             [AccountController::class, 'orderShow']
 
         )->name('account.orders.show');
-
-
-
-
 
         /*
 
@@ -764,8 +799,6 @@ Route::middleware('auth')
 
         */
 
-
-
         Route::get(
 
             '/account/profile',
@@ -774,10 +807,6 @@ Route::middleware('auth')
 
         )->name('account.profile');
 
-
-
-
-
         Route::put(
 
             '/account/profile',
@@ -785,10 +814,6 @@ Route::middleware('auth')
             [AccountController::class, 'updateProfile']
 
         )->name('account.profile.update');
-
-
-
-
 
         /*
 
@@ -800,8 +825,6 @@ Route::middleware('auth')
 
         */
 
-
-
         Route::put(
 
             '/account/password',
@@ -809,10 +832,6 @@ Route::middleware('auth')
             [AccountController::class, 'updatePassword']
 
         )->name('account.password.update');
-
-
-
-
 
         /*
 
@@ -824,8 +843,6 @@ Route::middleware('auth')
 
         */
 
-
-
         Route::post(
 
             '/logout',
@@ -834,13 +851,7 @@ Route::middleware('auth')
 
         )->name('logout');
 
-
-
     });
-
-
-
-
 
 /*
 
@@ -860,15 +871,11 @@ Route::middleware('auth')
 
 */
 
-
-
 Route::prefix('admin')
 
     ->name('admin.')
 
     ->group(function () {
-
-
 
         /*
 
@@ -886,13 +893,9 @@ Route::prefix('admin')
 
         */
 
-
-
         Route::middleware('guest:admin')
 
             ->group(function () {
-
-
 
                 Route::get(
 
@@ -902,10 +905,6 @@ Route::prefix('admin')
 
                 )->name('login');
 
-
-
-
-
                 Route::post(
 
                     '/login',
@@ -914,13 +913,7 @@ Route::prefix('admin')
 
                 )->name('login.submit');
 
-
-
             });
-
-
-
-
 
         /*
 
@@ -938,13 +931,9 @@ Route::prefix('admin')
 
         */
 
-
-
         Route::middleware('auth:admin')
 
             ->group(function () {
-
-
 
                 /*
 
@@ -956,23 +945,13 @@ Route::prefix('admin')
 
                 */
 
-
-
                 Route::get('/', function () {
-
-
 
                     return redirect()
 
                         ->route('admin.orders.index');
 
-
-
                 })->name('dashboard');
-
-
-
-
 
                 /*
 
@@ -984,8 +963,6 @@ Route::prefix('admin')
 
                 */
 
-
-
                 Route::get(
 
                     '/orders',
@@ -993,10 +970,6 @@ Route::prefix('admin')
                     [OrderController::class, 'index']
 
                 )->name('orders.index');
-
-
-
-
 
                 /*
 
@@ -1008,8 +981,6 @@ Route::prefix('admin')
 
                 */
 
-
-
                 Route::get(
 
                     '/orders/{order}',
@@ -1017,10 +988,6 @@ Route::prefix('admin')
                     [OrderController::class, 'show']
 
                 )->name('orders.show');
-
-
-
-
 
                 /*
 
@@ -1032,17 +999,24 @@ Route::prefix('admin')
 
                 */
 
-
-
                 Route::patch(
+    '/orders/{order}/status',
+    [OrderController::class, 'updateStatus']
+)->middleware('throttle:10,1')
+  ->name('orders.status');
 
-                    '/orders/{order}/status',
+                /*
+|--------------------------------------------------------------------------
+| ADMIN MARK COD PAYMENT AS PAID
+|--------------------------------------------------------------------------
+*/
 
-                    [OrderController::class, 'updateStatus']
-
-                )->name('orders.status');
-
-
+Route::patch(
+    '/orders/{order}/payment',
+    [OrderController::class, 'markAsPaid']
+)
+    ->middleware('throttle:10,1')
+    ->name('orders.payment');
 
                 Route::get(
 
@@ -1052,10 +1026,6 @@ Route::prefix('admin')
 
 )->name('reviews.index');
 
-
-
-
-
 Route::get(
 
     '/reviews/{review}',
@@ -1063,10 +1033,6 @@ Route::get(
     [AdminProductReviewController::class, 'show']
 
 )->name('reviews.show');
-
-
-
-
 
 Route::delete(
 
@@ -1076,8 +1042,6 @@ Route::delete(
 
 )->name('reviews.destroy');
 
-
-
 Route::get(
 
     '/inventory',
@@ -1085,10 +1049,6 @@ Route::get(
     [ProductInventoryController::class, 'index']
 
 )->name('inventory.index');
-
-
-
-
 
 Route::put(
 
@@ -1098,45 +1058,187 @@ Route::put(
 
 )->name('inventory.update');
 
+/*
+
+|--------------------------------------------------------------------------
+
+| ADMIN EMAIL NOTIFICATIONS
+
+|--------------------------------------------------------------------------
+
+*/
+
+Route::get(
+
+    '/email-notifications',
+
+    [EmailNotificationController::class, 'index']
+
+)->name('email-notifications.index');
+
+Route::get(
+
+    '/email-notifications/{notification}',
+
+    [EmailNotificationController::class, 'show']
+
+)->name('email-notifications.show');
+
+Route::post(
+
+    '/email-notifications/{notification}/retry',
+
+    [EmailNotificationController::class, 'retry']
+
+)
+
+    ->middleware('throttle:10,1')
+
+    ->name('email-notifications.retry');
+
+Route::post(
+
+    '/email-notifications/{notification}/recover',
+
+    [EmailNotificationController::class, 'recoverProcessing']
+
+)
+
+    ->middleware('throttle:5,1')
+
+    ->name('email-notifications.recover');
+
+    Route::post(
+
+    '/email-notifications/{notification}/recover-uncertain',
+
+    [EmailNotificationController::class, 'recoverUncertain']
+
+)
+
+    ->middleware('throttle:5,1')
+
+    ->name('email-notifications.recover-uncertain');
+
+    /*
+
+|--------------------------------------------------------------------------
+
+| ADMIN PRODUCT MANAGEMENT
+
+|--------------------------------------------------------------------------
+
+*/
+
+Route::get(
+
+    '/products',
+
+    [AdminProductController::class, 'index']
+
+)->name('products.index');
+
+Route::get(
+
+    '/products/create',
+
+    [AdminProductController::class, 'create']
+
+)->name('products.create');
+
+Route::post(
+
+    '/products',
+
+    [AdminProductController::class, 'store']
+
+)->name('products.store');
+
+Route::get(
+
+    '/products/{product}/edit',
+
+    [AdminProductController::class, 'edit']
+
+)->name('products.edit');
+
+Route::put(
+
+    '/products/{product}',
+
+    [AdminProductController::class, 'update']
+
+)->name('products.update');
+
+Route::patch(
+
+    '/products/{product}/toggle-status',
+
+    [AdminProductController::class, 'toggleStatus']
+
+)->name('products.toggle-status');
+
+
 
 /*
 |--------------------------------------------------------------------------
-| ADMIN EMAIL NOTIFICATIONS
+| ADMIN RETAILER MANAGEMENT
+|--------------------------------------------------------------------------
+|
+| Only authenticated admins can review retailer applications.
+|
+*/
+
+Route::get(
+    '/retailers',
+    [AdminRetailerController::class, 'index']
+)->name('retailers.index');
+
+Route::get(
+    '/retailers/{retailerProfile}',
+    [AdminRetailerController::class, 'show']
+)->name('retailers.show');
+
+Route::patch(
+    '/retailers/{retailerProfile}/approve',
+    [AdminRetailerController::class, 'approve']
+)
+    ->middleware('throttle:10,1')
+    ->name('retailers.approve');
+
+Route::patch(
+    '/retailers/{retailerProfile}/reject',
+    [AdminRetailerController::class, 'reject']
+)
+    ->middleware('throttle:10,1')
+    ->name('retailers.reject');
+
+    
+/*
+|--------------------------------------------------------------------------
+| ADMIN CONTACT ENQUIRIES
 |--------------------------------------------------------------------------
 */
 
 Route::get(
-    '/email-notifications',
-    [EmailNotificationController::class, 'index']
-)->name('email-notifications.index');
+    '/contact-enquiries',
+    [AdminContactEnquiryController::class, 'index']
+)->name('contact-enquiries.index');
 
 Route::get(
-    '/email-notifications/{notification}',
-    [EmailNotificationController::class, 'show']
-)->name('email-notifications.show');
+    '/contact-enquiries/{enquiry}',
+    [AdminContactEnquiryController::class, 'show']
+)->name('contact-enquiries.show');
 
-Route::post(
-    '/email-notifications/{notification}/retry',
-    [EmailNotificationController::class, 'retry']
-)
-    ->middleware('throttle:10,1')
-    ->name('email-notifications.retry');
+Route::patch(
+    '/contact-enquiries/{enquiry}/read',
+    [AdminContactEnquiryController::class, 'markRead']
+)->name('contact-enquiries.read');
 
-Route::post(
-    '/email-notifications/{notification}/recover',
-    [EmailNotificationController::class, 'recoverProcessing']
-)
-    ->middleware('throttle:5,1')
-    ->name('email-notifications.recover');
-
-    Route::post(
-    '/email-notifications/{notification}/recover-uncertain',
-    [EmailNotificationController::class, 'recoverUncertain']
-)
-    ->middleware('throttle:5,1')
-    ->name('email-notifications.recover-uncertain');
-
-
+Route::patch(
+    '/contact-enquiries/{enquiry}/unread',
+    [AdminContactEnquiryController::class, 'markUnread']
+)->name('contact-enquiries.unread');
 
 
 
@@ -1150,8 +1252,6 @@ Route::post(
 
                 */
 
-
-
                 Route::post(
 
                     '/logout',
@@ -1160,10 +1260,35 @@ Route::post(
 
                 )->name('logout');
 
-
-
             });
 
+    });
 
+
+
+    /*
+|--------------------------------------------------------------------------
+| B2B Retailer Registration
+|--------------------------------------------------------------------------
+|
+| Existing customers can apply for a retailer account.
+| Wholesale access requires admin approval.
+|
+*/
+
+Route::middleware(['auth', 'verified'])
+    ->prefix('retailer')
+    ->name('retailer.')
+    ->group(function () {
+
+        Route::get('/register', [
+            RetailerRegistrationController::class,
+            'create'
+        ])->name('register');
+
+        Route::post('/register', [
+            RetailerRegistrationController::class,
+            'store'
+        ])->name('store');
 
     });

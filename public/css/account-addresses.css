@@ -1,0 +1,61 @@
+
+.tob-address-page{background:#faf7f3;color:#33241d;min-height:70vh;padding:42px 0 85px;font-family:inherit}
+.tob-address-container{max-width:1120px;margin:0 auto;padding:0 22px}
+.tob-address-back{display:inline-flex;color:#7b4937;text-decoration:none;font-size:14px;font-weight:600;margin-bottom:26px}
+.tob-address-back:hover{text-decoration:underline}
+.tob-address-eyebrow{font-size:11px;letter-spacing:2px;color:#b17b54;font-weight:800}
+.tob-address-header{margin-bottom:32px}
+.tob-address-header h1{font-family:Georgia,serif;font-size:clamp(30px,4vw,44px);margin:8px 0 10px;color:#45291e}
+.tob-address-header p,.tob-address-add-heading p{color:#84766d;margin:0;font-size:15px}
+.tob-address-section-title{font-family:Georgia,serif;font-size:23px;margin:0 0 18px;color:#45291e}
+.tob-address-section-title span{font-family:inherit;font-size:15px;color:#947e70}
+.tob-address-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.tob-address-card,.tob-address-add{background:#fff;border:1px solid #e9ded5;border-radius:16px;box-shadow:0 7px 26px rgba(69,41,30,.035);padding:26px;min-width:0}
+.tob-address-card.is-default{border-color:#c9a181}
+.tob-address-card-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.tob-address-card-head h3{font-size:19px;margin:0;color:#4b2c20;font-family:Georgia,serif}
+.tob-address-default-badge{display:inline-block;background:#f5e7d9;color:#805032;border-radius:50px;padding:5px 11px;font-size:11px;font-weight:700}
+.tob-address-person{font-weight:700;margin:0 0 5px}
+.tob-address-muted{color:#6d6057;margin:0 0 12px}
+.tob-address-location{color:#675b54;line-height:1.7;margin:0;overflow-wrap:anywhere}
+.tob-address-actions{display:flex;gap:10px;flex-wrap:wrap;margin:20px 0 0}
+.tob-address-actions form{margin:0}
+.tob-address-btn{appearance:none;border:1px solid transparent;border-radius:9px;padding:11px 17px;font:inherit;font-size:13px;font-weight:700;cursor:pointer;transition:background .2s,color .2s,border-color .2s}
+.tob-address-btn-primary{background:#653d2d;color:white}
+.tob-address-btn-primary:hover{background:#49291d}
+.tob-address-btn-outline{background:#fff;border-color:#d7bba5;color:#653d2d}
+.tob-address-btn-outline:hover{background:#f9eee6}
+.tob-address-btn-danger{background:#fff7f5;color:#a14237;border-color:#efcec8}
+.tob-address-btn-danger:hover{background:#fcebe7}
+.tob-address-edit{border-top:1px solid #eee4dc;margin-top:20px;padding-top:16px}
+.tob-address-edit summary{list-style:none;cursor:pointer;color:#71432e;font-weight:700;font-size:14px;display:flex;justify-content:space-between}
+.tob-address-edit summary::-webkit-details-marker{display:none}
+.tob-address-edit[open] summary{margin-bottom:20px}
+.tob-address-add{margin-top:30px}
+.tob-address-add-heading{display:flex;gap:15px;align-items:center;margin-bottom:24px}
+.tob-address-add-heading h2{font-family:Georgia,serif;color:#4b2c20;font-size:26px;margin:0 0 5px}
+.tob-address-add-icon{display:grid;place-items:center;background:#f4e9dd;border-radius:50%;color:#72442e;font-size:28px;width:48px;height:48px;flex-shrink:0}
+.tob-address-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.tob-address-field{min-width:0}
+.tob-address-full{grid-column:1/-1}
+.tob-address-field label{display:block;font-size:13px;font-weight:700;color:#574337;margin-bottom:8px}
+.tob-address-field label span{color:#b75d45}
+.tob-address-field input{display:block;box-sizing:border-box;width:100%;height:48px;background:#fff;border:1px solid #e1d4c9;border-radius:9px;padding:12px 14px;font:inherit;font-size:14px;color:#3d2b22;outline:none}
+.tob-address-field input:focus{border-color:#9b684b;box-shadow:0 0 0 3px rgba(155,104,75,.12)}
+.tob-address-field input::placeholder{color:#a59a92}
+.tob-address-checkbox{display:flex;align-items:center;gap:9px;font-size:14px;color:#5f4d42;cursor:pointer}
+.tob-address-checkbox input{accent-color:#653d2d;width:17px;height:17px;margin:0}
+.tob-address-alert{padding:14px 18px;border-radius:10px;margin:0 0 24px;font-size:14px}
+.tob-address-alert-success{background:#ecf8ee;color:#276238;border:1px solid #b7dfc2}
+.tob-address-alert-error{background:#fff2ee;color:#a14130;border:1px solid #f0c7be}
+.tob-address-alert ul{margin:8px 0 0;padding-left:20px}
+.tob-address-empty{background:#fff;border:1px dashed #d7bda8;padding:22px;border-radius:12px;color:#6d5a4b}
+
+@media(max-width:700px){
+    .tob-address-page{padding:26px 0 60px}
+    .tob-address-container{padding:0 15px}
+    .tob-address-grid,.tob-address-form{grid-template-columns:1fr}
+    .tob-address-card,.tob-address-add{padding:20px}
+    .tob-address-add-heading h2{font-size:23px}
+    .tob-address-header{margin-bottom:25px}
+}

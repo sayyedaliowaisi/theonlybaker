@@ -91,6 +91,13 @@
     My Wishlist
 </a>
 
+<a
+    href="{{ route('account.addresses.index') }}"
+    class="{{ request()->routeIs('account.addresses.*') ? 'active' : '' }}"
+>
+    My Addresses
+</a>
+
 
                         <a href="{{ route('account.profile') }}">
                             Account Details
@@ -255,6 +262,13 @@
                         >
                             Account Details
                         </a>
+
+                        <a
+    href="{{ route('account.addresses.index') }}"
+    class="tob-account-secondary-link"
+>
+    Manage My Addresses
+</a>
 
                     </div>
 

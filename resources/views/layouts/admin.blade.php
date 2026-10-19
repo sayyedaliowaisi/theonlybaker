@@ -31,13 +31,40 @@
 
 <body class="tob-admin-body">
 
+
+{{-- MOBILE SIDEBAR BUTTON --}}
+<button
+    type="button"
+    class="tob-admin-mobile-toggle"
+    id="tobAdminMenuToggle"
+    aria-label="Open admin navigation"
+    aria-controls="tobAdminSidebar"
+    aria-expanded="false"
+>
+    ☰
+</button>
+
+{{-- MOBILE SIDEBAR OVERLAY --}}
+<div
+    class="tob-admin-sidebar-overlay"
+    id="tobAdminSidebarOverlay"
+    aria-hidden="true"
+></div>
+
+
     <div class="tob-admin-layout">
 
         {{-- =====================================================
              SIDEBAR
         ====================================================== --}}
 
-        <aside class="tob-admin-sidebar">
+        
+<aside
+    class="tob-admin-sidebar"
+    id="tobAdminSidebar"
+    aria-label="Admin navigation"
+>
+
 
             <a
                 href="{{ route('admin.orders.index') }}"
@@ -55,6 +82,14 @@
                 ADMIN PANEL
             </div>
 
+            
+@php
+    $unreadContactEnquiries = \App\Models\ContactEnquiry::query()
+        ->whereNull('read_at')
+        ->count();
+@endphp
+
+
             <nav class="tob-admin-nav">
 
                 {{-- ORDERS --}}
@@ -70,6 +105,10 @@
                     Orders
 
                 </a>
+
+                <a href="{{ route('admin.products.index') }}">
+    Products
+</a>
 
                 {{-- INVENTORY --}}
                 <a
@@ -112,6 +151,33 @@
                     Email Notifications
 
                 </a>
+
+                
+
+{{-- CONTACT ENQUIRIES --}}
+<a
+    href="{{ route('admin.contact-enquiries.index') }}"
+    class="tob-admin-contact-link {{ request()->routeIs('admin.contact-enquiries.*') ? 'active' : '' }}"
+>
+    <span class="tob-admin-nav-icon" aria-hidden="true">
+        ✉
+    </span>
+
+    <span class="tob-admin-contact-label">
+        Contact Enquiries
+    </span>
+
+    @if($unreadContactEnquiries > 0)
+        <span
+            class="tob-admin-unread-badge"
+            aria-label="{{ $unreadContactEnquiries }} unread contact enquiries"
+        >
+            {{ $unreadContactEnquiries > 99 ? '99+' : $unreadContactEnquiries }}
+        </span>
+    @endif
+</a>
+
+
 
             </nav>
 
@@ -208,6 +274,8 @@
         </main>
 
     </div>
+
+    <script src="{{ asset('js/admin.js') }}" defer></script>
 
     @stack('scripts')
 

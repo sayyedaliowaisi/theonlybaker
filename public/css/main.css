@@ -1321,7 +1321,8 @@ img {
     }
 
     .tob-actions > button[aria-label="Search"],
-    .tob-actions > a[aria-label="Account"],
+    .tob-actions > a[aria-label="My Account"],
+.tob-actions > a[aria-label="Login"],
     .tob-actions > a[aria-label="Wishlist"] {
         display: none;
     }
@@ -9491,3 +9492,533 @@ img {
 .tob-search-lock{overflow:hidden}.tob-search-overlay{position:fixed;inset:0;z-index:5000;display:flex;align-items:flex-start;justify-content:center;padding:86px 20px 30px;background:rgba(31,17,10,.58);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .25s ease,visibility .25s ease}.tob-search-overlay.show{opacity:1;visibility:visible;pointer-events:auto}.tob-search-panel{width:min(760px,100%);max-height:calc(100vh - 116px);overflow:hidden;display:flex;flex-direction:column;background:#fffaf2;border:1px solid rgba(50,23,12,.10);box-shadow:0 24px 70px rgba(31,17,10,.24);transform:translateY(-14px);transition:transform .25s ease}.tob-search-overlay.show .tob-search-panel{transform:translateY(0)}.tob-search-head{display:flex;align-items:center;gap:14px;padding:19px 22px;border-bottom:1px solid rgba(50,23,12,.10)}.tob-search-head-icon{flex:0 0 auto;width:21px;height:21px;fill:none;stroke:#32170c;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}.tob-search-input{flex:1;min-width:0;height:42px;padding:0;border:0;outline:0;background:transparent;color:#28170f;font-family:Georgia,"Times New Roman",serif;font-size:23px}.tob-search-input::placeholder{color:#9d8d82}.tob-search-close{flex:0 0 auto;width:38px;height:38px;display:grid;place-items:center;border:0;background:transparent;color:#32170c;cursor:pointer}.tob-search-close svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round}.tob-search-body{overflow-y:auto;padding:18px 22px 22px}.tob-search-kicker{margin:0 0 12px;color:#8b6b58;font-size:10px;font-weight:600;letter-spacing:1.7px;text-transform:uppercase}.tob-search-results{display:grid;gap:8px}.tob-search-result{display:grid;grid-template-columns:72px minmax(0,1fr) auto;align-items:center;gap:15px;padding:9px;color:#28170f;text-decoration:none;border:1px solid transparent;transition:background .2s ease,border-color .2s ease,transform .2s ease}.tob-search-result:hover,.tob-search-result:focus-visible{background:#fff4e7;border-color:rgba(50,23,12,.10);transform:translateY(-1px);outline:none}.tob-search-result-image{width:72px;height:72px;display:block;object-fit:cover;background:#f1e6d9}.tob-search-result-copy{min-width:0}.tob-search-result-name{display:block;margin-bottom:6px;overflow:hidden;color:#32170c;font-family:Georgia,"Times New Roman",serif;font-size:17px;font-weight:400;line-height:1.2;text-overflow:ellipsis;white-space:nowrap}.tob-search-result-category{display:block;color:#8d786a;font-size:10px;letter-spacing:1px;text-transform:uppercase}.tob-search-result-price{color:#32170c;font-size:13px;font-weight:600;white-space:nowrap}.tob-search-empty{padding:38px 15px;text-align:center}.tob-search-empty-title{margin:0 0 8px;color:#32170c;font-family:Georgia,"Times New Roman",serif;font-size:24px;font-weight:400}.tob-search-empty-text{margin:0;color:#846f61;font-size:13px;line-height:1.6}.tob-search-footer{padding:15px 22px 19px;border-top:1px solid rgba(50,23,12,.10);text-align:center}.tob-search-view-all{display:inline-flex;align-items:center;justify-content:center;min-width:180px;height:43px;padding:0 24px;background:#32170c;color:#fffaf2;font-size:10px;font-weight:600;letter-spacing:1.35px;text-decoration:none;text-transform:uppercase;transition:background .2s ease,transform .2s ease}.tob-search-view-all:hover{background:#4a2818;transform:translateY(-1px)}
 @media(max-width:900px){.tob-search-overlay{padding-top:45px}}
 @media(max-width:700px){.tob-search-overlay{padding:18px 12px}.tob-search-panel{max-height:calc(100vh - 36px)}.tob-search-head{gap:10px;padding:14px 15px}.tob-search-input{font-size:19px}.tob-search-body{padding:14px 15px 17px}.tob-search-result{grid-template-columns:60px minmax(0,1fr);gap:12px}.tob-search-result-image{width:60px;height:60px}.tob-search-result-price{grid-column:2;margin-top:-22px;justify-self:end}.tob-search-footer{padding:13px 15px 15px}}
+
+
+
+/* ==========================================
+   THE ONLY BAKER - MOBILE NAVBAR UPDATE
+========================================== */
+
+@media (max-width: 900px) {
+
+    /* Hide desktop search and wishlist icons */
+    .tob-actions .tob-desktop-search,
+    .tob-actions .tob-desktop-wishlist {
+        display: none !important;
+    }
+
+    /* Guest: hide login icon, keep cart */
+    .tob-actions > a[aria-label="Login"] {
+        display: none !important;
+    }
+
+    /* Logged-in: show account icon */
+    .tob-actions > a[aria-label="My Account"] {
+        display: inline-flex !important;
+    }
+
+    /* Mobile search menu item */
+    .tob-mobile-search-link {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        padding: 14px 20px;
+        border: 0;
+        background: transparent;
+        color: inherit;
+        font: inherit;
+        text-align: left;
+        cursor: pointer;
+    }
+
+    /* Hamburger on left */
+    .tob-navbar-inner {
+        position: relative;
+    }
+
+    @media (max-width: 900px) {
+
+    .tob-navbar-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: relative;
+    }
+
+    .tob-navbar-inner > .tob-mobile-toggle {
+        display: flex !important;
+        order: 1;
+        position: relative !important;
+        left: auto !important;
+        top: auto !important;
+        transform: none !important;
+        z-index: 5;
+        flex-shrink: 0;
+    }
+
+    .tob-logo-drop {
+        order: 2;
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .tob-actions {
+        order: 3;
+        margin-left: auto;
+    }
+}
+
+    /* Keep logo visually centered */
+    .tob-logo-drop {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    /* Account and cart on right */
+    .tob-actions {
+        margin-left: auto;
+    }
+}
+
+
+/* ==========================================
+   PREMIUM MOBILE HAMBURGER ICON
+========================================== */
+
+@media (max-width: 900px) {
+
+    .tob-navbar-inner > .tob-mobile-toggle {
+        width: 42px;
+        height: 42px;
+        padding: 10px;
+        border: 1px solid rgba(50, 23, 12, 0.15);
+        border-radius: 12px;
+        background: #fffaf2;
+        display: flex !important;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(50, 23, 12, 0.06);
+    }
+
+    .tob-navbar-inner > .tob-mobile-toggle span {
+        display: block;
+        width: 20px;
+        height: 2px;
+        border-radius: 5px;
+        background: #32170c;
+        transition: transform 0.3s ease, opacity 0.2s ease;
+    }
+
+    /* Hamburger transforms into X */
+    .tob-navbar-inner > .tob-mobile-toggle[aria-expanded="true"] span:nth-child(1) {
+        transform: translateY(7px) rotate(45deg);
+    }
+
+    .tob-navbar-inner > .tob-mobile-toggle[aria-expanded="true"] span:nth-child(2) {
+        opacity: 0;
+    }
+
+    .tob-navbar-inner > .tob-mobile-toggle[aria-expanded="true"] span:nth-child(3) {
+        transform: translateY(-7px) rotate(-45deg);
+    }
+}
+
+/* Lock background scroll while menu is open */
+html.tob-mobile-menu-locked,
+body.tob-mobile-menu-locked {
+    overflow: hidden !important;
+}
+
+@media (max-width: 900px) {
+
+    .tob-mobile-menu.show {
+        max-height: calc(100dvh - 100px);
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+/* ==========================================
+   FIX MOBILE HAMBURGER ICON VISIBILITY
+========================================== */
+
+@media (max-width: 900px) {
+
+    .tob-navbar-inner > button#tobMobileToggle {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+
+        width: 42px !important;
+        height: 42px !important;
+        min-width: 42px;
+
+        padding: 10px !important;
+        gap: 5px !important;
+
+        background: #fffaf2 !important;
+        border: 1px solid #d9c8b5 !important;
+        border-radius: 12px !important;
+
+        opacity: 1 !important;
+        visibility: visible !important;
+        z-index: 100;
+    }
+
+    .tob-navbar-inner > button#tobMobileToggle > span {
+        display: block !important;
+        position: relative !important;
+
+        width: 20px !important;
+        height: 2px !important;
+        min-height: 2px !important;
+
+        background: #32170c !important;
+        border-radius: 4px !important;
+
+        opacity: 1;
+        visibility: visible !important;
+        flex-shrink: 0;
+    }
+
+    /* Open state - animated X */
+
+    .tob-navbar-inner > button#tobMobileToggle[aria-expanded="true"] > span:nth-child(1) {
+        transform: translateY(7px) rotate(45deg);
+    }
+
+    .tob-navbar-inner > button#tobMobileToggle[aria-expanded="true"] > span:nth-child(2) {
+        opacity: 0 !important;
+    }
+
+    .tob-navbar-inner > button#tobMobileToggle[aria-expanded="true"] > span:nth-child(3) {
+        transform: translateY(-7px) rotate(-45deg);
+    }
+}
+
+
+/* MOBILE SHOP ACCORDION FIX */
+
+@media (max-width: 900px) {
+    .tob-mobile-shop-row {
+        display: block;
+    }
+
+    .tob-mobile-shop-button {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        cursor: pointer;
+        text-align: left;
+        font: inherit;
+        color: inherit;
+        background: transparent;
+        border: 0;
+    }
+
+    .tob-mobile-shop-button .tob-mobile-shop-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        flex-shrink: 0;
+        width: 24px;
+        height: 24px;
+        pointer-events: none;
+    }
+
+    .tob-mobile-shop-button .tob-mobile-shop-toggle span {
+        position: absolute;
+        width: 12px;
+        height: 2px;
+        background: currentColor;
+        transition: transform 0.25s ease;
+    }
+
+    .tob-mobile-shop-button .tob-mobile-shop-toggle span:last-child {
+        transform: rotate(90deg);
+    }
+
+    .tob-mobile-shop-button.active .tob-mobile-shop-toggle span:last-child {
+        transform: rotate(0deg);
+    }
+}
+
+
+
+
+
+/* ==========================================
+   MOBILE SHOP PLUS / MINUS ICON FIX
+========================================== */
+
+@media (max-width: 900px) {
+
+    .tob-mobile-shop-button .tob-mobile-shop-toggle {
+        position: relative !important;
+        display: block !important;
+        width: 24px !important;
+        height: 24px !important;
+        flex: 0 0 24px;
+        padding: 0 !important;
+        border: none !important;
+        background: transparent !important;
+    }
+
+    .tob-mobile-shop-button .tob-mobile-shop-toggle span {
+        position: absolute !important;
+        display: block !important;
+        width: 14px !important;
+        height: 2px !important;
+        top: 50% !important;
+        left: 50% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: 0 !important;
+        border-radius: 2px;
+        background: currentColor !important;
+        transform-origin: center !important;
+    }
+
+    /* Horizontal line */
+    .tob-mobile-shop-button .tob-mobile-shop-toggle span:first-child {
+        transform: translate(-50%, -50%) rotate(0deg) !important;
+    }
+
+    /* Vertical line */
+    .tob-mobile-shop-button .tob-mobile-shop-toggle span:last-child {
+        transform: translate(-50%, -50%) rotate(90deg) !important;
+    }
+
+    /* Open dropdown = minus */
+    .tob-mobile-shop-button.active .tob-mobile-shop-toggle span:last-child {
+        transform: translate(-50%, -50%) rotate(0deg) !important;
+    }
+}
+
+
+
+
+/* ==========================================
+   DESKTOP SHOP DROPDOWN FIX
+========================================== */
+
+@media (min-width: 901px) {
+
+    .tob-nav-dropdown > .tob-nav-dropdown-trigger {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        font: inherit;
+        color: inherit;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+    }
+
+    .tob-nav-dropdown > .tob-nav-dropdown-trigger.active {
+        color: var(--tob-primary, #75452e);
+    }
+
+    /* Closed by default */
+    #tobDesktopShopDropdown > .tob-shop-dropdown {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transform: translateY(10px);
+        transition:
+            opacity 0.25s ease,
+            transform 0.25s ease,
+            visibility 0.25s ease;
+    }
+
+    /* Open on click */
+    #tobDesktopShopDropdown.is-open > .tob-shop-dropdown {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+        transform: translateY(0);
+    }
+
+    /* Arrow animation */
+    #tobDesktopShopToggle .tob-arrow {
+        transition: transform 0.25s ease;
+    }
+
+    #tobDesktopShopDropdown.is-open #tobDesktopShopToggle .tob-arrow {
+        transform: rotate(180deg);
+    }
+}
+
+
+
+/* ==========================================
+   DESKTOP SHOP - MATCH OTHER NAV LINKS
+========================================== */
+
+@media (min-width: 901px) {
+
+    .tob-menu #tobDesktopShopToggle {
+        appearance: none;
+        -webkit-appearance: none;
+
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+
+        margin: 0;
+        padding: 0;
+
+        border: none;
+        border-radius: 0;
+        background: transparent;
+
+        font-family: inherit;
+        font-size: inherit;
+        font-weight: inherit;
+        line-height: inherit;
+        letter-spacing: inherit;
+        text-transform: inherit;
+
+        color: inherit;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+
+    .tob-menu #tobDesktopShopToggle .tob-arrow {
+        flex-shrink: 0;
+    }
+}
+ 
+
+
+
+/* DESKTOP SHOP BUTTON - NAVBAR ALIGNMENT */
+
+@media (min-width: 901px) {
+
+    .tob-menu #tobDesktopShopToggle {
+        font-family: inherit;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: normal;
+        letter-spacing: normal;
+        text-transform: none;
+
+        color: #2b160f;
+        background: transparent;
+        border: 0;
+        padding: 0;
+        margin: 0;
+
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+    }
+
+    .tob-menu #tobDesktopShopToggle .tob-arrow {
+        width: 10px;
+        height: 7px;
+        flex-shrink: 0;
+    }
+
+    .tob-menu #tobDesktopShopToggle:hover {
+        color: #8b4a2b;
+    }
+}
+
+
+/* =========================================================
+   STEP 68 - NAVBAR / FOOTER FINAL INTEGRATION
+   Additive refinements; original styles and animations retained.
+========================================================= */
+
+/* Keep keyboard navigation visible across links and controls. */
+.tob-header :is(a, button):focus-visible,
+.tob-footer :is(a, button, input):focus-visible {
+    outline: 2px solid #a78055;
+    outline-offset: 3px;
+}
+
+/* Added navigation links use the same visual rhythm as existing ones. */
+.tob-menu > a,
+.tob-nav-dropdown-trigger {
+    white-space: nowrap;
+}
+
+/* The desktop navigation needs slightly tighter spacing with Custom Orders. */
+@media (min-width: 901px) and (max-width: 1350px) {
+    .tob-navbar-inner {
+        grid-template-columns: minmax(155px, 1fr) auto minmax(145px, 1fr);
+    }
+    .tob-menu {
+        gap: clamp(11px, 1.35vw, 19px);
+    }
+    .tob-menu > a,
+    .tob-menu #tobDesktopShopToggle {
+        font-size: 12px;
+    }
+    .tob-actions {
+        gap: 13px;
+    }
+}
+
+/* Mobile navigation: allow new links to wrap instead of overflowing. */
+@media (max-width: 900px) {
+    .tob-mobile-menu {
+        max-height: min(75vh, 650px);
+        overflow-y: auto;
+        overscroll-behavior: contain;
+    }
+    .tob-mobile-menu > a {
+        gap: 12px;
+        overflow-wrap: anywhere;
+    }
+    .tob-mobile-menu :is(a, button) {
+        touch-action: manipulation;
+    }
+}
+
+/* Footer links and newsletter must remain legible at narrow widths. */
+.tob-footer-column,
+.tob-footer-contact,
+.tob-footer-newsletter {
+    min-width: 0;
+}
+.tob-footer-column a,
+.tob-footer-contact-item {
+    overflow-wrap: anywhere;
+}
+.tob-footer-newsletter-form input {
+    min-width: 0;
+}
+
+/* Preserve accessible feedback when a newsletter button is disabled. */
+.tob-footer-newsletter-form button:disabled {
+    opacity: .55;
+    cursor: not-allowed;
+}
+.tob-footer-newsletter-form button:disabled:hover svg {
+    transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .tob-footer-animate,
+    .tob-footer-link-arrow,
+    .tob-footer-socials a,
+    .tob-footer-contact-social a {
+        transition-duration: .01ms;
+        animation-duration: .01ms;
+    }
+}

@@ -3,27 +3,39 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Product;
 use App\Models\ProductInventory;
+use App\Services\ProductCatalog;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class ProductInventoryController extends Controller
 {
-    public function index(Request $request): View
-    {
-        $products = config('products', []);
+    /*
+    |--------------------------------------------------------------------------
+    | INVENTORY LIST
+    |--------------------------------------------------------------------------
+    */
 
+    public function index(
+        Request $request,
+        ProductCatalog $catalog
+    ): View {
+
+        // Include active and inactive products in admin inventory.
+        $products = $catalog->all(false);
 
         /*
         |--------------------------------------------------------------------------
-        | ENSURE EVERY CONFIG PRODUCT HAS INVENTORY
+        | ENSURE EVERY DATABASE PRODUCT HAS INVENTORY
         |--------------------------------------------------------------------------
         */
 
         foreach ($products as $slug => $product) {
 
-            ProductInventory::firstOrCreate(
+            ProductInventory::query()->firstOrCreate(
                 [
                     'product_slug' => $slug,
                 ],
@@ -34,7 +46,6 @@ class ProductInventoryController extends Controller
             );
         }
 
-
         /*
         |--------------------------------------------------------------------------
         | INVENTORY RECORDS
@@ -42,9 +53,12 @@ class ProductInventoryController extends Controller
         */
 
         $inventories = ProductInventory::query()
+            ->whereIn(
+                'product_slug',
+                array_keys($products)
+            )
             ->get()
             ->keyBy('product_slug');
-
 
         /*
         |--------------------------------------------------------------------------
@@ -55,7 +69,6 @@ class ProductInventoryController extends Controller
         $search = trim(
             (string) $request->query('search', '')
         );
-
 
         if ($search !== '') {
 
@@ -77,7 +90,6 @@ class ProductInventoryController extends Controller
             );
         }
 
-
         /*
         |--------------------------------------------------------------------------
         | STATS
@@ -85,7 +97,7 @@ class ProductInventoryController extends Controller
         */
 
         $stats = [
-            'products' => count(config('products', [])),
+            'products' => count($catalog->all(false)),
 
             'in_stock' => $inventories
                 ->filter(
@@ -105,10 +117,12 @@ class ProductInventoryController extends Controller
                 ->count(),
 
             'out_of_stock' => $inventories
-                ->where('stock', 0)
+                ->filter(
+                    fn ($inventory) =>
+                        $inventory->stock <= 0
+                )
                 ->count(),
         ];
-
 
         return view(
             'admin.inventory.index',
@@ -121,20 +135,21 @@ class ProductInventoryController extends Controller
         );
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | UPDATE INVENTORY
+    |--------------------------------------------------------------------------
+    */
 
     public function update(
         Request $request,
         string $slug
     ): RedirectResponse {
 
-        $products = config('products', []);
-
-
-        abort_unless(
-            isset($products[$slug]),
-            404
-        );
-
+        // Inactive products can still have inventory managed.
+        $product = Product::query()
+            ->where('slug', $slug)
+            ->firstOrFail();
 
         $validated = $request->validate([
             'stock' => [
@@ -152,24 +167,32 @@ class ProductInventoryController extends Controller
             ],
         ]);
 
+        DB::transaction(function () use ($slug, $validated) {
 
-        ProductInventory::updateOrCreate(
-            [
-                'product_slug' => $slug,
-            ],
-            [
-                'stock' =>
-                    $validated['stock'],
+            $inventory = ProductInventory::query()
+                ->where('product_slug', $slug)
+                ->lockForUpdate()
+                ->first();
 
+            if (!$inventory) {
+                $inventory = ProductInventory::query()
+                    ->create([
+                        'product_slug' => $slug,
+                        'stock' => 0,
+                        'low_stock_threshold' => 5,
+                    ]);
+            }
+
+            $inventory->update([
+                'stock' => $validated['stock'],
                 'low_stock_threshold' =>
                     $validated['low_stock_threshold'],
-            ]
-        );
-
+            ]);
+        });
 
         return back()->with(
             'success',
-            $products[$slug]['name'] .
+            $product->name .
             ' inventory updated successfully.'
         );
     }

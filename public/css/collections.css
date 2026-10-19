@@ -1,0 +1,1457 @@
+
+/* ==========================================================
+   THE ONLY BAKER — COLLECTIONS PAGE
+   Premium Responsive Design
+========================================================== */
+
+.tob-collections-page {
+    --collection-brown: #432819;
+    --collection-muted: #806c5d;
+    --collection-accent: #a46b42;
+    --collection-cream: #fffaf3;
+    --collection-sand: #f5eadc;
+
+    background: var(--collection-cream);
+    color: var(--collection-brown);
+    overflow: hidden;
+}
+
+.tob-collections-page *,
+.tob-collections-page *::before,
+.tob-collections-page *::after {
+    box-sizing: border-box;
+}
+
+.tob-collections-container {
+    width: min(100% - 48px, 1240px);
+    margin-inline: auto;
+}
+
+.tob-collections-eyebrow {
+    display: inline-block;
+    color: var(--collection-accent);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+}
+
+.tob-collections-page h1,
+.tob-collections-page h2,
+.tob-collections-page h3,
+.tob-collections-page p {
+    margin-top: 0;
+}
+
+/* ==========================================================
+   HERO
+========================================================== */
+
+.tob-collections-hero {
+    position: relative;
+    padding: 76px 0 90px;
+    background:
+        radial-gradient(circle at 15% 25%, #fff9ee 0%, transparent 42%),
+        linear-gradient(125deg, #f9eddd 0%, #fffaf3 70%);
+}
+
+.tob-collections-hero .tob-collections-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    gap: 70px;
+}
+
+.tob-collections-hero-content {
+    max-width: 570px;
+}
+
+.tob-collections-hero h1 {
+    margin: 20px 0 24px;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(46px, 5vw, 76px);
+    font-weight: 400;
+    line-height: 1.08;
+    letter-spacing: -2.5px;
+}
+
+.tob-collections-hero h1 em {
+    display: block;
+    color: var(--collection-accent);
+    font-weight: 400;
+}
+
+.tob-collections-hero-content > p {
+    max-width: 450px;
+    margin-bottom: 32px;
+    color: var(--collection-muted);
+    font-size: 16px;
+    line-height: 1.85;
+}
+
+.tob-collections-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    min-height: 52px;
+    padding: 15px 25px;
+    border: 1px solid var(--collection-brown);
+    border-radius: 4px;
+    background: var(--collection-brown);
+    color: #fff !important;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.7px;
+    text-decoration: none;
+    transition:
+        background 0.3s ease,
+        color 0.3s ease,
+        transform 0.3s ease;
+}
+
+.tob-collections-btn:hover {
+    background: var(--collection-accent);
+    border-color: var(--collection-accent);
+    transform: translateY(-3px);
+}
+
+.tob-collections-btn span {
+    font-size: 18px;
+}
+
+.tob-collections-hero-image {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 5 / 5.3;
+    border-radius: 48% 48% 8px 8px;
+    background: #ead8c3;
+    box-shadow: 0 24px 65px rgba(67, 40, 25, 0.12);
+}
+
+.tob-collections-hero-image img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.8s ease;
+}
+
+.tob-collections-hero-image:hover img {
+    transform: scale(1.045);
+}
+
+/* ==========================================================
+   SECTION HEADINGS
+========================================================== */
+
+.tob-collections-section,
+.tob-curated-section {
+    padding: 105px 0;
+}
+
+.tob-collections-section-heading {
+    max-width: 640px;
+    margin: 0 auto 52px;
+    text-align: center;
+}
+
+.tob-collections-section-heading h2 {
+    margin: 14px 0 16px;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(35px, 4vw, 54px);
+    font-weight: 400;
+    line-height: 1.2;
+}
+
+.tob-collections-section-heading p {
+    color: var(--collection-muted);
+    font-size: 15px;
+    line-height: 1.8;
+}
+
+/* ==========================================================
+   SHOP BY CATEGORY
+========================================================== */
+
+.tob-collections-category-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 28px;
+}
+
+.tob-collection-category-card {
+    display: block;
+    overflow: hidden;
+    border: 1px solid #eadfce;
+    border-radius: 8px;
+    background: #fff;
+    color: var(--collection-brown);
+    text-decoration: none;
+    box-shadow: 0 8px 28px rgba(67, 40, 25, 0.035);
+    transition:
+        transform 0.35s ease,
+        box-shadow 0.35s ease;
+}
+
+.tob-collection-category-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 22px 48px rgba(67, 40, 25, 0.12);
+}
+
+.tob-collection-card-image {
+    overflow: hidden;
+    aspect-ratio: 4 / 3.7;
+    background: #f2e5d5;
+}
+
+.tob-collection-card-image img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.65s ease;
+}
+
+.tob-collection-category-card:hover img {
+    transform: scale(1.07);
+}
+
+.tob-collection-card-content {
+    padding: 28px 26px 32px;
+}
+
+.tob-collection-card-content > span {
+    color: var(--collection-accent);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.7px;
+}
+
+.tob-collection-card-content h3 {
+    margin: 12px 0;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(24px, 2.5vw, 31px);
+    font-weight: 400;
+}
+
+.tob-collection-card-content p {
+    min-height: 52px;
+    margin-bottom: 22px;
+    color: var(--collection-muted);
+    font-size: 14px;
+    line-height: 1.8;
+}
+
+.tob-collection-card-content strong {
+    display: inline-block;
+    color: var(--collection-brown);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+}
+
+/* ==========================================================
+   CURATED COLLECTIONS
+========================================================== */
+
+.tob-curated-section {
+    background: var(--collection-sand);
+}
+
+.tob-curated-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 28px;
+}
+
+.tob-curated-card {
+    position: relative;
+    overflow: hidden;
+    min-height: 390px;
+    border-radius: 8px;
+    background: #cbb29b;
+    isolation: isolate;
+}
+
+.tob-curated-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(
+        180deg,
+        transparent 15%,
+        rgba(35, 20, 13, 0.78) 100%
+    );
+}
+
+.tob-curated-card > img {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.7s ease;
+}
+
+.tob-curated-card:hover > img {
+    transform: scale(1.06);
+}
+
+.tob-curated-card-content {
+    position: absolute;
+    right: 35px;
+    bottom: 32px;
+    left: 35px;
+    color: #fff;
+}
+
+.tob-curated-card-content > span {
+    display: block;
+    margin-bottom: 12px;
+    color: #f5d7b7;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+}
+
+.tob-curated-card-content h3 {
+    margin-bottom: 12px;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(28px, 3vw, 40px);
+    font-weight: 400;
+}
+
+.tob-curated-card-content p {
+    max-width: 300px;
+    margin-bottom: 0;
+    color: #f5e8dd;
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+/* ==========================================================
+   FINAL CTA
+========================================================== */
+
+.tob-collections-final-cta {
+    padding: 100px 24px;
+    background: #fffaf3;
+    text-align: center;
+}
+
+.tob-collections-final-cta h2 {
+    max-width: 650px;
+    margin: 18px auto;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(35px, 4.5vw, 58px);
+    font-weight: 400;
+    line-height: 1.18;
+}
+
+.tob-collections-final-cta p {
+    margin-bottom: 30px;
+    color: var(--collection-muted);
+    font-size: 15px;
+    line-height: 1.8;
+}
+
+/* ==========================================================
+   TABLET
+========================================================== */
+
+@media (max-width: 1000px) {
+    .tob-collections-hero .tob-collections-container {
+        gap: 35px;
+    }
+
+    .tob-collections-hero h1 {
+        font-size: clamp(42px, 5.5vw, 60px);
+    }
+
+    .tob-collections-category-grid {
+        gap: 16px;
+    }
+
+    .tob-collection-card-content {
+        padding: 22px 18px 26px;
+    }
+
+    .tob-curated-card {
+        min-height: 330px;
+    }
+}
+
+/* ==========================================================
+   MOBILE
+========================================================== */
+
+@media (max-width: 700px) {
+    .tob-collections-container {
+        width: min(100% - 32px, 520px);
+    }
+
+    .tob-collections-hero {
+        padding: 52px 0 65px;
+    }
+
+    .tob-collections-hero .tob-collections-container {
+        grid-template-columns: 1fr;
+        gap: 38px;
+    }
+
+    .tob-collections-hero-content {
+        text-align: center;
+    }
+
+    .tob-collections-hero h1 {
+        margin: 15px 0 20px;
+        font-size: clamp(40px, 9vw, 58px);
+        letter-spacing: -1.6px;
+    }
+
+    .tob-collections-hero-content > p {
+        margin: 0 auto 26px;
+        font-size: 14px;
+    }
+
+    .tob-collections-hero-image {
+        max-width: 480px;
+        margin-inline: auto;
+        aspect-ratio: 5 / 4.5;
+        border-radius: 45% 45% 6px 6px;
+    }
+
+    .tob-collections-section,
+    .tob-curated-section {
+        padding: 70px 0;
+    }
+
+    .tob-collections-section-heading {
+        margin-bottom: 35px;
+    }
+
+    .tob-collections-section-heading h2 {
+        font-size: 37px;
+    }
+
+    .tob-collections-category-grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+
+    .tob-collection-card-image {
+        aspect-ratio: 4 / 2.8;
+    }
+
+    .tob-collection-card-content p {
+        min-height: 0;
+    }
+
+    .tob-curated-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .tob-curated-card {
+        min-height: 350px;
+    }
+
+    .tob-curated-card-content {
+        right: 24px;
+        bottom: 25px;
+        left: 24px;
+    }
+
+    .tob-collections-final-cta {
+        padding: 75px 18px;
+    }
+}
+
+@media (max-width: 380px) {
+    .tob-collections-hero h1 {
+        font-size: 37px;
+    }
+
+    .tob-curated-card {
+        min-height: 310px;
+    }
+
+    .tob-collection-card-content h3 {
+        font-size: 26px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .tob-collections-page *,
+    .tob-collections-page *::before,
+    .tob-collections-page *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+    }
+}
+
+
+
+/* ==========================================================
+   FEATURED COOKIES
+========================================================== */
+
+.tob-featured-cookies {
+    padding: 105px 0;
+    background: #fffdf9;
+}
+
+.tob-featured-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 24px;
+}
+
+.tob-featured-card {
+    overflow: hidden;
+    border: 1px solid #eee2d6;
+    border-radius: 8px;
+    background: #fff;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.tob-featured-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 18px 35px rgba(67, 40, 25, 0.1);
+}
+
+.tob-featured-image {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    aspect-ratio: 1 / 1;
+    background: #f5eadc;
+}
+
+.tob-featured-image img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.tob-featured-card:hover .tob-featured-image img {
+    transform: scale(1.06);
+}
+
+.tob-featured-no-image {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100%;
+    color: #806c5d;
+    font-size: 13px;
+}
+
+.tob-featured-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    padding: 7px 11px;
+    border-radius: 3px;
+    background: #432819;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.tob-featured-soldout {
+    background: #8a8a8a;
+}
+
+.tob-featured-content {
+    padding: 22px 18px 24px;
+}
+
+.tob-featured-category {
+    display: block;
+    margin-bottom: 9px;
+    color: #a46b42;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.tob-featured-content h3 {
+    margin: 0 0 14px;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 22px;
+    font-weight: 400;
+    line-height: 1.3;
+}
+
+.tob-featured-content h3 a {
+    color: #432819;
+    text-decoration: none;
+}
+
+.tob-featured-price {
+    color: #432819;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.tob-featured-price span {
+    display: block;
+    margin-top: 5px;
+    color: #806c5d;
+    font-size: 11px;
+    font-weight: 400;
+}
+
+.tob-featured-moq {
+    margin: 8px 0 0;
+    color: #806c5d;
+    font-size: 12px;
+}
+
+.tob-featured-view {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
+    color: #432819;
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+    border-bottom: 1px solid #432819;
+    padding-bottom: 5px;
+    transition: color 0.2s ease;
+}
+
+.tob-featured-view:hover {
+    color: #a46b42;
+}
+
+.tob-featured-footer {
+    margin-top: 45px;
+    text-align: center;
+}
+
+.tob-featured-empty {
+    padding: 45px 20px;
+    border: 1px solid #eee2d6;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.tob-featured-empty a {
+    color: #432819;
+    font-weight: 700;
+}
+
+@media (max-width: 1000px) {
+    .tob-featured-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 700px) {
+    .tob-featured-cookies {
+        padding: 70px 0;
+    }
+
+    .tob-featured-grid {
+        gap: 14px;
+    }
+
+    .tob-featured-content {
+        padding: 16px 12px 20px;
+    }
+
+    .tob-featured-content h3 {
+        font-size: 18px;
+    }
+
+    .tob-featured-price {
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 420px) {
+    .tob-featured-grid {
+        grid-template-columns: 1fr;
+        gap: 22px;
+    }
+}
+
+
+/* ==========================================================
+   PREMIUM GIFTING BANNER
+========================================================== */
+
+.tob-gifting-banner {
+    padding: 95px 0;
+    background: #f8f0e6;
+}
+
+.tob-gifting-banner-inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    min-height: 480px;
+    overflow: hidden;
+    border-radius: 12px;
+    background: #efe0ce;
+    box-shadow: 0 20px 55px rgba(67, 40, 25, 0.08);
+}
+
+.tob-gifting-banner-image {
+    height: 100%;
+    min-height: 480px;
+    overflow: hidden;
+    background: #d5b99e;
+}
+
+.tob-gifting-banner-image img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.7s ease;
+}
+
+.tob-gifting-banner-inner:hover .tob-gifting-banner-image img {
+    transform: scale(1.035);
+}
+
+.tob-gifting-banner-content {
+    padding: clamp(30px, 5vw, 75px);
+}
+
+.tob-gifting-banner-content h2 {
+    margin: 18px 0 22px;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(36px, 4vw, 58px);
+    font-weight: 400;
+    line-height: 1.14;
+    letter-spacing: -1.4px;
+    color: #432819;
+}
+
+.tob-gifting-banner-content h2 em {
+    display: block;
+    color: #a46b42;
+    font-weight: 400;
+}
+
+.tob-gifting-banner-content > p {
+    max-width: 460px;
+    margin: 0 0 28px;
+    color: #806c5d;
+    font-size: 15px;
+    line-height: 1.9;
+}
+
+.tob-gifting-banner-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.tob-gifting-secondary-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    color: #432819;
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+    border-bottom: 1px solid #432819;
+    transition: color 0.25s ease;
+}
+
+.tob-gifting-secondary-link:hover {
+    color: #a46b42;
+}
+
+.tob-gifting-banner-note {
+    margin-top: 35px;
+    color: #806c5d;
+    font-size: 12px;
+    letter-spacing: 0.3px;
+}
+
+.tob-gifting-banner-note span {
+    margin-right: 7px;
+    color: #a46b42;
+}
+
+@media (max-width: 850px) {
+    .tob-gifting-banner-inner {
+        grid-template-columns: 1fr;
+    }
+
+    .tob-gifting-banner-image {
+        height: 350px;
+        min-height: 0;
+    }
+
+    .tob-gifting-banner-content {
+        padding: 45px 35px;
+    }
+}
+
+@media (max-width: 700px) {
+    .tob-gifting-banner {
+        padding: 65px 0;
+    }
+
+    .tob-gifting-banner-inner {
+        border-radius: 8px;
+    }
+
+    .tob-gifting-banner-image {
+        height: 280px;
+    }
+
+    .tob-gifting-banner-content {
+        padding: 35px 24px 40px;
+        text-align: center;
+    }
+
+    .tob-gifting-banner-content h2 {
+        font-size: clamp(32px, 8vw, 44px);
+        letter-spacing: -0.8px;
+    }
+
+    .tob-gifting-banner-content > p {
+        font-size: 14px;
+    }
+
+    .tob-gifting-banner-actions {
+        justify-content: center;
+    }
+
+    .tob-gifting-banner-note {
+        margin-top: 25px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .tob-gifting-banner-image img {
+        transition: none;
+    }
+}
+
+
+
+/* ==========================================================
+   WHY OUR COOKIES ARE SPECIAL
+========================================================== */
+
+.tob-cookie-special {
+    padding: 105px 0;
+    background: #fffaf3;
+}
+
+.tob-cookie-special-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 24px;
+}
+
+.tob-cookie-special-card {
+    padding: 42px 24px 38px;
+    border: 1px solid #eadfce;
+    border-radius: 10px;
+    background: #fffdf9;
+    text-align: center;
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease,
+        border-color 0.3s ease;
+}
+
+.tob-cookie-special-card:hover {
+    transform: translateY(-7px);
+    border-color: #d6b89b;
+    box-shadow: 0 18px 40px rgba(67, 40, 25, 0.08);
+}
+
+.tob-cookie-special-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 82px;
+    height: 82px;
+    margin: 0 auto 27px;
+    border-radius: 50%;
+    background: #f5eadc;
+    color: #8e5835;
+    transition:
+        background 0.3s ease,
+        transform 0.3s ease;
+}
+
+.tob-cookie-special-icon svg {
+    width: 43px;
+    height: 43px;
+}
+
+.tob-cookie-special-card:hover .tob-cookie-special-icon {
+    background: #ead5bf;
+    transform: scale(1.06);
+}
+
+.tob-cookie-special-card h3 {
+    margin: 0 0 15px;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 23px;
+    font-weight: 400;
+    line-height: 1.3;
+    color: #432819;
+}
+
+.tob-cookie-special-card p {
+    max-width: 250px;
+    margin: 0 auto;
+    color: #806c5d;
+    font-size: 13px;
+    line-height: 1.85;
+}
+
+@media (max-width: 1000px) {
+    .tob-cookie-special-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 700px) {
+    .tob-cookie-special {
+        padding: 70px 0;
+    }
+
+    .tob-cookie-special-grid {
+        gap: 15px;
+    }
+
+    .tob-cookie-special-card {
+        padding: 30px 16px;
+    }
+
+    .tob-cookie-special-icon {
+        width: 68px;
+        height: 68px;
+        margin-bottom: 20px;
+    }
+
+    .tob-cookie-special-icon svg {
+        width: 35px;
+        height: 35px;
+    }
+
+    .tob-cookie-special-card h3 {
+        font-size: 19px;
+    }
+
+    .tob-cookie-special-card p {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 420px) {
+    .tob-cookie-special-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .tob-cookie-special-card {
+        padding: 34px 24px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .tob-cookie-special-card,
+    .tob-cookie-special-icon {
+        transition: none;
+    }
+}
+
+
+
+/* ==========================================================
+   COLLECTIONS SCROLL REVEAL ANIMATIONS
+========================================================== */
+
+.tob-collections-page .tob-reveal {
+    opacity: 0;
+    transform: translateY(30px);
+
+    transition:
+        opacity 700ms ease,
+        transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+
+    transition-delay: var(--tob-reveal-delay, 0ms);
+}
+
+.tob-collections-page .tob-reveal.tob-reveal-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Extra smooth hover for collection cards */
+
+.tob-collections-page .tob-collection-category-card,
+.tob-collections-page .tob-curated-card {
+    transition:
+        transform 350ms ease,
+        box-shadow 350ms ease;
+}
+
+.tob-collections-page .tob-collection-category-card:hover,
+.tob-collections-page .tob-curated-card:hover {
+    box-shadow: 0 20px 45px rgba(67, 40, 25, 0.12);
+}
+
+/* Accessible reduced-motion support */
+
+@media (prefers-reduced-motion: reduce) {
+    .tob-collections-page .tob-reveal {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+
+    .tob-collections-page .tob-collection-category-card,
+    .tob-collections-page .tob-curated-card {
+        transition: none;
+    }
+}
+
+
+
+/* ==========================================================
+   SHOP BY MOOD
+========================================================== */
+
+.tob-shop-mood {
+    padding: 105px 0;
+    background: #f8f0e6;
+}
+
+.tob-shop-mood-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 25px;
+}
+
+.tob-shop-mood-card {
+    position: relative;
+    display: block;
+    min-height: 430px;
+    overflow: hidden;
+    border-radius: 10px;
+    background: #432819;
+    color: #fff;
+    text-decoration: none;
+    isolation: isolate;
+    transition:
+        transform 350ms ease,
+        box-shadow 350ms ease;
+}
+
+.tob-shop-mood-card > img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 600ms ease;
+}
+
+.tob-shop-mood-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        to top,
+        rgba(31, 17, 10, 0.88) 0%,
+        rgba(31, 17, 10, 0.35) 55%,
+        rgba(31, 17, 10, 0.05) 100%
+    );
+}
+
+.tob-shop-mood-content {
+    position: absolute;
+    z-index: 1;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 30px;
+}
+
+.tob-shop-mood-content > span {
+    display: block;
+    margin-bottom: 12px;
+    color: #f2d7b9;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.4px;
+}
+
+.tob-shop-mood-content h3 {
+    margin: 0 0 10px;
+    color: #fff;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(27px, 3vw, 38px);
+    font-weight: 400;
+    line-height: 1.2;
+}
+
+.tob-shop-mood-content p {
+    margin: 0 0 20px;
+    color: #f4e9de;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.tob-shop-mood-content strong {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.8);
+    color: #fff;
+    font-size: 12px;
+}
+
+.tob-shop-mood-card:hover {
+    transform: translateY(-7px);
+    box-shadow: 0 20px 45px rgba(67, 40, 25, 0.2);
+}
+
+.tob-shop-mood-card:hover > img {
+    transform: scale(1.07);
+}
+
+.tob-shop-mood-card:focus-visible {
+    outline: 3px solid #a46b42;
+    outline-offset: 4px;
+}
+
+@media (max-width: 900px) {
+    .tob-shop-mood-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .tob-shop-mood-card:last-child {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 700px) {
+    .tob-shop-mood {
+        padding: 70px 0;
+    }
+
+    .tob-shop-mood-grid {
+        grid-template-columns: 1fr;
+        gap: 18px;
+    }
+
+    .tob-shop-mood-card,
+    .tob-shop-mood-card:last-child {
+        grid-column: auto;
+        min-height: 380px;
+    }
+
+    .tob-shop-mood-content {
+        padding: 25px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .tob-shop-mood-card,
+    .tob-shop-mood-card > img {
+        transition: none;
+    }
+}
+
+
+
+/* ==========================================================
+   COLLECTIONS QUICK NAVIGATION
+========================================================== */
+
+.tob-collections-quick-nav {
+    position: relative;
+    z-index: 20;
+    background: #fffaf3;
+    border-top: 1px solid #efe3d5;
+    border-bottom: 1px solid #efe3d5;
+}
+
+.tob-collections-nav-list {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 17px 0;
+    overflow-x: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #d4bba5 transparent;
+}
+
+.tob-collections-nav-link {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 18px;
+    border-radius: 30px;
+    color: #654b3b;
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+    transition:
+        background 250ms ease,
+        color 250ms ease,
+        transform 250ms ease;
+}
+
+.tob-collections-nav-link:hover {
+    background: #f0e1d0;
+    color: #432819;
+    transform: translateY(-2px);
+}
+
+.tob-collections-nav-link.is-active {
+    background: #432819;
+    color: #fff;
+}
+
+.tob-collections-nav-link:focus-visible {
+    outline: 2px solid #a46b42;
+    outline-offset: 3px;
+}
+
+/* Smooth anchor navigation */
+
+html:has(.tob-collections-page) {
+    scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html:has(.tob-collections-page) {
+        scroll-behavior: auto;
+    }
+}
+
+.tob-collections-page section[id] {
+    scroll-margin-top: 110px;
+}
+
+@media (max-width: 900px) {
+    .tob-collections-nav-list {
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 700px) {
+    .tob-collections-quick-nav .tob-collections-container {
+        width: 100%;
+    }
+
+    .tob-collections-nav-list {
+        padding: 12px 16px;
+        gap: 5px;
+    }
+
+    .tob-collections-nav-link {
+        padding: 11px 15px;
+        font-size: 11px;
+    }
+
+    .tob-collections-page section[id] {
+        scroll-margin-top: 85px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .tob-collections-nav-link {
+        transition: none;
+    }
+}
+
+
+
+
+/* ==========================================================
+   FINAL POLISH — REVEAL + HOVER COMPATIBILITY
+========================================================== */
+
+/* Keep the card lift effect after scroll reveal completes */
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+
+    .tob-collections-page
+    .tob-collection-category-card.tob-reveal-visible:hover {
+        transform: translateY(-8px);
+    }
+
+    .tob-collections-page
+    .tob-featured-card.tob-reveal-visible:hover {
+        transform: translateY(-6px);
+    }
+
+    .tob-collections-page
+    .tob-cookie-special-card.tob-reveal-visible:hover {
+        transform: translateY(-7px);
+    }
+
+    .tob-collections-page
+    .tob-shop-mood-card.tob-reveal-visible:hover {
+        transform: translateY(-7px);
+    }
+}
+
+/* Improve keyboard navigation */
+
+.tob-collections-page a:focus-visible {
+    outline: 2px solid #a46b42;
+    outline-offset: 4px;
+}
+
+/* Prevent long product names from overflowing cards */
+
+.tob-featured-content h3,
+.tob-collection-card-content h3 {
+    overflow-wrap: anywhere;
+}
+
+/* Improve mobile navigation scrolling */
+
+.tob-collections-nav-list {
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Better small-screen headings */
+
+@media (max-width: 420px) {
+    .tob-collections-section-heading h2 {
+        font-size: clamp(29px, 8vw, 35px);
+    }
+}
+
+
+
+/* ==========================================================
+   FINAL MOBILE RESPONSIVE OPTIMIZATION
+========================================================== */
+
+/* Prevent horizontal overflow */
+.tob-collections-page {
+    max-width: 100%;
+}
+
+/* Ensure images remain responsive */
+.tob-collections-page img {
+    max-width: 100%;
+}
+
+/* Improve tablet layouts */
+@media (min-width: 701px) and (max-width: 900px) {
+
+    .tob-collections-hero .tob-collections-container {
+        gap: 30px;
+    }
+
+    .tob-collections-hero h1 {
+        font-size: clamp(40px, 5vw, 54px);
+    }
+
+    .tob-collections-category-grid {
+        gap: 18px;
+    }
+
+    .tob-collections-nav-list {
+        justify-content: flex-start;
+    }
+}
+
+/* Mobile improvements */
+@media (max-width: 700px) {
+
+    .tob-collections-hero {
+        padding-top: 42px;
+        padding-bottom: 55px;
+    }
+
+    .tob-collections-hero h1 {
+        line-height: 1.12;
+    }
+
+    .tob-collections-section-heading {
+        max-width: 100%;
+    }
+
+    .tob-collections-section-heading h2 {
+        line-height: 1.2;
+    }
+
+    .tob-collections-nav-list {
+        justify-content: flex-start;
+        scroll-snap-type: x proximity;
+    }
+
+    .tob-collections-nav-link {
+        scroll-snap-align: start;
+    }
+
+    .tob-featured-card {
+        min-width: 0;
+    }
+
+    .tob-featured-content {
+        min-width: 0;
+    }
+
+    .tob-gifting-banner-inner {
+        min-width: 0;
+    }
+
+    .tob-shop-mood-card {
+        min-width: 0;
+    }
+
+    .tob-collections-final-cta h2 {
+        font-size: clamp(30px, 8vw, 42px);
+    }
+}
+
+/* Very small phones */
+@media (max-width: 380px) {
+
+    .tob-collections-container {
+        width: calc(100% - 28px);
+    }
+
+    .tob-collections-nav-link {
+        padding: 10px 13px;
+        font-size: 11px;
+    }
+
+    .tob-gifting-banner-content {
+        padding: 28px 18px;
+    }
+
+    .tob-shop-mood-content {
+        padding: 22px;
+    }
+}

@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CustomerAddress;
 use App\Models\Order;
+use App\Models\Product;
 use App\Models\ProductInventory;
 use App\Services\OrderEmailService;
 use Illuminate\Database\QueryException;
@@ -13,6 +15,7 @@ use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
+use Throwable;
 
 class CheckoutController extends Controller
 {
@@ -26,9 +29,8 @@ class CheckoutController extends Controller
     {
         $user = $request->user();
 
-        $checkoutToken = $request->session()->get(
-            'tob_checkout_token'
-        );
+        $checkoutToken = $request->session()
+            ->get('tob_checkout_token');
 
         if (
             !$checkoutToken ||
@@ -42,9 +44,20 @@ class CheckoutController extends Controller
             );
         }
 
+        $savedAddresses = $user
+            ? $user->addresses()
+                ->orderByDesc('is_default')
+                ->latest()
+                ->get()
+            : collect();
+
         return view(
             'pages.checkout',
-            compact('user', 'checkoutToken')
+            compact(
+                'user',
+                'checkoutToken',
+                'savedAddresses'
+            )
         );
     }
 
@@ -78,6 +91,50 @@ class CheckoutController extends Controller
 
     public function store(Request $request): JsonResponse
     {
+        $user = $request->user();
+
+        $userId = $user?->id;
+
+        $submittedToken = $request->input('checkout_token');
+
+        $sessionToken = (string) $request
+            ->session()
+            ->get('tob_checkout_token', '');
+
+        /*
+        |--------------------------------------------------------------------------
+        | SAFE RETRY CHECK
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            is_string($submittedToken) &&
+            Str::isUuid($submittedToken) &&
+            $sessionToken !== '' &&
+            hash_equals($sessionToken, $submittedToken)
+        ) {
+            $existingOrder = Order::query()
+                ->where('checkout_token', $submittedToken)
+                ->first();
+
+            if ($existingOrder) {
+                if (
+                    $existingOrder->user_id !== null &&
+                    $existingOrder->user_id !== $userId
+                ) {
+                    abort(403);
+                }
+
+                return $this->successResponse($existingOrder);
+            }
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | VALIDATE REQUEST
+        |--------------------------------------------------------------------------
+        */
+
         $validated = $request->validate([
             'checkout_token' => [
                 'required',
@@ -131,6 +188,21 @@ class CheckoutController extends Controller
                 'digits:6',
             ],
 
+            'saved_address_id' => [
+                'nullable',
+            ],
+
+            'save_address' => [
+                'sometimes',
+                'boolean',
+            ],
+
+            'address_label' => [
+                'nullable',
+                'string',
+                'max:40',
+            ],
+
             'payment_method' => [
                 'required',
                 Rule::in(['cod']),
@@ -161,17 +233,12 @@ class CheckoutController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | VERIFY CHECKOUT SESSION
+        | VERIFY SESSION TOKEN
         |--------------------------------------------------------------------------
         */
 
-        $sessionToken = (string) $request->session()->get(
-            'tob_checkout_token',
-            ''
-        );
-
         if (
-            !$sessionToken ||
+            $sessionToken === '' ||
             !hash_equals($sessionToken, $checkoutToken)
         ) {
             throw ValidationException::withMessages([
@@ -181,24 +248,73 @@ class CheckoutController extends Controller
             ]);
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | IDEMPOTENCY - ALREADY PLACED ORDER
-        |--------------------------------------------------------------------------
-        */
-
         $existingOrder = Order::query()
             ->where('checkout_token', $checkoutToken)
             ->first();
 
         if ($existingOrder) {
+            if (
+                $existingOrder->user_id !== null &&
+                $existingOrder->user_id !== $userId
+            ) {
+                abort(403);
+            }
+
             return $this->successResponse($existingOrder);
         }
 
-        $user = $request->user();
-        $userId = $user?->id;
+        /*
+        |--------------------------------------------------------------------------
+        | VERIFY SAVED ADDRESS OWNERSHIP
+        |--------------------------------------------------------------------------
+        */
 
-        $products = config('products', []);
+        $selectedAddressId = $validated['saved_address_id'] ?? null;
+
+        if (
+            $selectedAddressId !== null &&
+            $selectedAddressId !== '' &&
+            $selectedAddressId !== 'new'
+        ) {
+            if (
+                !$user ||
+                !ctype_digit((string) $selectedAddressId)
+            ) {
+                throw ValidationException::withMessages([
+                    'saved_address_id' => [
+                        'Invalid delivery address selected.',
+                    ],
+                ]);
+            }
+
+            $savedAddress = $user->addresses()
+                ->whereKey($selectedAddressId)
+                ->first();
+
+            if (!$savedAddress) {
+                throw ValidationException::withMessages([
+                    'saved_address_id' => [
+                        'The selected delivery address was not found.',
+                    ],
+                ]);
+            }
+
+            // Use the saved address as the authoritative
+            // delivery snapshot instead of browser-edited values.
+            foreach ([
+                'name',
+                'phone',
+                'address',
+                'landmark',
+                'city',
+                'state',
+                'pincode',
+            ] as $field) {
+                $validated[$field] = $savedAddress->{$field};
+            }
+
+            $validated['save_address'] = false;
+        }
 
         /*
         |--------------------------------------------------------------------------
@@ -210,6 +326,7 @@ class CheckoutController extends Controller
 
         foreach ($validated['cart'] as $cartItem) {
             $slug = $cartItem['slug'];
+
             $quantity = (int) $cartItem['quantity'];
 
             $normalizedCart[$slug] =
@@ -224,7 +341,6 @@ class CheckoutController extends Controller
             }
         }
 
-        // Consistent locking order helps reduce deadlocks.
         ksort($normalizedCart);
 
         /*
@@ -234,235 +350,361 @@ class CheckoutController extends Controller
         */
 
         try {
-            $result = DB::transaction(
-                function () use (
-                    $validated,
-                    $checkoutToken,
-                    $normalizedCart,
-                    $products,
-                    $userId
-                ) {
-                    /*
-                    |--------------------------------------------------------------------------
-                    | RECHECK EXISTING ORDER
-                    |--------------------------------------------------------------------------
-                    */
+            $result = DB::transaction(function () use (
+                $validated,
+                $checkoutToken,
+                $normalizedCart,
+                $userId
+            ) {
+                /*
+                |--------------------------------------------------------------
+                | PREVENT DUPLICATE ORDERS
+                |--------------------------------------------------------------
+                */
 
-                    $existingOrder = Order::query()
-                        ->where('checkout_token', $checkoutToken)
+                $existingOrder = Order::query()
+                    ->where('checkout_token', $checkoutToken)
+                    ->first();
+
+                if ($existingOrder) {
+                    return [
+                        'order' => $existingOrder,
+                        'created' => false,
+                    ];
+                }
+
+                /*
+                |--------------------------------------------------------------
+                | RETAILER WHOLESALE ELIGIBILITY
+                |--------------------------------------------------------------
+                */
+
+                $isApprovedRetailer = false;
+
+                if ($userId !== null) {
+                    $isApprovedRetailer = DB::table('retailer_profiles')
+                        ->where('user_id', $userId)
+                        ->where('status', 'approved')
+                        ->exists();
+                }
+
+                $subtotal = 0;
+
+                $items = [];
+
+                $inventoryRows = [];
+
+                /*
+                |--------------------------------------------------------------
+                | PRODUCTS, PRICES AND STOCK
+                |--------------------------------------------------------------
+                */
+
+                foreach ($normalizedCart as $slug => $quantity) {
+                    $productModel = Product::query()
+                        ->where('slug', $slug)
+                        ->where('is_active', true)
+                        ->lockForUpdate()
                         ->first();
 
-                    if ($existingOrder) {
-                        return [
-                            'order' => $existingOrder,
-                            'created' => false,
-                        ];
+                    if (!$productModel) {
+                        throw ValidationException::withMessages([
+                            'cart' => [
+                                'Your cart contains an unavailable product.',
+                            ],
+                        ]);
                     }
 
-                    $subtotal = 0;
-                    $items = [];
-                    $inventoryRows = [];
+                    $productName = $productModel->name;
 
                     /*
-                    |--------------------------------------------------------------------------
-                    | VERIFY PRODUCTS AND LOCK INVENTORY
-                    |--------------------------------------------------------------------------
+                    |----------------------------------------------------------
+                    | WHOLESALE PRICING
+                    |----------------------------------------------------------
                     */
 
-                    foreach (
-                        $normalizedCart as $slug => $quantity
-                    ) {
-                        if (!isset($products[$slug])) {
-                            throw ValidationException::withMessages([
-                                'cart' => [
-                                    'Your cart contains an invalid product.',
-                                ],
-                            ]);
-                        }
+                    $useWholesale =
+                        $isApprovedRetailer &&
+                        $productModel->hasWholesalePricing();
 
-                        $product = $products[$slug];
+                    $minimumQuantity = $useWholesale
+                        ? $productModel->getWholesaleMinimumQuantity()
+                        : 1;
 
-                        $inventory = ProductInventory::query()
-                            ->where('product_slug', $slug)
-                            ->lockForUpdate()
-                            ->first();
+                    if ($minimumQuantity > 50) {
+                        throw ValidationException::withMessages([
+                            'cart' => [
+                                $productName .
+                                ' has a wholesale minimum quantity above the 50-unit checkout limit.',
+                            ],
+                        ]);
+                    }
 
-                        if (
-                            !$inventory ||
-                            $inventory->stock <= 0
-                        ) {
-                            throw ValidationException::withMessages([
-                                'cart' => [
-                                    $product['name'] .
-                                    ' is currently out of stock.',
-                                ],
-                            ]);
-                        }
-
-                        if ($quantity > $inventory->stock) {
-                            throw ValidationException::withMessages([
-                                'cart' => [
-                                    'Only ' .
-                                    $inventory->stock .
-                                    ' unit(s) of ' .
-                                    $product['name'] .
-                                    ' are currently available.',
-                                ],
-                            ]);
-                        }
-
-                        /*
-                        |--------------------------------------------------------------------------
-                        | TRUST SERVER-SIDE PRICE ONLY
-                        |--------------------------------------------------------------------------
-                        */
-
-                        $price = (float) $product['price'];
-
-                        $lineTotal = round(
-                            $price * $quantity,
-                            2
-                        );
-
-                        $subtotal += $lineTotal;
-
-                        $items[] = [
-                            'product_slug' => $slug,
-                            'product_name' => $product['name'],
-                            'price' => $price,
-                            'quantity' => $quantity,
-                            'total' => $lineTotal,
-                            'image' => $product['image'],
-                        ];
-
-                        $inventoryRows[] = [
-                            'model' => $inventory,
-                            'quantity' => $quantity,
-                        ];
+                    if ($quantity < $minimumQuantity) {
+                        throw ValidationException::withMessages([
+                            'cart' => [
+                                $productName .
+                                ' requires a minimum quantity of ' .
+                                $minimumQuantity . ' units.',
+                            ],
+                        ]);
                     }
 
                     /*
-                    |--------------------------------------------------------------------------
-                    | SHIPPING AND TOTAL
-                    |--------------------------------------------------------------------------
+                    |----------------------------------------------------------
+                    | SERVER-SIDE PRICE
+                    |----------------------------------------------------------
                     */
 
-                    $subtotal = round($subtotal, 2);
+                    $price = round(
+                        (float) (
+                            $useWholesale
+                                ? $productModel->wholesale_price
+                                : $productModel->price
+                        ),
+                        2
+                    );
 
-                    $shipping = $subtotal >= 499
-                        ? 0
+                    if (!is_finite($price) || $price < 0) {
+                        throw ValidationException::withMessages([
+                            'cart' => [
+                                'A product has an invalid price.',
+                            ],
+                        ]);
+                    }
+
+                    /*
+                    |----------------------------------------------------------
+                    | PRODUCT IMAGE
+                    |----------------------------------------------------------
+                    */
+
+                    $image = $productModel->image
+                        ? (
+                            str_starts_with(
+                                $productModel->image,
+                                'products/'
+                            )
+                                ? 'storage/' . $productModel->image
+                                : $productModel->image
+                        )
                         : null;
 
-                    // Shipping below ₹499 is not configured yet.
-                    $total = $subtotal;
-
                     /*
-                    |--------------------------------------------------------------------------
-                    | CREATE ORDER
-                    |--------------------------------------------------------------------------
+                    |----------------------------------------------------------
+                    | LOCK INVENTORY
+                    |----------------------------------------------------------
                     */
 
-                    $order = Order::create([
-                        'user_id' => $userId,
+                    $inventory = ProductInventory::query()
+                        ->where('product_slug', $slug)
+                        ->lockForUpdate()
+                        ->first();
 
-                        'checkout_token' => $checkoutToken,
+                    if (!$inventory || $inventory->stock <= 0) {
+                        throw ValidationException::withMessages([
+                            'cart' => [
+                                $productName .
+                                ' is currently out of stock.',
+                            ],
+                        ]);
+                    }
 
-                        'order_number' =>
-                            'TOB-' .
-                            now()->format('Ymd') .
-                            '-' .
-                            strtoupper(Str::random(6)),
+                    if ($quantity > $inventory->stock) {
+                        throw ValidationException::withMessages([
+                            'cart' => [
+                                'Only ' . $inventory->stock .
+                                ' unit(s) of ' . $productName .
+                                ' are currently available.',
+                            ],
+                        ]);
+                    }
 
+                    /*
+                    |----------------------------------------------------------
+                    | ORDER ITEM SNAPSHOT
+                    |----------------------------------------------------------
+                    */
+
+                    $lineTotal = round($price * $quantity, 2);
+
+                    $subtotal += $lineTotal;
+
+                    $items[] = [
+                        'product_slug' => $slug,
+                        'product_name' => $productName,
+                        'price' => $price,
+                        'quantity' => $quantity,
+                        'total' => $lineTotal,
+                        'image' => $image,
+                    ];
+
+                    $inventoryRows[] = [
+                        'model' => $inventory,
+                        'quantity' => $quantity,
+                    ];
+                }
+
+                /*
+                |--------------------------------------------------------------
+                | SHIPPING CALCULATION
+                |--------------------------------------------------------------
+                */
+
+                $subtotal = round($subtotal, 2);
+
+                $shipping = $subtotal >= 499 ? 0 : null;
+
+                // Shipping below Rs 499 has not been configured.
+                // Preserve the existing checkout calculation.
+
+                $total = $subtotal;
+
+                /*
+                |--------------------------------------------------------------
+                | CREATE ORDER
+                |--------------------------------------------------------------
+                */
+
+                $order = Order::create([
+                    'user_id' => $userId,
+
+                    'checkout_token' => $checkoutToken,
+
+                    'order_number' =>
+                        'TOB-' .
+                        now()->format('Ymd') .
+                        '-' .
+                        strtoupper(Str::random(6)),
+
+                    'name' => $validated['name'],
+                    'email' => $validated['email'],
+                    'phone' => $validated['phone'],
+                    'address' => $validated['address'],
+                    'landmark' => $validated['landmark'] ?? null,
+                    'city' => $validated['city'],
+                    'state' => $validated['state'],
+                    'pincode' => $validated['pincode'],
+                    'country' => 'India',
+
+                    'payment_method' => 'cod',
+                    'payment_status' => 'pending',
+                    'order_status' => 'pending',
+
+                    'subtotal' => $subtotal,
+                    'shipping' => $shipping,
+                    'total' => $total,
+                ]);
+
+                /*
+                |--------------------------------------------------------------
+                | ORDER STATUS HISTORY
+                |--------------------------------------------------------------
+                */
+
+                $order->statusHistory()->create([
+                    'status' => 'pending',
+                    'note' => 'Order placed successfully.',
+                    'changed_by' => null,
+                ]);
+
+                /*
+                |--------------------------------------------------------------
+                | CREATE ORDER ITEMS
+                |--------------------------------------------------------------
+                */
+
+                $order->items()->createMany($items);
+
+                /*
+                |--------------------------------------------------------------
+                | DEDUCT INVENTORY
+                |--------------------------------------------------------------
+                */
+
+                foreach ($inventoryRows as $inventoryRow) {
+                    $inventoryRow['model']->decrement(
+                        'stock',
+                        $inventoryRow['quantity']
+                    );
+                }
+
+                $order->forceFill([
+                    'inventory_deducted_at' => now(),
+                    'inventory_restored_at' => null,
+                ])->save();
+
+                /*
+                |--------------------------------------------------------------
+                | SAVE NEW DELIVERY ADDRESS
+                |--------------------------------------------------------------
+                */
+
+                if (
+                    $userId !== null &&
+                    !empty($validated['save_address'])
+                ) {
+                    $addressFields = [
                         'name' => $validated['name'],
-                        'email' => $validated['email'],
                         'phone' => $validated['phone'],
                         'address' => $validated['address'],
-
-                        'landmark' =>
-                            $validated['landmark'] ?? null,
-
+                        'landmark' => $validated['landmark'] ?? null,
                         'city' => $validated['city'],
                         'state' => $validated['state'],
                         'pincode' => $validated['pincode'],
-
-                        'country' => 'India',
-
-                        'payment_method' => 'cod',
-                        'payment_status' => 'pending',
-                        'order_status' => 'pending',
-
-                        'subtotal' => $subtotal,
-                        'shipping' => $shipping,
-                        'total' => $total,
-                    ]);
-
-                    /*
-                    |--------------------------------------------------------------------------
-                    | CREATE ORDER ITEMS
-                    |--------------------------------------------------------------------------
-                    */
-
-                    $order->items()->createMany($items);
-
-                    /*
-                    |--------------------------------------------------------------------------
-                    | DEDUCT INVENTORY
-                    |--------------------------------------------------------------------------
-                    */
-
-                    foreach ($inventoryRows as $inventoryRow) {
-                        $inventoryRow['model']->decrement(
-                            'stock',
-                            $inventoryRow['quantity']
-                        );
-                    }
-
-                    /*
-                    |--------------------------------------------------------------------------
-                    | MARK INVENTORY DEDUCTED
-                    |--------------------------------------------------------------------------
-                    */
-
-                    $order->forceFill([
-                        'inventory_deducted_at' => now(),
-                        'inventory_restored_at' => null,
-                    ])->save();
-
-                    /*
-                    |--------------------------------------------------------------------------
-                    | RECORD EMAIL NOTIFICATIONS IN SAME TRANSACTION
-                    |--------------------------------------------------------------------------
-                    */
-
-                    app(OrderEmailService::class)->record($order);
-
-                    return [
-                        'order' => $order,
-                        'created' => true,
                     ];
-                },
-                3
-            );
 
-            $order = $result['order'];
+                    $existingAddress = CustomerAddress::query()
+                        ->where('user_id', $userId)
+                        ->where($addressFields)
+                        ->first();
+
+                    if (!$existingAddress) {
+                        $hasAddress = CustomerAddress::query()
+                            ->where('user_id', $userId)
+                            ->exists();
+
+                        CustomerAddress::create([
+                            'user_id' => $userId,
+
+                            'label' =>
+                                $validated['address_label']
+                                ?? 'Home',
+
+                            ...$addressFields,
+
+                            'is_default' => !$hasAddress,
+                        ]);
+                    }
+                }
+
+                /*
+                |--------------------------------------------------------------
+                | RECORD ORDER EMAILS
+                |--------------------------------------------------------------
+                */
+
+                app(OrderEmailService::class)->record($order);
+
+                return [
+                    'order' => $order,
+                    'created' => true,
+                ];
+            }, 3);
 
             /*
-            |--------------------------------------------------------------------------
-            | EXISTING ORDER - DO NOT DISPATCH EMAIL AGAIN
-            |--------------------------------------------------------------------------
+            |------------------------------------------------------------------
+            | TRANSACTION RESULT
+            |------------------------------------------------------------------
             */
+
+            $order = $result['order'];
 
             if (!$result['created']) {
                 return $this->successResponse($order);
             }
 
             $order->load('items');
-
-            /*
-            |--------------------------------------------------------------------------
-            | COMPLETE NEW ORDER
-            |--------------------------------------------------------------------------
-            */
 
             return $this->completeNewOrder(
                 $order,
@@ -474,12 +716,6 @@ class CheckoutController extends Controller
             throw $exception;
 
         } catch (QueryException $exception) {
-            /*
-            |--------------------------------------------------------------------------
-            | HANDLE CONCURRENT DUPLICATE TOKEN
-            |--------------------------------------------------------------------------
-            */
-
             $existingOrder = Order::query()
                 ->where('checkout_token', $checkoutToken)
                 ->first();
@@ -492,24 +728,22 @@ class CheckoutController extends Controller
 
             return response()->json([
                 'success' => false,
-                'message' =>
-                    'We could not place your order. Please try again.',
+                'message' => 'We could not place your order. Please try again.',
             ], 500);
 
-        } catch (\Throwable $exception) {
+        } catch (Throwable $exception) {
             report($exception);
 
             return response()->json([
                 'success' => false,
-                'message' =>
-                    'We could not place your order. Please try again.',
+                'message' => 'We could not place your order. Please try again.',
             ], 500);
         }
     }
 
     /*
     |--------------------------------------------------------------------------
-    | COMPLETE NEW ORDER - QUEUE EMAILS
+    | COMPLETE NEW ORDER
     |--------------------------------------------------------------------------
     */
 
@@ -519,25 +753,22 @@ class CheckoutController extends Controller
         array $validated
     ): JsonResponse {
         /*
-        |--------------------------------------------------------------------------
-        | DISPATCH CUSTOMER AND ADMIN EMAIL JOBS
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
+        | DISPATCH ORDER EMAILS
+        |----------------------------------------------------------------------
         */
 
         try {
             app(OrderEmailService::class)->dispatch($order);
 
-        } catch (\Throwable $exception) {
+        } catch (Throwable $exception) {
             report($exception);
-
-            // Order is already saved.
-            // Scheduler can dispatch pending notifications later.
         }
 
         /*
-        |--------------------------------------------------------------------------
-        | SAVE USER PHONE
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
+        | SAVE CUSTOMER PHONE IF MISSING
+        |----------------------------------------------------------------------
         */
 
         try {
@@ -551,7 +782,7 @@ class CheckoutController extends Controller
                 ]);
             }
 
-        } catch (\Throwable $exception) {
+        } catch (Throwable $exception) {
             report($exception);
         }
 
@@ -564,8 +795,15 @@ class CheckoutController extends Controller
     |--------------------------------------------------------------------------
     */
 
-    public function success(string $orderNumber)
-    {
+    public function success(
+        Request $request,
+        string $orderNumber
+    ) {
+        abort_unless(
+            $request->hasValidSignature(),
+            403
+        );
+
         $order = Order::with('items')
             ->where('order_number', $orderNumber)
             ->firstOrFail();

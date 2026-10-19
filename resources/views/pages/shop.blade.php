@@ -1,10 +1,6 @@
 @extends('layouts.app')
 
-
-
 @section('title', 'Cookies | The Only Baker')
-
-
 
 @push('styles')
 
@@ -12,13 +8,7 @@
 
 @endpush
 
-
-
-
-
 @php
-
-
 
     /*
 
@@ -30,7 +20,17 @@
 
     */
 
+    $categoryCounts = [];
 
+    foreach ($products as $item) {
+
+        $category = $item['category'] ?? '';
+
+        $categoryCounts[$category] = ($categoryCounts[$category] ?? 0) + 1;
+
+    }
+
+    $totalProducts = count($products);
 
     $wishlistSlugs = auth()->check()
 
@@ -44,25 +44,11 @@
 
         : [];
 
-
-
-
-
 @endphp
-
-
-
-
 
 @section('content')
 
-
-
 <div class="tob-shop-page">
-
-
-
-
 
     {{-- =========================================================
 
@@ -70,11 +56,7 @@
 
     ========================================================== --}}
 
-
-
     <section class="tob-cookie-hero">
-
-
 
         <div class="tob-cookie-hero-bg">
 
@@ -88,17 +70,9 @@
 
         </div>
 
-
-
-
-
         <div class="tob-hero-leaf" aria-hidden="true">
 
-
-
             <svg viewBox="0 0 180 330">
-
-
 
                 <path
 
@@ -108,8 +82,6 @@
 
                 />
 
-
-
                 <path
 
                     class="tob-leaf"
@@ -117,8 +89,6 @@
                     d="M45 255C8 248 1 219 7 194C37 198 55 220 45 255Z"
 
                 />
-
-
 
                 <path
 
@@ -128,8 +98,6 @@
 
                 />
 
-
-
                 <path
 
                     class="tob-leaf"
@@ -137,8 +105,6 @@
                     d="M92 162C62 141 70 111 88 94C113 111 116 139 92 162Z"
 
                 />
-
-
 
                 <path
 
@@ -148,29 +114,17 @@
 
                 />
 
-
-
             </svg>
-
-
 
         </div>
 
-
-
-
-
         <div class="tob-cookie-hero-content">
-
-
 
             <span class="tob-cookie-hero-eyebrow">
 
                 OUR COOKIE COLLECTION
 
             </span>
-
-
 
             <h1>
 
@@ -180,8 +134,6 @@
 
             </h1>
 
-
-
             <p class="tob-cookie-hero-description">
 
                 Discover our handcrafted cookies, made with<br class="tob-desktop-break">
@@ -190,27 +142,13 @@
 
             </p>
 
-
-
-
-
             <div class="tob-cookie-hero-features">
-
-
-
-
 
                 <div class="tob-cookie-hero-feature">
 
-
-
                     <div class="tob-cookie-feature-icon">
 
-
-
                         <svg viewBox="0 0 40 40" aria-hidden="true">
-
-
 
                             <path
 
@@ -224,15 +162,9 @@
 
                             />
 
-
-
                         </svg>
 
-
-
                     </div>
-
-
 
                     <span>
 
@@ -242,31 +174,15 @@
 
                     </span>
 
-
-
                 </div>
-
-
-
-
 
                 <div class="tob-cookie-feature-divider"></div>
 
-
-
-
-
                 <div class="tob-cookie-hero-feature">
-
-
 
                     <div class="tob-cookie-feature-icon">
 
-
-
                         <svg viewBox="0 0 40 40" aria-hidden="true">
-
-
 
                             <path
 
@@ -280,15 +196,9 @@
 
                             />
 
-
-
                         </svg>
 
-
-
                     </div>
-
-
 
                     <span>
 
@@ -298,31 +208,15 @@
 
                     </span>
 
-
-
                 </div>
-
-
-
-
 
                 <div class="tob-cookie-feature-divider"></div>
 
-
-
-
-
                 <div class="tob-cookie-hero-feature">
-
-
 
                     <div class="tob-cookie-feature-icon">
 
-
-
                         <svg viewBox="0 0 40 40" aria-hidden="true">
-
-
 
                             <circle
 
@@ -340,8 +234,6 @@
 
                             />
 
-
-
                             <circle
 
                                 cx="15"
@@ -354,8 +246,6 @@
 
                             />
 
-
-
                             <circle
 
                                 cx="25"
@@ -367,8 +257,6 @@
                                 fill="currentColor"
 
                             />
-
-
 
                             <path
 
@@ -384,15 +272,9 @@
 
                             />
 
-
-
                         </svg>
 
-
-
                     </div>
-
-
 
                     <span>
 
@@ -402,37 +284,19 @@
 
                     </span>
 
-
-
                 </div>
-
-
 
             </div>
 
-
-
         </div>
-
-
-
-
 
         <div class="tob-cookie-hero-note" aria-hidden="true">
 
-
-
             <span>Cookies make</span>
-
-
 
             <strong>everything</strong>
 
-
-
             <span>better</span>
-
-
 
             <svg viewBox="0 0 130 45">
 
@@ -440,19 +304,9 @@
 
             </svg>
 
-
-
         </div>
 
-
-
     </section>
-
-
-
-
-
-
 
     {{-- =========================================================
 
@@ -460,15 +314,9 @@
 
     ========================================================== --}}
 
-
-
     <div class="tob-shop-breadcrumb-wrap">
 
-
-
         <div class="tob-shop-main-container">
-
-
 
             <nav
 
@@ -478,39 +326,21 @@
 
             >
 
-
-
                 <a href="{{ route('home') }}">
 
                     Home
 
                 </a>
 
-
-
                 <span>›</span>
-
-
 
                 <span>Cookies</span>
 
-
-
             </nav>
-
-
 
         </div>
 
-
-
     </div>
-
-
-
-
-
-
 
     {{-- =========================================================
 
@@ -518,29 +348,17 @@
 
     ========================================================== --}}
 
-
-
     <section class="tob-shop-content">
-
-
 
         <div class="tob-shop-main-container">
 
-
-
             <div class="tob-shop-layout">
-
-
-
-
 
                 {{-- =================================================
 
                      SIDEBAR
 
                 ================================================== --}}
-
-
 
                 <aside
 
@@ -550,17 +368,9 @@
 
                 >
 
-
-
-
-
                     {{-- CATEGORIES --}}
 
-
-
                     <div class="tob-shop-sidebar-box">
-
-
 
                         <button
 
@@ -572,15 +382,9 @@
 
                         >
 
-
-
                             <span class="tob-sidebar-title-left">
 
-
-
                                 <svg viewBox="0 0 32 32" aria-hidden="true">
-
-
 
                                     <circle
 
@@ -598,8 +402,6 @@
 
                                     />
 
-
-
                                     <circle
 
                                         cx="12"
@@ -611,8 +413,6 @@
                                         fill="currentColor"
 
                                     />
-
-
 
                                     <circle
 
@@ -626,8 +426,6 @@
 
                                     />
 
-
-
                                     <circle
 
                                         cx="21"
@@ -639,8 +437,6 @@
                                         fill="currentColor"
 
                                     />
-
-
 
                                     <circle
 
@@ -654,21 +450,11 @@
 
                                     />
 
-
-
                                 </svg>
-
-
 
                                 <span>Categories</span>
 
-
-
                             </span>
-
-
-
-
 
                             <svg
 
@@ -684,17 +470,9 @@
 
                             </svg>
 
-
-
                         </button>
 
-
-
-
-
                         <div class="tob-sidebar-body">
-
-
 
                             <button
 
@@ -708,13 +486,9 @@
 
                                 <span class="tob-category-filter-icon">◉</span>
 
-                                <span>All Cookies (16)</span>
+                                <span>All Cookies ({{ $totalProducts }})</span>
 
                             </button>
-
-
-
-
 
                             <button
 
@@ -728,13 +502,9 @@
 
                                 <span class="tob-category-filter-icon">◌</span>
 
-                                <span>Dry Fruit Cookies (7)</span>
+                                <span>Dry Fruit Cookies ({{ $categoryCounts['dry-fruit'] ?? 0 }})</span>
 
                             </button>
-
-
-
-
 
                             <button
 
@@ -748,13 +518,9 @@
 
                                 <span class="tob-category-filter-icon">◌</span>
 
-                                <span>Chocolate Cookies (2)</span>
+                                <span>Chocolate Cookies ({{ $categoryCounts['chocolate'] ?? 0 }})</span>
 
                             </button>
-
-
-
-
 
                             <button
 
@@ -768,31 +534,17 @@
 
                                 <span class="tob-category-filter-icon">◌</span>
 
-                                <span>Classic Cookies (7)</span>
+                                <span>Classic Cookies ({{ $categoryCounts['classic'] ?? 0 }})</span>
 
                             </button>
 
-
-
                         </div>
-
-
 
                     </div>
 
-
-
-
-
-
-
                     {{-- FILTERS --}}
 
-
-
                     <div class="tob-shop-sidebar-box tob-filter-box">
-
-
 
                         <button
 
@@ -804,15 +556,9 @@
 
                         >
 
-
-
                             <span class="tob-sidebar-title-left">
 
-
-
                                 <svg viewBox="0 0 32 32" aria-hidden="true">
-
-
 
                                     <path
 
@@ -828,21 +574,11 @@
 
                                     />
 
-
-
                                 </svg>
-
-
 
                                 <span>Filters</span>
 
-
-
                             </span>
-
-
-
-
 
                             <svg
 
@@ -858,33 +594,15 @@
 
                             </svg>
 
-
-
                         </button>
-
-
-
-
 
                         <div class="tob-sidebar-body">
 
-
-
-
-
                             <div class="tob-filter-group">
-
-
 
                                 <h3>Price Range</h3>
 
-
-
-
-
                                 <label class="tob-filter-checkbox">
-
-
 
                                     <input
 
@@ -896,25 +614,13 @@
 
                                     >
 
-
-
                                     <span class="tob-custom-checkbox"></span>
-
-
 
                                     <span>Under ₹200</span>
 
-
-
                                 </label>
 
-
-
-
-
                                 <label class="tob-filter-checkbox">
-
-
 
                                     <input
 
@@ -926,25 +632,13 @@
 
                                     >
 
-
-
                                     <span class="tob-custom-checkbox"></span>
-
-
 
                                     <span>₹200 – ₹300</span>
 
-
-
                                 </label>
 
-
-
-
-
                                 <label class="tob-filter-checkbox">
-
-
 
                                     <input
 
@@ -956,25 +650,13 @@
 
                                     >
 
-
-
                                     <span class="tob-custom-checkbox"></span>
-
-
 
                                     <span>₹300 – ₹400</span>
 
-
-
                                 </label>
 
-
-
-
-
                                 <label class="tob-filter-checkbox">
-
-
 
                                     <input
 
@@ -986,41 +668,19 @@
 
                                     >
 
-
-
                                     <span class="tob-custom-checkbox"></span>
-
-
 
                                     <span>Above ₹400</span>
 
-
-
                                 </label>
-
-
 
                             </div>
 
-
-
-
-
-
-
                             <div class="tob-filter-group tob-dietary-group">
-
-
 
                                 <h3>Dietary</h3>
 
-
-
-
-
                                 <label class="tob-filter-checkbox">
-
-
 
                                     <input
 
@@ -1032,25 +692,13 @@
 
                                     >
 
-
-
                                     <span class="tob-custom-checkbox"></span>
-
-
 
                                     <span>Eggless</span>
 
-
-
                                 </label>
 
-
-
-
-
                                 <label class="tob-filter-checkbox">
-
-
 
                                     <input
 
@@ -1062,39 +710,19 @@
 
                                     >
 
-
-
                                     <span class="tob-custom-checkbox"></span>
-
-
 
                                     <span>No Preservatives</span>
 
-
-
                                 </label>
-
-
 
                             </div>
 
-
-
                         </div>
-
-
 
                     </div>
 
-
-
-
-
-
-
                     {{-- GIFTING --}}
-
-
 
                     <div
 
@@ -1104,8 +732,6 @@
 
                     >
 
-
-
                         <img
 
                             src="{{ asset('images/shop/gifting-cookie-box.jpg') }}"
@@ -1114,11 +740,7 @@
 
                         >
 
-
-
                         <div class="tob-gifting-card-content">
-
-
 
                             <p>
 
@@ -1130,39 +752,19 @@
 
                             </p>
 
-
-
                             <a href="#gifting">
-
-
 
                                 <span>EXPLORE GIFTING</span>
 
-
-
                                 <span>→</span>
-
-
 
                             </a>
 
-
-
                         </div>
-
-
 
                     </div>
 
-
-
                 </aside>
-
-
-
-
-
-
 
                 {{-- =================================================
 
@@ -1170,43 +772,23 @@
 
                 ================================================== --}}
 
-
-
                 <div class="tob-products-area">
-
-
-
-
 
                     <div class="tob-products-header">
 
-
-
                         <div>
-
-
 
                             <h2>Our Cookies</h2>
 
-
-
                             <p id="tobProductCount">
 
-                                16 Delicious Varieties
+                                {{ $totalProducts }} Delicious Varieties
 
                             </p>
 
-
-
                         </div>
 
-
-
-
-
                         <div class="tob-sort-wrap">
-
-
 
                             <label for="tobProductSort">
 
@@ -1214,11 +796,7 @@
 
                             </label>
 
-
-
                             <select id="tobProductSort">
-
-
 
                                 <option value="featured">
 
@@ -1226,15 +804,11 @@
 
                                 </option>
 
-
-
                                 <option value="price-low">
 
                                     Price: Low to High
 
                                 </option>
-
-
 
                                 <option value="price-high">
 
@@ -1242,35 +816,19 @@
 
                                 </option>
 
-
-
                                 <option value="name">
 
                                     Name
 
                                 </option>
 
-
-
                             </select>
-
-
 
                         </div>
 
-
-
                     </div>
 
-
-
-
-
-
-
                     {{-- PRODUCT GRID --}}
-
-
 
                     <div
 
@@ -1280,15 +838,9 @@
 
                     >
 
-
-
                         @foreach($products as $product)
 
-
-
                             @php
-
-
 
                                 /*
 
@@ -1300,8 +852,6 @@
 
                                 */
 
-
-
                                 $productStock = max(
 
                                     0,
@@ -1310,19 +860,17 @@
 
                                 );
 
-
-
                                 $productInStock =
 
                                     $productStock > 0;
 
+                                $productImage = !empty($product['image'])
 
+                                    ? asset($product['image'])
+
+                                    : asset('images/products/cherry-fruit.jpg');
 
                             @endphp
-
-
-
-
 
                             <article
 
@@ -1340,9 +888,9 @@
 
                                 data-slug="{{ $product['slug'] }}"
 
-                                data-image="{{ asset($product['image']) }}"
+                                data-image="{{ $productImage }}"
 
-                                data-number="{{ $product['number'] }}"
+                                data-number="{{ $product['number'] ?? $loop->iteration }}"
 
                                 data-stock="{{ $productStock }}"
 
@@ -1350,17 +898,9 @@
 
                             >
 
-
-
-
-
                                 {{-- PRODUCT IMAGE --}}
 
-
-
                                 <div class="tob-product-image">
-
-
 
                                     <a
 
@@ -1372,11 +912,9 @@
 
                                     >
 
-
-
                                         <img
 
-                                            src="{{ asset($product['image']) }}"
+                                            src="{{ $productImage }}"
 
                                             alt="{{ $product['name'] }}"
 
@@ -1384,23 +922,11 @@
 
                                         >
 
-
-
                                     </a>
-
-
-
-
-
-
 
                                     {{-- STOCK BADGE --}}
 
-
-
                                     @if (!$productInStock)
-
-
 
                                         <span class="tob-shop-stock-badge">
 
@@ -1408,11 +934,7 @@
 
                                         </span>
 
-
-
                                     @elseif ($productStock <= 5)
-
-
 
                                         <span class="tob-shop-stock-badge tob-low-stock-badge">
 
@@ -1420,19 +942,9 @@
 
                                         </span>
 
-
-
                                     @endif
 
-
-
-
-
-
-
                                     {{-- WISHLIST --}}
-
-
 
                                     <button
 
@@ -1462,8 +974,6 @@
 
                                     >
 
-
-
                                         <svg
 
                                             viewBox="0 0 32 32"
@@ -1471,8 +981,6 @@
                                             aria-hidden="true"
 
                                         >
-
-
 
                                             <path
 
@@ -1486,253 +994,145 @@
 
                                             />
 
-
-
                                         </svg>
-
-
 
                                     </button>
 
-
-
                                 </div>
-
-
-
-
-
-
 
                                 {{-- PRODUCT INFO --}}
 
-
-
                                 <div class="tob-product-info">
-
-
 
                                     <h3 class="tob-product-name">
 
-
-
                                         <a href="{{ route('product.show', $product['slug']) }}">
 
-
-
-                                            {{ $product['number'] }}.
+                                            {{ $product['number'] ?? $loop->iteration }}.
 
                                             {{ $product['name'] }}
 
-
-
                                         </a>
-
-
 
                                     </h3>
 
+{{-- PRODUCT PRICE --}}
 
+<div class="tob-product-price">
 
+    ₹{{ number_format((float) $product['price'], 2) }}
 
+</div>
 
-                                    <div class="tob-product-price">
+{{-- WHOLESALE INFORMATION: APPROVED RETAILERS ONLY --}}
 
-                                        ₹{{ $product['price'] }}
+@if(!empty($product['has_wholesale_pricing']))
 
-                                    </div>
+    <div
 
+        class="tob-product-wholesale-info"
 
+        style="
 
+            margin-top: 9px;
 
+            padding: 10px 12px;
 
+            border: 1px solid #ead8c1;
 
+            border-radius: 9px;
+
+            background: #fff8ef;
+
+            font-size: 13px;
+
+            line-height: 1.6;
+
+        "
+
+    >
+
+        <div style="color: #76513a; font-weight: 600;">
+
+            Approved Retailer Rate
+
+        </div>
+
+        <strong style="color: #237747; font-size: 17px;">
+
+            ₹{{ number_format((float) $product['wholesale_price'], 2) }}
+
+        </strong>
+
+        <div style="color: #76513a;">
+
+            Minimum order:
+
+            {{ $product['wholesale_moq'] }}
+
+            {{ (int) $product['wholesale_moq'] === 1 ? 'unit' : 'units' }}
+
+        </div>
+        <small style="display: block; margin-top: 5px; color: #237747; font-weight: 600;">
+            Wholesale pricing applies at checkout when the minimum order quantity is met.
+        </small>
+
+    </div>
+
+@endif
 
                                     {{-- STOCK STATUS --}}
 
-
-
                                     @if ($productInStock)
-
-
 
                                         <div class="tob-shop-stock-status">
 
-
-
                                             <span class="tob-shop-stock-dot"></span>
-
-
 
                                             @if ($productStock <= 5)
 
-
-
                                                 Only {{ $productStock }} Left
-
-
 
                                             @else
 
-
-
                                                 In Stock
-
-
 
                                             @endif
 
-
-
                                         </div>
-
-
 
                                     @else
 
-
-
                                         <div class="tob-shop-stock-status tob-shop-out-of-stock">
-
-
 
                                             <span class="tob-shop-stock-dot"></span>
 
-
-
                                             Out of Stock
-
-
 
                                         </div>
 
-
-
                                     @endif
 
-
-
-
-
-
-
-                                    {{-- ADD TO CART --}}
-
-
-
-                                    <button
-
-                                        type="button"
-
-                                        class="tob-add-cart"
-
-                                        data-add-cart
-
-                                        data-product="{{ $product['name'] }}"
-
-                                        data-stock="{{ $productStock }}"
-
-                                        @disabled(!$productInStock)
-
+                                    {{-- VIEW DETAILS — CART ACTION MOVED TO PRODUCT PAGE --}}
+                                    <a
+                                        href="{{ route('product.show', $product['slug']) }}"
+                                        class="tob-add-cart tob-view-details"
+                                        style="text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px;"
+                                        aria-label="View details of {{ $product['name'] }}"
                                     >
-
-
-
-                                        <svg
-
-                                            viewBox="0 0 32 32"
-
-                                            aria-hidden="true"
-
-                                        >
-
-
-
-                                            <path
-
-                                                d="M6 8h3l2 12h12l3-9H10"
-
-                                                fill="none"
-
-                                                stroke="currentColor"
-
-                                                stroke-width="1.6"
-
-                                                stroke-linejoin="round"
-
-                                            />
-
-
-
-                                            <circle
-
-                                                cx="13"
-
-                                                cy="25"
-
-                                                r="1.5"
-
-                                                fill="currentColor"
-
-                                            />
-
-
-
-                                            <circle
-
-                                                cx="23"
-
-                                                cy="25"
-
-                                                r="1.5"
-
-                                                fill="currentColor"
-
-                                            />
-
-
-
-                                        </svg>
-
-
-
-
-
-                                        <span>
-
-                                            {{ $productInStock ? 'Add to Cart' : 'Out of Stock' }}
-
-                                        </span>
-
-
-
-                                    </button>
-
-
+                                        <span>View Details</span>
+                                        <span aria-hidden="true">→</span>
+                                    </a>
 
                                 </div>
 
-
-
                             </article>
-
-
 
                         @endforeach
 
-
-
                     </div>
 
-
-
-
-
-
-
                     {{-- NO RESULTS --}}
-
-
 
                     <div
 
@@ -1748,27 +1148,13 @@
 
                     </div>
 
-
-
                 </div>
-
-
 
             </div>
 
-
-
         </div>
 
-
-
     </section>
-
-
-
-
-
-
 
     {{-- =========================================================
 
@@ -1776,33 +1162,17 @@
 
     ========================================================== --}}
 
-
-
     <section class="tob-shop-benefits">
-
-
 
         <div class="tob-shop-main-container">
 
-
-
             <div class="tob-benefits-grid">
-
-
-
-
 
                 <div class="tob-benefit-item">
 
-
-
                     <div class="tob-benefit-icon">
 
-
-
                         <svg viewBox="0 0 48 48" aria-hidden="true">
-
-
 
                             <circle
 
@@ -1819,8 +1189,6 @@
                                 stroke-width="1"
 
                             />
-
-
 
                             <path
 
@@ -1834,19 +1202,11 @@
 
                             />
 
-
-
                         </svg>
-
-
 
                     </div>
 
-
-
                     <div>
-
-
 
                         <h3>
 
@@ -1854,39 +1214,21 @@
 
                         </h3>
 
-
-
                         <p>
 
                             Sourced with care
 
                         </p>
 
-
-
                     </div>
-
-
 
                 </div>
 
-
-
-
-
-
-
                 <div class="tob-benefit-item">
-
-
 
                     <div class="tob-benefit-icon">
 
-
-
                         <svg viewBox="0 0 48 48" aria-hidden="true">
-
-
 
                             <circle
 
@@ -1903,8 +1245,6 @@
                                 stroke-width="1"
 
                             />
-
-
 
                             <path
 
@@ -1918,19 +1258,11 @@
 
                             />
 
-
-
                         </svg>
-
-
 
                     </div>
 
-
-
                     <div>
-
-
 
                         <h3>
 
@@ -1938,39 +1270,21 @@
 
                         </h3>
 
-
-
                         <p>
 
                             For everyone to enjoy
 
                         </p>
 
-
-
                     </div>
-
-
 
                 </div>
 
-
-
-
-
-
-
                 <div class="tob-benefit-item">
-
-
 
                     <div class="tob-benefit-icon">
 
-
-
                         <svg viewBox="0 0 48 48" aria-hidden="true">
-
-
 
                             <circle
 
@@ -1987,8 +1301,6 @@
                                 stroke-width="1"
 
                             />
-
-
 
                             <path
 
@@ -2002,19 +1314,11 @@
 
                             />
 
-
-
                         </svg>
-
-
 
                     </div>
 
-
-
                     <div>
-
-
 
                         <h3>
 
@@ -2022,39 +1326,21 @@
 
                         </h3>
 
-
-
                         <p>
 
                             Just real ingredients
 
                         </p>
 
-
-
                     </div>
-
-
 
                 </div>
 
-
-
-
-
-
-
                 <div class="tob-benefit-item">
-
-
 
                     <div class="tob-benefit-icon">
 
-
-
                         <svg viewBox="0 0 48 48" aria-hidden="true">
-
-
 
                             <circle
 
@@ -2072,8 +1358,6 @@
 
                             />
 
-
-
                             <path
 
                                 d="M15 20h18v16H15V20Zm-2-5h22v5H13v-5Zm11 5v16"
@@ -2086,19 +1370,11 @@
 
                             />
 
-
-
                         </svg>
-
-
 
                     </div>
 
-
-
                     <div>
-
-
 
                         <h3>
 
@@ -2106,45 +1382,25 @@
 
                         </h3>
 
-
-
                         <p>
 
                             Freshness guaranteed
 
                         </p>
 
-
-
                     </div>
-
-
 
                 </div>
 
-
-
             </div>
-
-
 
         </div>
 
-
-
     </section>
-
-
 
 </div>
 
-
-
 @endsection
-
-
-
-
 
 @push('scripts')
 

@@ -4,34 +4,31 @@ namespace App\Http\Controllers\Customer;
 
 use App\Http\Controllers\Controller;
 use App\Models\Wishlist;
+use App\Services\ProductCatalog;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class WishlistController extends Controller
 {
-    public function index(Request $request): View
-    {
-        $catalog = config('products', []);
-
+    public function index(
+        Request $request,
+        ProductCatalog $catalog
+    ): View {
         $wishlistRows = Wishlist::query()
             ->where('user_id', $request->user()->id)
             ->latest()
             ->get();
 
+        $catalogProducts = $catalog->findMany(
+            $wishlistRows->pluck('product_slug')->all()
+        );
+
         $products = $wishlistRows
-            ->map(function (Wishlist $wishlist) use ($catalog) {
-
-                if (!isset($catalog[$wishlist->product_slug])) {
-                    return null;
-                }
-
-                $product = $catalog[$wishlist->product_slug];
-
-                $product['slug'] = $wishlist->product_slug;
-
-                return $product;
-            })
+            ->map(
+                fn (Wishlist $wishlist) =>
+                    $catalogProducts[$wishlist->product_slug] ?? null
+            )
             ->filter()
             ->values();
 
@@ -43,19 +40,13 @@ class WishlistController extends Controller
 
     public function toggle(
         Request $request,
-        string $slug
+        string $slug,
+        ProductCatalog $catalog
     ): JsonResponse {
-        $catalog = config('products', []);
-
-        if (!isset($catalog[$slug])) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Product not found.',
-            ], 404);
-        }
+        $userId = $request->user()->id;
 
         $existing = Wishlist::query()
-            ->where('user_id', $request->user()->id)
+            ->where('user_id', $userId)
             ->where('product_slug', $slug)
             ->first();
 
@@ -65,8 +56,15 @@ class WishlistController extends Controller
             $added = false;
             $message = 'Removed from wishlist.';
         } else {
-            Wishlist::create([
-                'user_id' => $request->user()->id,
+            if ($catalog->find($slug) === null) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Product not found.',
+                ], 404);
+            }
+
+            Wishlist::query()->firstOrCreate([
+                'user_id' => $userId,
                 'product_slug' => $slug,
             ]);
 
@@ -75,7 +73,7 @@ class WishlistController extends Controller
         }
 
         $count = Wishlist::query()
-            ->where('user_id', $request->user()->id)
+            ->where('user_id', $userId)
             ->count();
 
         return response()->json([

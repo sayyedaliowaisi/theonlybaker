@@ -46,6 +46,8 @@
     class="tob-cart-page"
     id="tobCartPage"
     data-stock-url="{{ route('cart.check-stock') }}"
+    data-customer-authenticated="{{ auth()->check() ? '1' : '0' }}"
+    data-checkout-url="{{ route('checkout') }}"
 >
     {{-- BREADCRUMB --}}
     <div class="tob-cart-breadcrumb-wrap">
@@ -182,6 +184,8 @@
                         </strong>
                     </div>
 
+                    
+
                     <a
                         href="{{ route('checkout') }}"
                         class="tob-checkout-button"
@@ -297,5 +301,5 @@
 @endsection
 
 @push('scripts')
-    <script src="{{ asset('js/cart.js') }}"></script>
+    <script src="{{ asset('js/cart.js') }}?v=20261019-2" defer></script>
 @endpush

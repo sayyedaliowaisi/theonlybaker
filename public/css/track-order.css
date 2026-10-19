@@ -1,0 +1,389 @@
+
+/* ============================================
+   THE ONLY BAKER - ORDER TRACKING
+============================================ */
+
+.tob-tracking {
+    background: #fffaf2;
+    color: #32170c;
+    min-height: 70vh;
+}
+
+.tob-tracking-container {
+    width: min(100% - 40px, 1100px);
+    margin: 0 auto;
+}
+
+.tob-tracking-hero {
+    padding: 75px 0;
+    background: #32170c;
+    color: #fffaf2;
+    text-align: center;
+}
+
+.tob-tracking-eyebrow {
+    display: block;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #c99a67;
+    margin-bottom: 15px;
+}
+
+.tob-tracking-hero h1 {
+    font-family: Georgia, serif;
+    font-size: clamp(36px, 5vw, 58px);
+    font-weight: 400;
+    margin-bottom: 15px;
+}
+
+.tob-tracking-hero p {
+    font-size: 14px;
+    line-height: 1.8;
+    color: #eadbcd;
+}
+
+.tob-tracking-section {
+    padding: 65px 0 90px;
+}
+
+.tob-tracking-panel,
+.tob-tracking-result {
+    background: #fff;
+    border: 1px solid #eadfd2;
+    border-radius: 12px;
+    padding: 38px;
+    box-shadow: 0 12px 40px rgba(50, 23, 12, .04);
+}
+
+.tob-tracking-panel {
+    max-width: 720px;
+    margin: 0 auto 35px;
+}
+
+.tob-tracking-intro {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.tob-tracking-intro h2,
+.tob-tracking-result h2,
+.tob-tracking-progress h3 {
+    font-family: Georgia, serif;
+    font-weight: 400;
+}
+
+.tob-tracking-intro h2 {
+    font-size: 31px;
+    margin-bottom: 10px;
+}
+
+.tob-tracking-intro p {
+    color: #78695d;
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+.tob-tracking-form {
+    display: grid;
+    gap: 22px;
+}
+
+.tob-tracking-field label {
+    display: block;
+    margin-bottom: 9px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.tob-tracking-field input {
+    display: block;
+    width: 100%;
+    min-height: 50px;
+    padding: 12px 15px;
+    border: 1px solid #dacbbb;
+    border-radius: 6px;
+    background: #fffdf9;
+    color: #32170c;
+    outline: none;
+    font-size: 14px;
+}
+
+.tob-tracking-field input:focus {
+    border-color: #a77a4c;
+    box-shadow: 0 0 0 3px rgba(167, 122, 76, .12);
+}
+
+.tob-tracking-field small {
+    display: block;
+    color: #a13737;
+    margin-top: 7px;
+}
+
+.tob-tracking-submit {
+    min-height: 52px;
+    padding: 13px 20px;
+    border: 0;
+    border-radius: 6px;
+    background: #32170c;
+    color: #fffaf2;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: .7px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 14px;
+    transition: background .2s ease, transform .2s ease;
+}
+
+.tob-tracking-submit:hover {
+    background: #5a321d;
+    transform: translateY(-2px);
+}
+
+.tob-tracking-alert {
+    padding: 14px 18px;
+    background: #fff1ee;
+    color: #923b32;
+    border: 1px solid #efcbc5;
+    border-radius: 6px;
+    font-size: 13px;
+    line-height: 1.6;
+    margin-bottom: 25px;
+}
+
+.tob-tracking-result {
+    margin: 0 auto;
+    max-width: 900px;
+}
+
+.tob-tracking-result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 18px;
+    padding-bottom: 25px;
+    border-bottom: 1px solid #eee3d8;
+}
+
+.tob-tracking-result h2 {
+    font-size: clamp(22px, 3vw, 32px);
+    overflow-wrap: anywhere;
+}
+
+.tob-tracking-status {
+    display: inline-flex;
+    padding: 9px 17px;
+    background: #eaf3e9;
+    color: #28633b;
+    border-radius: 30px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.tob-tracking-status.is-cancelled {
+    background: #fff0ec;
+    color: #a13b30;
+}
+
+.tob-tracking-details {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 20px;
+    padding: 28px 0;
+    border-bottom: 1px solid #eee3d8;
+}
+
+.tob-tracking-details > div {
+    min-width: 0;
+}
+
+.tob-tracking-details span {
+    display: block;
+    font-size: 12px;
+    color: #88766a;
+    margin-bottom: 9px;
+}
+
+.tob-tracking-details strong {
+    display: block;
+    font-size: 14px;
+    overflow-wrap: anywhere;
+}
+
+.tob-tracking-progress {
+    padding: 32px 0;
+}
+
+.tob-tracking-progress h3 {
+    font-size: 26px;
+    margin-bottom: 10px;
+}
+
+.tob-tracking-progress-note {
+    font-size: 12px;
+    color: #88766a;
+    line-height: 1.7;
+}
+
+.tob-tracking-timeline {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    list-style: none;
+    padding: 30px 0 20px;
+    margin: 0;
+}
+
+.tob-tracking-step {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    text-align: center;
+    min-width: 0;
+}
+
+.tob-tracking-step:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    top: 17px;
+    left: calc(50% + 20px);
+    width: calc(100% - 40px);
+    height: 2px;
+    background: #e9ded3;
+}
+
+.tob-tracking-step.is-complete::after {
+    background: #a47b50;
+}
+
+.tob-tracking-step-dot {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #eee6de;
+    color: #765e4e;
+    font-weight: 700;
+    font-size: 13px;
+    z-index: 1;
+}
+
+.tob-tracking-step.is-complete .tob-tracking-step-dot,
+.tob-tracking-step.is-current .tob-tracking-step-dot {
+    background: #32170c;
+    color: #fffaf2;
+}
+
+.tob-tracking-step strong {
+    display: block;
+    font-size: 13px;
+    margin-bottom: 7px;
+}
+
+.tob-tracking-step div span {
+    display: block;
+    color: #8a7a6e;
+    font-size: 11px;
+}
+
+.tob-tracking-cancelled {
+    padding: 30px 0;
+}
+
+.tob-tracking-cancelled h3 {
+    color: #a13b30;
+    margin-bottom: 10px;
+}
+
+.tob-tracking-cancelled p {
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+.tob-tracking-help {
+    text-align: center;
+    padding: 25px 0 0;
+}
+
+.tob-tracking-help p {
+    font-size: 13px;
+    color: #78695d;
+    margin-bottom: 12px;
+}
+
+.tob-tracking-help a {
+    color: #8c5932;
+    font-weight: 700;
+    font-size: 13px;
+    text-decoration: none;
+}
+
+.tob-tracking-help a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 767px) {
+    .tob-tracking-hero {
+        padding: 55px 0;
+    }
+
+    .tob-tracking-section {
+        padding: 35px 0 60px;
+    }
+
+    .tob-tracking-panel,
+    .tob-tracking-result {
+        padding: 24px 18px;
+    }
+
+    .tob-tracking-details {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 24px;
+    }
+
+    .tob-tracking-timeline {
+        grid-template-columns: 1fr;
+        gap: 22px;
+        padding-left: 8px;
+    }
+
+    .tob-tracking-step {
+        flex-direction: row;
+        text-align: left;
+        align-items: center;
+    }
+
+    .tob-tracking-step:not(:last-child)::after {
+        top: 37px;
+        left: 17px;
+        width: 2px;
+        height: calc(100% + 3px);
+    }
+
+    .tob-tracking-step strong {
+        margin-bottom: 4px;
+    }
+}
+
+@media (max-width: 380px) {
+    .tob-tracking-details {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .tob-tracking-submit {
+        transition: none;
+    }
+
+    .tob-tracking-submit:hover {
+        transform: none;
+    }
+}

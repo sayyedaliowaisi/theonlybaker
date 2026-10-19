@@ -28,8 +28,8 @@
             <h1>Email Notifications</h1>
 
             <p>
-                Monitor order confirmation emails,
-                delivery attempts and notification errors.
+                Monitor new order emails, customer status updates,
+                COD payment confirmations and delivery errors.
             </p>
         </div>
 
@@ -41,6 +41,42 @@
         </a>
 
     </div>
+
+    {{-- =====================================================
+         VALIDATION ERRORS
+    ====================================================== --}}
+
+    @if($errors->any())
+
+        <div
+            class="tob-email-investigation-warning"
+            role="alert"
+        >
+            <strong>Please review the following errors:</strong>
+
+            <ul>
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+
+    @endif
+
+    {{-- =====================================================
+         SUCCESS MESSAGE
+    ====================================================== --}}
+
+    @if(session('success'))
+
+        <div
+            class="tob-email-investigation-card"
+            role="status"
+        >
+            <strong>{{ session('success') }}</strong>
+        </div>
+
+    @endif
 
     {{-- =====================================================
          STUCK PROCESSING WARNING
@@ -127,6 +163,7 @@
     >
 
         {{-- SEARCH --}}
+
         <div class="tob-email-filter-field tob-email-search">
 
             <label for="emailSearch">
@@ -139,11 +176,13 @@
                 name="search"
                 value="{{ request('search') }}"
                 placeholder="Order number, name or email"
+                maxlength="150"
             >
 
         </div>
 
         {{-- STATUS FILTER --}}
+
         <div class="tob-email-filter-field">
 
             <label for="emailStatus">
@@ -181,6 +220,7 @@
         </div>
 
         {{-- EMAIL TYPE FILTER --}}
+
         <div class="tob-email-filter-field">
 
             <label for="emailType">
@@ -196,25 +236,31 @@
                     All Types
                 </option>
 
-                <option
-                    value="customer"
-                    @selected(request('type') === 'customer')
-                >
-                    Customer
-                </option>
+                @foreach([
+                    'customer' => 'Customer Order Confirmation',
+                    'admin' => 'Admin New Order',
+                    'order_confirmed' => 'Order Confirmed',
+                    'order_shipped' => 'Order Shipped',
+                    'order_delivered' => 'Order Delivered',
+                    'order_cancelled' => 'Order Cancelled',
+                    'payment_received' => 'Payment Received',
+                ] as $type => $label)
 
-                <option
-                    value="admin"
-                    @selected(request('type') === 'admin')
-                >
-                    Admin
-                </option>
+                    <option
+                        value="{{ $type }}"
+                        @selected(request('type') === $type)
+                    >
+                        {{ $label }}
+                    </option>
+
+                @endforeach
 
             </select>
 
         </div>
 
         {{-- FILTER ACTIONS --}}
+
         <div class="tob-email-filter-actions">
 
             <button type="submit">
@@ -241,7 +287,7 @@
                 <h2>Notification History</h2>
 
                 <p>
-                    {{ $notifications->total() }}
+                    {{ number_format($notifications->total()) }}
                     matching notification(s)
                 </p>
             </div>
@@ -271,11 +317,25 @@
 
                         @php
                             $isStuck = $notification->isStuck();
+
+                            $typeLabels = [
+                                'customer' => 'Customer Order Confirmation',
+                                'admin' => 'Admin New Order',
+                                'order_confirmed' => 'Order Confirmed',
+                                'order_shipped' => 'Order Shipped',
+                                'order_delivered' => 'Order Delivered',
+                                'order_cancelled' => 'Order Cancelled',
+                                'payment_received' => 'Payment Received',
+                            ];
+
+                            $typeLabel = $typeLabels[$notification->type]
+                                ?? ucwords(str_replace('_', ' ', $notification->type));
                         @endphp
 
                         <tr>
 
                             {{-- ORDER DETAILS --}}
+
                             <td>
 
                                 @if($notification->order)
@@ -305,6 +365,7 @@
                             </td>
 
                             {{-- RECIPIENT --}}
+
                             <td>
 
                                 <span class="tob-email-recipient">
@@ -314,15 +375,17 @@
                             </td>
 
                             {{-- EMAIL TYPE --}}
+
                             <td>
 
                                 <span class="tob-email-type">
-                                    {{ ucfirst($notification->type) }}
+                                    {{ $typeLabel }}
                                 </span>
 
                             </td>
 
                             {{-- STATUS --}}
+
                             <td>
 
                                 <span
@@ -352,6 +415,7 @@
                             </td>
 
                             {{-- ATTEMPTS --}}
+
                             <td>
 
                                 <span class="tob-email-attempts">
@@ -361,6 +425,7 @@
                             </td>
 
                             {{-- CREATED DATE --}}
+
                             <td>
 
                                 <span class="tob-email-date">
@@ -374,6 +439,7 @@
                             </td>
 
                             {{-- SENT DATE --}}
+
                             <td>
 
                                 @if($notification->sent_at)
@@ -397,6 +463,7 @@
                             </td>
 
                             {{-- ACTIONS --}}
+
                             <td>
 
                                 <a
@@ -452,6 +519,7 @@
                         </tr>
 
                         {{-- LAST ERROR DETAILS --}}
+
                         @if($notification->last_error)
 
                             <tr class="tob-email-error-row">
@@ -477,6 +545,7 @@
                     @empty
 
                         {{-- EMPTY STATE --}}
+
                         <tr>
 
                             <td colspan="8">
@@ -490,12 +559,21 @@
                                     </h3>
 
                                     <p>
-                                        @if(request()->filled('search') || request()->filled('status') || request()->filled('type'))
+                                        @if(
+                                            request()->filled('search')
+                                            || request()->filled('status')
+                                            || request()->filled('type')
+                                        )
+
                                             No notifications match your current filters.
                                             Try changing or resetting the filters.
+
                                         @else
+
                                             Email notifications will appear here
-                                            after customers place orders.
+                                            after customers place orders or
+                                            order statuses are updated.
+
                                         @endif
                                     </p>
 
@@ -514,6 +592,7 @@
         </div>
 
         {{-- PAGINATION --}}
+
         @if($notifications->hasPages())
 
             <div class="tob-email-pagination">

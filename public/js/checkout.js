@@ -89,12 +89,28 @@ document.addEventListener("DOMContentLoaded", function () {
     let orderSubmitted = false;
     let retryUncertainOrder = false;
     let stockRequestId = 0;
+    let lastVerifiedCartSignature = null;
 
     /*
     |--------------------------------------------------------------------------
     | HELPERS
     |--------------------------------------------------------------------------
     */
+
+    function getCart() {
+        return cartSystem.getCart();
+    }
+
+    function signature(cart) {
+        return JSON.stringify(
+            cart.map(function (item) {
+                return {
+                    slug: item.slug,
+                    quantity: Number(item.quantity)
+                };
+            })
+        );
+    }
 
     function formatPrice(price) {
         return (
@@ -113,9 +129,48 @@ document.addEventListener("DOMContentLoaded", function () {
         return element.innerHTML;
     }
 
-    function getCart() {
-        return cartSystem.getCart();
+    
+    /*
+    |--------------------------------------------------------------------------
+    | VERIFIED WHOLESALE PRICING
+    |--------------------------------------------------------------------------
+    */
+
+    function getWholesaleInfo(item) {
+        if (!stockChecked) {
+            return null;
+        }
+
+        const product = stockData[item.slug];
+
+        
+        if (
+            !product ||
+            product.exists !== true ||
+            product.has_wholesale_pricing !== true ||
+            product.wholesale_checkout_enabled !== true
+        ) {
+            return null;
+        }
+
+
+        const price = Number(product.wholesale_price);
+        const moq = Number(product.wholesale_moq);
+
+        if (
+            product.wholesale_price == null ||
+            !Number.isFinite(price) ||
+            price <= 0 ||
+            !Number.isInteger(moq) ||
+            moq < 1 ||
+            moq > 50
+        ) {
+            return null;
+        }
+
+        return { price, moq };
     }
+
 
     /*
     |--------------------------------------------------------------------------
@@ -133,7 +188,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
             errorBox.id = "tobCheckoutError";
             errorBox.className = "tob-checkout-error";
-            errorBox.setAttribute("role", "alert");
+
+            errorBox.setAttribute(
+                "role",
+                "alert"
+            );
 
             checkoutForm.prepend(errorBox);
         }
@@ -179,17 +238,26 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const product = stockData[item.slug];
 
-        if (!product || !product.exists) {
+        if (!product || product.exists !== true) {
             return (
                 item.name +
                 " is no longer available."
             );
         }
 
-        const available = Math.max(
-            0,
-            Number(product.available) || 0
-        );
+        const latestPrice = Number(product.price);
+
+        if (
+            product.price == null ||
+            !Number.isFinite(latestPrice) ||
+            latestPrice < 0
+        ) {
+            return (
+                "Unable to verify the latest price for " +
+                item.name +
+                "."
+            );
+        }
 
         const quantity = Number(item.quantity);
 
@@ -200,6 +268,19 @@ document.addEventListener("DOMContentLoaded", function () {
         ) {
             return (
                 "Invalid quantity for " +
+                item.name +
+                "."
+            );
+        }
+
+        const available = Number(product.available);
+
+        if (
+            !Number.isInteger(available) ||
+            available < 0
+        ) {
+            return (
+                "Unable to verify stock for " +
                 item.name +
                 "."
             );
@@ -221,6 +302,35 @@ document.addEventListener("DOMContentLoaded", function () {
                 " are currently available."
             );
         }
+
+        
+        
+        const productUsesWholesale =
+            product.has_wholesale_pricing === true ||
+            product.wholesale_checkout_enabled === true;
+
+
+        if (productUsesWholesale) {
+            const wholesale = getWholesaleInfo(item);
+
+            if (!wholesale) {
+                return (
+                    "Unable to verify wholesale pricing for " +
+                    item.name +
+                    ". Please refresh and try again."
+                );
+            }
+
+            if (quantity < wholesale.moq) {
+                return (
+                    item.name +
+                    " requires a minimum wholesale order of " +
+                    wholesale.moq +
+                    " units."
+                );
+            }
+        }
+
 
         return null;
     }
@@ -249,7 +359,10 @@ document.addEventListener("DOMContentLoaded", function () {
     |--------------------------------------------------------------------------
     */
 
-    function setButtonsDisabled(disabled, loading = false) {
+    function setButtonsDisabled(
+        disabled,
+        loading = false
+    ) {
         placeOrderButtons.forEach(function (button) {
             button.disabled = disabled;
 
@@ -314,6 +427,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             setStockWarning("");
             updateButtons();
+
             return;
         }
 
@@ -335,42 +449,54 @@ document.addEventListener("DOMContentLoaded", function () {
         let subtotal = 0;
 
         cart.forEach(function (item) {
-            const verifiedProduct = stockChecked
+            const verified = stockChecked
                 ? stockData[item.slug]
                 : null;
 
             const verifiedPrice = Number(
-                verifiedProduct?.price
+                verified?.price
             );
 
-            const price = (
-                verifiedProduct &&
-                verifiedProduct.exists &&
-                verifiedProduct.price !== null &&
-                Number.isFinite(verifiedPrice)
+            
+            const retailPrice = (
+                verified &&
+                verified.exists === true &&
+                verified.price != null &&
+                Number.isFinite(verifiedPrice) &&
+                verifiedPrice >= 0
             )
                 ? verifiedPrice
                 : Number(item.price) || 0;
 
-            const quantity = Number(item.quantity) || 0;
+            const wholesale = getWholesaleInfo(item);
+
+            const price = wholesale
+                ? wholesale.price
+                : retailPrice;
+
+
+            const quantity =
+                Number(item.quantity) || 0;
+
+            const name =
+                verified?.name || item.name;
+
+            const image =
+                verified?.image || item.image || "";
 
             totalQuantity += quantity;
             subtotal += price * quantity;
 
-            const productName =
-                verifiedProduct?.name || item.name;
-
-            const productImage = item.image;
-
             const product = document.createElement("div");
 
-            product.className = "tob-checkout-product";
+            product.className =
+                "tob-checkout-product";
 
             product.innerHTML = `
                 <div class="tob-checkout-product-image">
                     <img
-                        src="${escapeHtml(productImage)}"
-                        alt="${escapeHtml(productName)}"
+                        src="${escapeHtml(image)}"
+                        alt="${escapeHtml(name)}"
                     >
 
                     <span>
@@ -380,12 +506,32 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 <div class="tob-checkout-product-info">
                     <h3>
-                        ${escapeHtml(productName)}
+                        ${escapeHtml(name)}
                     </h3>
 
                     <small>
                         Qty: ${quantity}
                     </small>
+
+
+                    
+                    ${
+                        wholesale
+                            ? `
+                                <small style="
+                                    display: block;
+                                    margin-top: 5px;
+                                    color: #237747;
+                                    font-weight: 600;
+                                ">
+                                    Wholesale: ${formatPrice(wholesale.price)} / unit
+                                    · MOQ ${wholesale.moq}
+                                </small>
+                            `
+                            : ""
+                    }
+
+
                 </div>
 
                 <strong>
@@ -405,6 +551,12 @@ document.addEventListener("DOMContentLoaded", function () {
                         : " items"
                 );
         }
+
+        /*
+        |--------------------------------------------------------------------------
+        | SHIPPING
+        |--------------------------------------------------------------------------
+        */
 
         const freeShipping = subtotal >= 499;
 
@@ -429,7 +581,8 @@ document.addEventListener("DOMContentLoaded", function () {
             );
         }
 
-        // Shipping charges below ₹499 are not configured.
+        // Shipping below Rs 499 is not configured
+        // in the backend yet.
         if (totalElement) {
             totalElement.textContent =
                 formatPrice(subtotal);
@@ -448,7 +601,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     "Add " +
                     formatPrice(remaining) +
                     " more for FREE shipping. " +
-                    "Shipping charges, if applicable, are calculated separately.";
+                    "Shipping charges, if applicable, " +
+                    "are calculated separately.";
 
                 shippingNote.classList.remove(
                     "unlocked"
@@ -456,18 +610,28 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         }
 
+        /*
+        |--------------------------------------------------------------------------
+        | WARNINGS
+        |--------------------------------------------------------------------------
+        */
+
         if (checkingStock) {
             setStockWarning(
                 "Checking latest product availability..."
             );
+
         } else if (!stockChecked) {
             setStockWarning(
                 retryUncertainOrder
                     ? "Your previous order request may have been received. You can retry safely."
                     : "Unable to verify product availability. Please try again."
             );
+
         } else {
-            setStockWarning(getCartProblem());
+            setStockWarning(
+                getCartProblem()
+            );
         }
 
         updateButtons();
@@ -482,22 +646,23 @@ document.addEventListener("DOMContentLoaded", function () {
     async function verifyStock() {
         const cart = getCart();
 
+        const startingSignature = signature(cart);
+
         const currentRequestId = ++stockRequestId;
 
-        if (cart.length === 0) {
+        lastVerifiedCartSignature = null;
+
+        if (
+            cart.length === 0 ||
+            !stockUrl ||
+            !csrfInput
+        ) {
             stockData = {};
             stockChecked = false;
             checkingStock = false;
 
             renderCheckout();
-            return false;
-        }
 
-        if (!stockUrl || !csrfInput) {
-            stockChecked = false;
-            checkingStock = false;
-
-            renderCheckout();
             return false;
         }
 
@@ -543,34 +708,61 @@ document.addEventListener("DOMContentLoaded", function () {
                 return false;
             }
 
-            stockData = data.products || {};
-            stockChecked = true;
+            if (
+                !data ||
+                !data.products ||
+                typeof data.products !== "object" ||
+                Array.isArray(data.products)
+            ) {
+                throw new Error(
+                    "Invalid stock verification response."
+                );
+            }
 
-            const currentSlugs = [
-                ...new Set(
-                    getCart().map(function (item) {
-                        return item.slug;
-                    })
-                )
-            ];
+            /*
+            |--------------------------------------------------------------------------
+            | REJECT STALE CART
+            |--------------------------------------------------------------------------
+            */
 
-            const sameProducts =
-                currentSlugs.length === slugs.length &&
-                currentSlugs.every(function (slug) {
-                    return slugs.includes(slug);
-                });
-
-            if (!sameProducts) {
+            if (
+                signature(getCart()) !==
+                startingSignature
+            ) {
                 stockChecked = false;
                 return false;
             }
 
-            return getCartProblem() === null;
+            stockData = data.products;
+            stockChecked = true;
+
+            if (getCartProblem()) {
+                return false;
+            }
+
+            lastVerifiedCartSignature =
+                startingSignature;
+
+            /*
+            |--------------------------------------------------------------------------
+            | SYNCHRONIZE LOCAL CART PRICES
+            |--------------------------------------------------------------------------
+            */
+
+            if (
+                !submitting &&
+                typeof cartSystem.syncProducts === "function"
+            ) {
+                cartSystem.syncProducts(stockData);
+            }
+
+            return true;
 
         } catch (error) {
             if (currentRequestId === stockRequestId) {
                 stockData = {};
                 stockChecked = false;
+                lastVerifiedCartSignature = null;
             }
 
             console.error(
@@ -596,19 +788,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function extractErrorMessage(data) {
         if (data && data.errors) {
-            const firstError = Object.values(
+            const first = Object.values(
                 data.errors
             )[0];
 
-            if (Array.isArray(firstError)) {
+            if (Array.isArray(first)) {
                 return (
-                    firstError[0] ||
+                    first[0] ||
                     "Unable to place order."
                 );
             }
 
-            if (firstError) {
-                return String(firstError);
+            if (first) {
+                return String(first);
             }
         }
 
@@ -652,10 +844,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
-            if (
-                !checkoutTokenInput ||
-                !checkoutTokenInput.value
-            ) {
+            if (!checkoutTokenInput?.value) {
                 showError(
                     "Checkout token missing. Please refresh the checkout page."
                 );
@@ -673,9 +862,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 */
 
                 if (!retryUncertainOrder) {
-                    const validStock = await verifyStock();
+                    const valid = await verifyStock();
 
-                    if (!validStock) {
+                    if (!valid) {
                         throw new Error(
                             getCartProblem() ||
                             "Unable to verify stock. Please try again."
@@ -685,12 +874,49 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 /*
                 |--------------------------------------------------------------------------
+                | PREPARE CART
+                |--------------------------------------------------------------------------
+                */
+
+                const cart = getCart().map(
+                    function (item) {
+                        return {
+                            slug: item.slug,
+                            quantity: Number(
+                                item.quantity
+                            )
+                        };
+                    }
+                );
+
+                const invalidCart =
+                    cart.length === 0 ||
+                    cart.length > 50 ||
+                    cart.some(function (item) {
+                        return (
+                            typeof item.slug !== "string" ||
+                            !item.slug.trim() ||
+                            !Number.isInteger(item.quantity) ||
+                            item.quantity < 1 ||
+                            item.quantity > 50
+                        );
+                    });
+
+                if (invalidCart) {
+                    throw new Error(
+                        "Your cart contains invalid items. Please review your cart."
+                    );
+                }
+
+                /*
+                |--------------------------------------------------------------------------
                 | PREPARE PAYLOAD
                 |--------------------------------------------------------------------------
                 */
 
-                const cart = getCart();
-                const formData = new FormData(checkoutForm);
+                const formData = new FormData(
+                    checkoutForm
+                );
 
                 const payload = {
                     checkout_token:
@@ -704,18 +930,16 @@ document.addEventListener("DOMContentLoaded", function () {
                     city: formData.get("city"),
                     state: formData.get("state"),
                     pincode: formData.get("pincode"),
+                    save_address: formData.get("save_address") === "1",
+address_label: formData.get("address_label") || "Home",
+saved_address_id: formData.get("saved_address_choice") === "new"
+    ? null
+    : (formData.get("saved_address_choice") || null),
 
                     payment_method:
                         formData.get("payment_method"),
 
-                    cart: cart.map(function (item) {
-                        return {
-                            slug: item.slug,
-                            quantity: Number(
-                                item.quantity
-                            )
-                        };
-                    })
+                    cart: cart
                 };
 
                 /*
@@ -724,7 +948,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 |--------------------------------------------------------------------------
                 */
 
-                // From here, network failure may leave order status unknown.
+                // Once sent, a network failure may mean
+                // the order was successfully created.
                 retryUncertainOrder = true;
 
                 const response = await fetch(
@@ -748,6 +973,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 try {
                     data = await response.json();
+
                 } catch (error) {
                     throw new Error(
                         "Invalid server response. Please check your order status before trying again."
@@ -755,15 +981,24 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
 
                 if (!response.ok) {
-                    // A clear server error allows fresh validation on retry.
-                    retryUncertainOrder = false;
+                    // 4xx means a definite client error.
+                    // A 5xx may happen after order creation.
+                    if (
+                        response.status >= 400 &&
+                        response.status < 500
+                    ) {
+                        retryUncertainOrder = false;
+                    }
 
                     throw new Error(
                         extractErrorMessage(data)
                     );
                 }
 
-                if (!data.success || !data.redirect) {
+                if (
+                    !data.success ||
+                    !data.redirect
+                ) {
                     throw new Error(
                         "Unable to confirm your order. Please retry using the same checkout page."
                     );
@@ -778,8 +1013,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 retryUncertainOrder = false;
                 orderSubmitted = true;
 
-                // Existing success page clears the cart.
-                window.location.href = data.redirect;
+                window.location.href =
+                    data.redirect;
 
             } catch (error) {
                 showError(
@@ -807,10 +1042,29 @@ document.addEventListener("DOMContentLoaded", function () {
     window.addEventListener(
         "tob-cart-updated",
         function () {
-            if (!submitting && !orderSubmitted) {
-                stockChecked = false;
-                verifyStock();
+            if (
+                submitting ||
+                orderSubmitted
+            ) {
+                return;
             }
+
+            const currentSignature = signature(
+                getCart()
+            );
+
+            if (
+                stockChecked &&
+                currentSignature ===
+                lastVerifiedCartSignature
+            ) {
+                renderCheckout();
+                return;
+            }
+
+            stockChecked = false;
+
+            verifyStock();
         }
     );
 

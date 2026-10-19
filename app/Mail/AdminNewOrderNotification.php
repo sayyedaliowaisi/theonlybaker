@@ -21,14 +21,16 @@ class AdminNewOrderNotification extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'New Order Received - ' . $this->order->order_number
+            subject: 'New Order Received - '
+                . $this->order->order_number
+                . ' | The Only Baker'
         );
     }
 
     public function content(): Content
     {
         return new Content(
-            view: 'emails.admin-new-order'
+            view: 'emails.admin-new-order-notification'
         );
     }
 

@@ -1,0 +1,151 @@
+
+.tob-saved-addresses-section{
+    margin:0 0 26px;
+    font-family:inherit;
+    color:#3f2a21;
+}
+.tob-saved-addresses-heading{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    margin-bottom:14px;
+    flex-wrap:wrap;
+}
+.tob-saved-addresses-heading h3{
+    font-size:16px;
+    font-weight:700;
+    margin:0;
+    color:#4e3022;
+}
+.tob-saved-addresses-heading a{
+    color:#87563a;
+    font-size:12px;
+    font-weight:700;
+    text-decoration:none;
+}
+.tob-saved-addresses-heading a:hover{text-decoration:underline}
+.tob-saved-addresses-list{display:grid;gap:11px}
+.tob-saved-address-option{
+    display:flex!important;
+    align-items:flex-start;
+    gap:12px;
+    border:1px solid #e8dbd1;
+    border-radius:12px;
+    padding:16px;
+    background:#fff;
+    cursor:pointer;
+    transition:border-color .2s,background .2s,box-shadow .2s;
+    min-width:0;
+}
+.tob-saved-address-option:has(input:checked){
+    border-color:#a87858;
+    background:#fffaf5;
+    box-shadow:0 0 0 2px rgba(168,120,88,.1);
+}
+.tob-saved-address-option>input[type=radio]{
+    flex:none;
+    width:17px;
+    height:17px;
+    margin:3px 0 0;
+    accent-color:#714630;
+    cursor:pointer;
+}
+.tob-saved-address-body{
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+    min-width:0;
+    font-size:13px;
+    line-height:1.55;
+}
+.tob-saved-address-top{
+    display:flex;
+    align-items:center;
+    gap:9px;
+    flex-wrap:wrap;
+}
+.tob-saved-address-top strong,.tob-saved-address-new strong{
+    font-size:15px;
+    color:#4d3024;
+}
+.tob-saved-address-badge{
+    background:#f0e0d2;
+    color:#77452d;
+    border-radius:30px;
+    padding:3px 9px;
+    font-size:10px;
+    font-weight:800;
+}
+.tob-saved-address-name{
+    font-weight:600;
+    color:#5a4539;
+}
+.tob-saved-address-line,.tob-saved-address-new small{
+    color:#7a6a60;
+    overflow-wrap:anywhere;
+}
+.tob-saved-address-empty{
+    background:#fbf5ee;
+    border-radius:9px;
+    padding:13px 15px;
+    color:#715a4a;
+    font-size:13px;
+    margin:0 0 15px;
+}
+.tob-save-address-options{
+    margin:18px 0 23px;
+    background:#fbf7f3;
+    border:1px solid #eaded3;
+    border-radius:11px;
+    padding:15px;
+}
+.tob-save-address-options[hidden],
+.tob-save-address-label[hidden]{
+    display:none!important;
+}
+.tob-save-address-checkbox{
+    display:flex!important;
+    align-items:center;
+    gap:10px;
+    cursor:pointer;
+    font-size:13px;
+    font-weight:600;
+    color:#5b4435;
+}
+.tob-save-address-checkbox input{
+    width:17px;
+    height:17px;
+    margin:0;
+    accent-color:#714630;
+}
+.tob-save-address-label{margin-top:15px}
+.tob-save-address-label label{
+    display:block;
+    font-size:12px;
+    font-weight:700;
+    margin-bottom:7px;
+    color:#5b4435;
+}
+.tob-save-address-label input{
+    display:block;
+    box-sizing:border-box;
+    width:100%;
+    max-width:360px;
+    padding:12px 14px;
+    border:1px solid #dfcfc1;
+    border-radius:8px;
+    background:#fff;
+    font:inherit;
+    font-size:14px;
+    outline:none;
+}
+.tob-save-address-label input:focus{
+    border-color:#9a6b50;
+    box-shadow:0 0 0 3px rgba(154,107,80,.12);
+}
+
+@media(max-width:600px){
+    .tob-saved-address-option{padding:13px}
+    .tob-saved-addresses-heading h3{font-size:15px}
+}

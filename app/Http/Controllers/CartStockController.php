@@ -3,15 +3,24 @@
 namespace App\Http\Controllers;
 
 use App\Models\ProductInventory;
+use App\Services\ProductCatalog;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class CartStockController extends Controller
 {
-    public function check(Request $request): JsonResponse
-    {
+    public function check(
+        Request $request,
+        ProductCatalog $catalog
+    ): JsonResponse {
         $validated = $request->validate([
-            'slugs' => ['required', 'array', 'min:1', 'max:50'],
+            'slugs' => [
+                'required',
+                'array',
+                'min:1',
+                'max:50',
+            ],
+
             'slugs.*' => [
                 'required',
                 'string',
@@ -20,39 +29,129 @@ class CartStockController extends Controller
             ],
         ]);
 
-        $catalog = config('products', []);
+        /*
+        |--------------------------------------------------------------------------
+        | GET ACTIVE PRODUCTS
+        |--------------------------------------------------------------------------
+        */
 
-        $knownSlugs = array_values(array_filter(
-            $validated['slugs'],
-            fn ($slug) => array_key_exists($slug, $catalog)
-        ));
+        $productsBySlug = $catalog->findMany(
+            $validated['slugs']
+        );
+
+        /*
+        |--------------------------------------------------------------------------
+        | GET INVENTORY
+        |--------------------------------------------------------------------------
+        */
 
         $stocks = ProductInventory::query()
-            ->whereIn('product_slug', $knownSlugs)
+            ->whereIn(
+                'product_slug',
+                array_keys($productsBySlug)
+            )
             ->pluck('stock', 'product_slug');
+
+        /*
+        |--------------------------------------------------------------------------
+        | CHECK RETAILER APPROVAL
+        |--------------------------------------------------------------------------
+        */
+
+        
+        $user = auth('web')->user();
+
+        $isApprovedRetailer = $user instanceof \App\Models\User
+            && $user->isApprovedRetailer();
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | PREPARE RESPONSE
+        |--------------------------------------------------------------------------
+        */
 
         $products = [];
 
         foreach ($validated['slugs'] as $slug) {
-            $exists = array_key_exists($slug, $catalog);
+            $product = $productsBySlug[$slug] ?? null;
 
-            $product = $exists ? $catalog[$slug] : null;
+            $exists = $product !== null;
+
+            $available = $exists
+                ? max(0, (int) ($stocks[$slug] ?? 0))
+                : 0;
+
+            $retailPrice = $exists
+                ? (float) $product['price']
+                : null;
+
+            $hasWholesalePricing = $exists
+                && $isApprovedRetailer
+                && !empty($product['has_wholesale_pricing']);
+
+            $wholesalePrice = $hasWholesalePricing
+                ? (float) $product['wholesale_price']
+                : null;
+
+            $wholesaleMoq = $hasWholesalePricing
+                ? max(1, (int) $product['wholesale_moq'])
+                : null;
+
+            /*
+|--------------------------------------------------------------------------
+| RETAIL AND WHOLESALE PRICING
+|--------------------------------------------------------------------------
+|
+| Keep the retail price in the existing price field.
+| Eligible retailers receive wholesale pricing separately.
+| Cart and checkout calculate their displayed totals using
+| verified pricing, while the server determines the final price.
+|
+*/
 
             $products[$slug] = [
                 'exists' => $exists,
-                'available' => $exists
-                    ? max(0, (int) ($stocks[$slug] ?? 0))
-                    : 0,
+
+                'available' => $available,
+
                 'name' => $product['name'] ?? null,
-                'price' => $exists
-                    ? (float) $product['price']
+
+                'price' => $retailPrice,
+
+                'image' => $exists && !empty($product['image'])
+                    ? asset($product['image'])
                     : null,
-                'image' => $product['image'] ?? null,
+
+                /*
+                |--------------------------------------------------------------------------
+                | B2B WHOLESALE INFORMATION
+                |--------------------------------------------------------------------------
+                */
+
+                'has_wholesale_pricing' => $hasWholesalePricing,
+
+                'wholesale_price' => $wholesalePrice,
+
+                'wholesale_moq' => $wholesaleMoq,
+
+                
+                /*
+                |--------------------------------------------------------------------------
+                | WHOLESALE CHECKOUT AVAILABILITY
+                |--------------------------------------------------------------------------
+                */
+
+                'wholesale_checkout_enabled' => $hasWholesalePricing
+                    && !empty($product['wholesale_checkout_enabled']),
+
             ];
         }
 
         return response()
-            ->json(['products' => $products])
+            ->json([
+                'products' => $products,
+            ])
             ->header(
                 'Cache-Control',
                 'no-store, no-cache, must-revalidate'

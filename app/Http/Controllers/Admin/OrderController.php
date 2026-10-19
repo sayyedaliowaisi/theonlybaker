@@ -5,14 +5,22 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\ProductInventory;
+use App\Services\OrderEmailService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
+use Throwable;
 
 class OrderController extends Controller
 {
+    /*
+    |--------------------------------------------------------------------------
+    | ORDERS LIST
+    |--------------------------------------------------------------------------
+    */
+
     public function index(Request $request)
     {
         $query = Order::query()
@@ -20,13 +28,11 @@ class OrderController extends Controller
             ->latest();
 
         /*
-        |--------------------------------------------------------------------------
         | SEARCH
-        |--------------------------------------------------------------------------
         */
 
         if ($request->filled('search')) {
-            $search = trim($request->search);
+            $search = trim((string) $request->input('search'));
 
             $query->where(function ($q) use ($search) {
                 $q->where('order_number', 'like', "%{$search}%")
@@ -37,16 +43,24 @@ class OrderController extends Controller
         }
 
         /*
-        |--------------------------------------------------------------------------
         | STATUS FILTER
-        |--------------------------------------------------------------------------
         */
 
         if ($request->filled('status')) {
-            $query->where(
-                'order_status',
-                $request->status
-            );
+            $allowedStatuses = [
+                'pending',
+                'confirmed',
+                'processing',
+                'shipped',
+                'delivered',
+                'cancelled',
+            ];
+
+            $status = $request->input('status');
+
+            if (in_array($status, $allowedStatuses, true)) {
+                $query->where('order_status', $status);
+            }
         }
 
         $orders = $query
@@ -54,9 +68,7 @@ class OrderController extends Controller
             ->withQueryString();
 
         /*
-        |--------------------------------------------------------------------------
         | DASHBOARD COUNTS
-        |--------------------------------------------------------------------------
         */
 
         $stats = [
@@ -72,6 +84,11 @@ class OrderController extends Controller
                 'confirmed'
             )->count(),
 
+            'processing' => Order::where(
+                'order_status',
+                'processing'
+            )->count(),
+
             'shipped' => Order::where(
                 'order_status',
                 'shipped'
@@ -81,6 +98,11 @@ class OrderController extends Controller
                 'order_status',
                 'delivered'
             )->count(),
+
+            'cancelled' => Order::where(
+                'order_status',
+                'cancelled'
+            )->count(),
         ];
 
         return view(
@@ -89,15 +111,70 @@ class OrderController extends Controller
         );
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | ORDER DETAILS
+    |--------------------------------------------------------------------------
+    */
+
     public function show(Order $order)
     {
-        $order->load('items');
+        $order->load([
+            'items',
+            'statusHistory',
+        ]);
+
+        $allowedTransitions = $this->allowedTransitions(
+            $order->order_status
+        );
 
         return view(
             'admin.orders.show',
-            compact('order')
+            compact('order', 'allowedTransitions')
         );
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | ALLOWED STATUS TRANSITIONS
+    |--------------------------------------------------------------------------
+    */
+
+    private function allowedTransitions(string $status): array
+    {
+        $transitions = [
+            'pending' => [
+                'confirmed',
+                'cancelled',
+            ],
+
+            'confirmed' => [
+                'processing',
+                'cancelled',
+            ],
+
+            'processing' => [
+                'shipped',
+                'cancelled',
+            ],
+
+            'shipped' => [
+                'delivered',
+            ],
+
+            'delivered' => [],
+
+            'cancelled' => [],
+        ];
+
+        return $transitions[$status] ?? [];
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | UPDATE ORDER STATUS
+    |--------------------------------------------------------------------------
+    */
 
     public function updateStatus(
         Request $request,
@@ -109,23 +186,37 @@ class OrderController extends Controller
                 Rule::in([
                     'pending',
                     'confirmed',
+                    'processing',
                     'shipped',
                     'delivered',
                     'cancelled',
                 ]),
             ],
+
+            'note' => [
+                'nullable',
+                'string',
+                'max:255',
+            ],
         ]);
 
         $newStatus = $validated['order_status'];
 
-        $message = DB::transaction(function () use (
+        $note = $validated['note'] ?? null;
+
+        /*
+        |--------------------------------------------------------------------------
+        | DATABASE TRANSACTION
+        |--------------------------------------------------------------------------
+        */
+
+        $result = DB::transaction(function () use (
             $order,
-            $newStatus
+            $newStatus,
+            $note
         ) {
             /*
-            |--------------------------------------------------------------------------
-            | LOCK ORDER TO PREVENT CONCURRENT STATUS CHANGES
-            |--------------------------------------------------------------------------
+            | LOCK ORDER
             */
 
             $lockedOrder = Order::query()
@@ -136,43 +227,42 @@ class OrderController extends Controller
             $oldStatus = $lockedOrder->order_status;
 
             /*
-            |--------------------------------------------------------------------------
-            | NO CHANGE
-            |--------------------------------------------------------------------------
+            | NO STATUS CHANGE
             */
 
             if ($oldStatus === $newStatus) {
-                return 'Order already has this status.';
+                return [
+                    'message' => 'Order already has this status.',
+                    'notification_type' => null,
+                ];
             }
 
             /*
-            |--------------------------------------------------------------------------
-            | CANCELLED ORDERS ARE FINAL
-            |--------------------------------------------------------------------------
+            | VALIDATE STATUS TRANSITION
             */
 
-            if ($oldStatus === 'cancelled') {
+            $allowedNextStatuses = $this->allowedTransitions(
+                $oldStatus
+            );
+
+            if (!in_array(
+                $newStatus,
+                $allowedNextStatuses,
+                true
+            )) {
                 throw ValidationException::withMessages([
                     'order_status' =>
-                        'A cancelled order cannot be reactivated.',
+                        'This order status change is not allowed.',
                 ]);
             }
 
             /*
             |--------------------------------------------------------------------------
-            | CANCEL ORDER AND RESTORE STOCK
+            | CANCEL ORDER
             |--------------------------------------------------------------------------
             */
 
             if ($newStatus === 'cancelled') {
-                /*
-                 * Only restore inventory if this order was
-                 * actually deducted from stock previously.
-                 *
-                 * This prevents old orders from incorrectly
-                 * increasing inventory.
-                 */
-
                 $shouldRestoreInventory =
                     $lockedOrder->inventory_deducted_at !== null
                     && $lockedOrder->inventory_restored_at === null;
@@ -181,36 +271,46 @@ class OrderController extends Controller
                     $lockedOrder->load('items');
 
                     /*
-                     * Aggregate quantities by slug so each
-                     * inventory row is updated only once.
-                     */
+                    | Aggregate quantities by product slug.
+                    */
 
                     $quantities = $lockedOrder->items
+                        ->filter(function ($item) {
+                            return !empty($item->product_slug);
+                        })
                         ->groupBy('product_slug')
                         ->map(function ($items) {
-                            return $items->sum('quantity');
+                            return (int) $items->sum('quantity');
                         })
                         ->sortKeys();
 
-                    foreach ($quantities as $slug => $quantity) {
-                        $quantity = (int) $quantity;
+                    /*
+                    | Restore inventory inside same transaction.
+                    */
 
+                    foreach ($quantities as $slug => $quantity) {
                         if ($quantity <= 0) {
                             continue;
                         }
 
                         /*
-                         * Create a missing inventory record
-                         * if necessary, then lock it.
-                         */
+                        | Ensure inventory record exists.
+                        | A missing record starts at zero.
+                        */
 
                         ProductInventory::query()->firstOrCreate(
-                            ['product_slug' => $slug],
+                            [
+                                'product_slug' => $slug,
+                            ],
                             [
                                 'stock' => 0,
                                 'low_stock_threshold' => 5,
                             ]
                         );
+
+                        /*
+                        | Lock inventory before increment.
+                        */
 
                         $inventory = ProductInventory::query()
                             ->where('product_slug', $slug)
@@ -226,12 +326,48 @@ class OrderController extends Controller
                     $lockedOrder->inventory_restored_at = now();
                 }
 
+                /*
+                | Update order status.
+                */
+
                 $lockedOrder->order_status = 'cancelled';
+
                 $lockedOrder->save();
 
-                return $shouldRestoreInventory
-                    ? 'Order cancelled and inventory restored successfully.'
-                    : 'Order cancelled successfully. No inventory restoration was required.';
+                /*
+                | Record cancellation history.
+                |
+                | Admin uses a separate auth guard/table,
+                | while changed_by references users.
+                | Therefore changed_by stays null.
+                */
+
+                $lockedOrder->statusHistory()->create([
+                    'status' => 'cancelled',
+
+                    'note' => $note
+                        ?: 'Order cancelled by admin.',
+
+                    'changed_by' => null,
+                ]);
+
+                /*
+                | Record customer cancellation email.
+                */
+
+                app(OrderEmailService::class)
+                    ->recordCustomerUpdate(
+                        $lockedOrder,
+                        'order_cancelled'
+                    );
+
+                return [
+                    'message' => $shouldRestoreInventory
+                        ? 'Order cancelled and inventory restored successfully.'
+                        : 'Order cancelled successfully. No inventory restoration was required.',
+
+                    'notification_type' => 'order_cancelled',
+                ];
             }
 
             /*
@@ -241,11 +377,233 @@ class OrderController extends Controller
             */
 
             $lockedOrder->order_status = $newStatus;
+
             $lockedOrder->save();
 
-            return 'Order status updated successfully.';
+            /*
+            | Record status history.
+            */
+
+            $defaultNotes = [
+                'confirmed' =>
+                    'Your order has been confirmed.',
+
+                'processing' =>
+                    'Your order is being prepared.',
+
+                'shipped' =>
+                    'Your order has been shipped.',
+
+                'delivered' =>
+                    'Your order has been delivered.',
+            ];
+
+            $lockedOrder->statusHistory()->create([
+                'status' => $newStatus,
+
+                'note' => $note
+                    ?: ($defaultNotes[$newStatus]
+                        ?? 'Order status updated.'),
+
+                'changed_by' => null,
+            ]);
+
+            /*
+            | Preserve existing customer email types.
+            */
+
+            $notificationTypes = [
+                'confirmed' => 'order_confirmed',
+                'shipped' => 'order_shipped',
+                'delivered' => 'order_delivered',
+            ];
+
+            $notificationType =
+                $notificationTypes[$newStatus] ?? null;
+
+            if ($notificationType !== null) {
+                app(OrderEmailService::class)
+                    ->recordCustomerUpdate(
+                        $lockedOrder,
+                        $notificationType
+                    );
+            }
+
+            /*
+            | Processing history is recorded, but no
+            | new email type is introduced until the
+            | email service supports it.
+            */
+
+            return [
+                'message' =>
+                    'Order status updated to ' .
+                    ucfirst($newStatus) .
+                    ' successfully.',
+
+                'notification_type' => $notificationType,
+            ];
+
         }, 3);
 
-        return back()->with('success', $message);
+        /*
+        |--------------------------------------------------------------------------
+        | DISPATCH EMAIL AFTER COMMIT
+        |--------------------------------------------------------------------------
+        */
+
+        if ($result['notification_type'] !== null) {
+            $this->dispatchCustomerNotification(
+                $order,
+                $result['notification_type']
+            );
+        }
+
+        return back()->with(
+            'success',
+            $result['message']
+        );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | MARK COD PAYMENT AS PAID
+    |--------------------------------------------------------------------------
+    */
+
+    public function markAsPaid(
+        Order $order
+    ): RedirectResponse {
+        $result = DB::transaction(function () use ($order) {
+            /*
+            | LOCK ORDER
+            */
+
+            $lockedOrder = Order::query()
+                ->whereKey($order->id)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            /*
+            | VALIDATE PAYMENT METHOD
+            */
+
+            if ($lockedOrder->payment_method !== 'cod') {
+                throw ValidationException::withMessages([
+                    'payment_status' =>
+                        'Only Cash on Delivery payments can be updated here.',
+                ]);
+            }
+
+            /*
+            | BLOCK CANCELLED ORDERS
+            */
+
+            if ($lockedOrder->order_status === 'cancelled') {
+                throw ValidationException::withMessages([
+                    'payment_status' =>
+                        'A cancelled order cannot be marked as paid.',
+                ]);
+            }
+
+            /*
+            | PAYMENT ONLY AFTER DELIVERY
+            */
+
+            if ($lockedOrder->order_status !== 'delivered') {
+                throw ValidationException::withMessages([
+                    'payment_status' =>
+                        'Mark the order as delivered before confirming COD payment.',
+                ]);
+            }
+
+            /*
+            | ALREADY PAID
+            */
+
+            if ($lockedOrder->payment_status === 'paid') {
+                return [
+                    'message' =>
+                        'This order is already marked as paid.',
+
+                    'notification_type' => null,
+                ];
+            }
+
+            /*
+            | VALIDATE CURRENT PAYMENT STATUS
+            */
+
+            if ($lockedOrder->payment_status !== 'pending') {
+                throw ValidationException::withMessages([
+                    'payment_status' =>
+                        'This payment status cannot be updated automatically.',
+                ]);
+            }
+
+            /*
+            | UPDATE PAYMENT STATUS
+            */
+
+            $lockedOrder->payment_status = 'paid';
+
+            $lockedOrder->save();
+
+            /*
+            | RECORD PAYMENT RECEIVED EMAIL
+            */
+
+            app(OrderEmailService::class)
+                ->recordCustomerUpdate(
+                    $lockedOrder,
+                    'payment_received'
+                );
+
+            return [
+                'message' =>
+                    'COD payment marked as paid successfully.',
+
+                'notification_type' => 'payment_received',
+            ];
+
+        }, 3);
+
+        /*
+        | DISPATCH EMAIL AFTER COMMIT
+        */
+
+        if ($result['notification_type'] !== null) {
+            $this->dispatchCustomerNotification(
+                $order,
+                $result['notification_type']
+            );
+        }
+
+        return back()->with(
+            'success',
+            $result['message']
+        );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | DISPATCH CUSTOMER NOTIFICATION
+    |--------------------------------------------------------------------------
+    */
+
+    private function dispatchCustomerNotification(
+        Order $order,
+        string $type
+    ): void {
+        try {
+            app(OrderEmailService::class)
+                ->dispatchCustomerUpdate(
+                    $order,
+                    $type
+                );
+
+        } catch (Throwable $exception) {
+            report($exception);
+        }
     }
 }

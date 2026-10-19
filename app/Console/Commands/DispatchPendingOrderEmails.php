@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Jobs\SendOrderEmailNotification;
 use App\Models\OrderEmailNotification;
 use Illuminate\Console\Command;
+use Throwable;
 
 class DispatchPendingOrderEmails extends Command
 {
@@ -16,39 +17,44 @@ class DispatchPendingOrderEmails extends Command
     public function handle(): int
     {
         $count = 0;
+        $failedDispatches = 0;
 
         OrderEmailNotification::query()
             ->whereNull('sent_at')
+            ->whereNull('send_started_at')
             ->where('attempts', '<', 5)
+            ->whereIn('status', [
+                'pending',
+                'failed',
+            ])
             ->where(function ($query) {
                 $query
-                    ->where(function ($pending) {
-                        $pending
-                            ->where('status', 'pending')
-                            ->whereNull('send_started_at');
-                    })
-                    ->orWhere(function ($failed) {
-                        $failed
-                            ->where('status', 'failed')
-                            ->whereNull('send_started_at')
-                            ->whereNotNull('next_attempt_at')
-                            ->where(
-                                'next_attempt_at',
-                                '<=',
-                                now()
-                            );
-                    });
+                    ->whereNull('next_attempt_at')
+                    ->orWhere(
+                        'next_attempt_at',
+                        '<=',
+                        now()
+                    );
             })
             ->orderBy('id')
             ->chunkById(
                 100,
-                function ($notifications) use (&$count) {
+                function ($notifications) use (
+                    &$count,
+                    &$failedDispatches
+                ) {
                     foreach ($notifications as $notification) {
-                        SendOrderEmailNotification::dispatch(
-                            $notification->id
-                        );
+                        try {
+                            SendOrderEmailNotification::dispatch(
+                                (int) $notification->id
+                            );
 
-                        $count++;
+                            $count++;
+                        } catch (Throwable $exception) {
+                            report($exception);
+
+                            $failedDispatches++;
+                        }
                     }
                 }
             );
@@ -57,6 +63,14 @@ class DispatchPendingOrderEmails extends Command
             "Dispatched {$count} notification job(s)."
         );
 
-        return self::SUCCESS;
+        if ($failedDispatches > 0) {
+            $this->warn(
+                "{$failedDispatches} dispatch(es) failed."
+            );
+        }
+
+        return $failedDispatches > 0
+            ? self::FAILURE
+            : self::SUCCESS;
     }
 }

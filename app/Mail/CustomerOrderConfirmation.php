@@ -21,7 +21,9 @@ class CustomerOrderConfirmation extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Order Confirmed - ' . $this->order->order_number
+            subject: 'Order Received - '
+                . $this->order->order_number
+                . ' | The Only Baker'
         );
     }
 

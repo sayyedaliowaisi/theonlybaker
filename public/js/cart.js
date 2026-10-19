@@ -1,204 +1,481 @@
+
+/* THE ONLY BAKER — CART PAGE */
+/* B2C + APPROVED RETAILER WHOLESALE SUPPORT */
+
 document.addEventListener("DOMContentLoaded", function () {
     "use strict";
 
-    const cartSystem = window.TheOnlyBakerCart;
+    const system = window.TheOnlyBakerCart;
 
-    const cartPage = document.getElementById("tobCartPage");
-    const cartItems = document.getElementById("tobCartItems");
-    const filledCart = document.getElementById("tobFilledCart");
-    const emptyCart = document.getElementById("tobEmptyCart");
-    const subtotalElement = document.getElementById("tobCartSubtotal");
-    const totalElement = document.getElementById("tobCartTotal");
-    const shippingElement = document.getElementById("tobCartShipping");
-    const shippingMessage = document.getElementById("tobShippingMessage");
-    const headingText = document.getElementById("tobCartHeadingText");
-    const clearButton = document.getElementById("tobClearCart");
-    const checkoutButton = document.getElementById("tobCheckoutButton");
-    const stockAlert = document.getElementById("tobCartStockAlert");
+    const page = document.getElementById("tobCartPage");
+    const items = document.getElementById("tobCartItems");
+    const filled = document.getElementById("tobFilledCart");
+    const empty = document.getElementById("tobEmptyCart");
 
-    if (!cartPage || !cartItems || !cartSystem) {
-        return;
-    }
+    const subtotalEl = document.getElementById(
+        "tobCartSubtotal"
+    );
 
-    const stockUrl = cartPage.dataset.stockUrl;
-    const csrfToken = document.querySelector(
+    const totalEl = document.getElementById(
+        "tobCartTotal"
+    );
+
+    const shippingEl = document.getElementById(
+        "tobCartShipping"
+    );
+
+    const shippingMessage = document.getElementById(
+        "tobShippingMessage"
+    );
+
+    const heading = document.getElementById(
+        "tobCartHeadingText"
+    );
+
+    const clear = document.getElementById(
+        "tobClearCart"
+    );
+
+    const checkout = document.getElementById(
+        "tobCheckoutButton"
+    );
+
+    const alertBox = document.getElementById(
+        "tobCartStockAlert"
+    );
+
+    if (!page || !items || !system) return;
+
+    const stockUrl =
+        page.dataset.stockUrl || "/cart/check-stock";
+
+    const csrf = document.querySelector(
         'meta[name="csrf-token"]'
     )?.content;
 
     let stockData = {};
-    let stockChecked = false;
-    let checkingStock = false;
-    let requestNumber = 0;
+    let checked = false;
+    let checking = false;
+    let requestId = 0;
 
-    function formatPrice(price) {
-        return "₹" + Number(price).toLocaleString("en-IN");
-    }
+    const getCart = () => system.getCart();
+
+    /*
+    |--------------------------------------------------------------------------
+    | FORMAT PRICE
+    |--------------------------------------------------------------------------
+    */
+
+    const money = value =>
+        "₹" +
+        Number(value).toLocaleString("en-IN", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+
+    /*
+    |--------------------------------------------------------------------------
+    | ESCAPE HTML
+    |--------------------------------------------------------------------------
+    */
 
     function escapeHtml(value) {
-        const element = document.createElement("div");
-        element.textContent = String(value ?? "");
-        return element.innerHTML;
+        const node = document.createElement("div");
+
+        node.textContent = String(value ?? "");
+
+        return node.innerHTML;
     }
 
-    function getCart() {
-        return cartSystem.getCart();
+    /*
+    |--------------------------------------------------------------------------
+    | AVAILABLE STOCK
+    |--------------------------------------------------------------------------
+    */
+
+    function available(slug) {
+        const item = stockData[slug];
+
+        return item && item.exists === true
+            ? Math.max(
+                0,
+                Number(item.available) || 0
+            )
+            : 0;
     }
 
-    function getStock(slug) {
-        const product = stockData[slug];
+    /*
+    |--------------------------------------------------------------------------
+    | WHOLESALE INFORMATION
+    |--------------------------------------------------------------------------
+    | Wholesale pricing must be verified by the server.
+    | Both eligibility and checkout activation are required.
+    |--------------------------------------------------------------------------
+    */
 
-        if (!product || product.exists === false) {
-            return 0;
-        }
+    function wholesaleInfo(item) {
+        if (!checked) return null;
 
-        return Math.max(0, Number(product.available) || 0);
-    }
+        const latest = stockData[item.slug];
 
-    function getStockProblem(item) {
-        if (!stockChecked) {
+        if (
+            !latest ||
+            latest.exists !== true ||
+            latest.has_wholesale_pricing !== true ||
+            latest.wholesale_checkout_enabled !== true
+        ) {
             return null;
         }
 
-        const product = stockData[item.slug];
+        const price = Number(latest.wholesale_price);
+        const moq = Number(latest.wholesale_moq);
 
-        if (!product || product.exists === false) {
+        if (
+            latest.wholesale_price == null ||
+            latest.wholesale_moq == null ||
+            !Number.isFinite(price) ||
+            price <= 0 ||
+            !Number.isInteger(moq) ||
+            moq < 1
+        ) {
+            return null;
+        }
+
+        return {
+            price,
+            moq
+        };
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | VERIFIED DATABASE PRICE
+    |--------------------------------------------------------------------------
+    */
+
+    function verifiedPrice(item) {
+        const latest = stockData[item.slug];
+
+        if (
+            checked &&
+            latest &&
+            latest.exists === true
+        ) {
+            if (
+                latest.has_wholesale_pricing === true ||
+                latest.wholesale_checkout_enabled === true
+            ) {
+                const wholesale = wholesaleInfo(item);
+
+                if (wholesale) {
+                    return wholesale.price;
+                }
+
+                // Invalid wholesale data must not silently
+                // become an eligible retail checkout.
+                return 0;
+            }
+
+            const price = Number(latest.price);
+
+            if (
+                latest.price != null &&
+                Number.isFinite(price) &&
+                price >= 0
+            ) {
+                return price;
+            }
+        }
+
+        // Display fallback only.
+        // Checkout remains disabled until verification.
+        return Math.max(
+            0,
+            Number(item.price) || 0
+        );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | CART VALIDATION
+    |--------------------------------------------------------------------------
+    */
+
+    function problem(item) {
+        if (!checked) {
+            return "Product availability has not been verified.";
+        }
+
+        const latest = stockData[item.slug];
+
+        if (
+            !latest ||
+            latest.exists !== true
+        ) {
             return "This product is no longer available.";
         }
 
-        const stock = getStock(item.slug);
+        const stock = available(item.slug);
 
         if (stock <= 0) {
             return "Out of Stock";
         }
 
-        if (Number(item.quantity) > stock) {
-            return "Only " + stock + " available. Please reduce quantity.";
+        const quantity = Number(item.quantity);
+
+        if (
+            !Number.isInteger(quantity) ||
+            quantity < 1
+        ) {
+            return "Invalid quantity. Please remove this item.";
         }
 
-        if (Number(item.quantity) > 50) {
+        if (quantity > 50) {
             return "Maximum 50 units allowed per product.";
+        }
+
+        if (quantity > stock) {
+            return (
+                "Only " +
+                stock +
+                " available. Please reduce quantity."
+            );
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | VERIFY RETAIL PRICE
+        |--------------------------------------------------------------------------
+        */
+
+        const retailPrice = Number(latest.price);
+
+        if (
+            latest.price == null ||
+            !Number.isFinite(retailPrice) ||
+            retailPrice < 0
+        ) {
+            return "Unable to verify the latest product price.";
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | VERIFY WHOLESALE PRICE AND MOQ
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            latest.has_wholesale_pricing === true ||
+            latest.wholesale_checkout_enabled === true
+        ) {
+            const wholesale = wholesaleInfo(item);
+
+            if (!wholesale) {
+                return (
+                    "Unable to verify wholesale pricing. " +
+                    "Please refresh and try again."
+                );
+            }
+
+            if (wholesale.moq > 50) {
+                return (
+                    "This product's wholesale MOQ exceeds " +
+                    "the current 50-unit checkout limit."
+                );
+            }
+
+            if (quantity < wholesale.moq) {
+                return (
+                    "Wholesale minimum order is " +
+                    wholesale.moq +
+                    " units. Please increase quantity."
+                );
+            }
         }
 
         return null;
     }
 
-    function setCheckoutEnabled(enabled) {
-        if (!checkoutButton) {
-            return;
-        }
+    /*
+    |--------------------------------------------------------------------------
+    | CHECKOUT BUTTON STATE
+    |--------------------------------------------------------------------------
+    */
 
-        checkoutButton.classList.toggle(
+    function enableCheckout(enabled) {
+        if (!checkout) return;
+
+        checkout.classList.toggle(
             "tob-checkout-disabled",
             !enabled
         );
 
-        checkoutButton.setAttribute(
+        checkout.setAttribute(
             "aria-disabled",
             enabled ? "false" : "true"
         );
 
-        checkoutButton.tabIndex = enabled ? 0 : -1;
+        checkout.tabIndex = enabled ? 0 : -1;
     }
 
-    function updateStockAlert(cart) {
-        if (!stockAlert) {
-            return;
-        }
+    /*
+    |--------------------------------------------------------------------------
+    | STOCK ALERT
+    |--------------------------------------------------------------------------
+    */
+
+    function updateAlert(cart) {
+        if (!alertBox) return;
 
         let message = "";
 
-        if (checkingStock || !stockChecked) {
-            message = "Checking latest product availability...";
+        if (checking || !checked) {
+            message =
+                "Checking latest product availability...";
         } else {
-            const problemCount = cart.filter(
-                item => getStockProblem(item) !== null
+            const issues = cart.filter(
+                item => problem(item)
             ).length;
 
-            if (problemCount > 0) {
+            if (issues) {
                 message =
-                    problemCount +
-                    (problemCount === 1
+                    issues +
+                    (issues === 1
                         ? " product needs attention. "
                         : " products need attention. ") +
-                    "Please adjust the quantities or remove unavailable products before checkout.";
+                    "Please adjust quantities or remove unavailable products before checkout.";
             }
         }
 
-        stockAlert.textContent = message;
-        stockAlert.hidden = message === "";
+        alertBox.textContent = message;
+        alertBox.hidden = !message;
     }
 
-    function renderCart() {
+    /*
+    |--------------------------------------------------------------------------
+    | RENDER CART
+    |--------------------------------------------------------------------------
+    */
+
+    function render() {
         const cart = getCart();
 
-        if (cart.length === 0) {
-            filledCart.hidden = true;
-            emptyCart.hidden = false;
+        /*
+        |--------------------------------------------------------------------------
+        | EMPTY CART
+        |--------------------------------------------------------------------------
+        */
 
-            if (headingText) {
-                headingText.textContent =
+        if (!cart.length) {
+            if (filled) filled.hidden = true;
+            if (empty) empty.hidden = false;
+
+            if (heading) {
+                heading.textContent =
                     "Your cart is waiting for something delicious.";
             }
 
-            if (subtotalElement) subtotalElement.textContent = "₹0";
-            if (totalElement) totalElement.textContent = "₹0";
+            if (subtotalEl) {
+                subtotalEl.textContent = "₹0";
+            }
 
-            if (shippingElement) {
-                shippingElement.textContent =
+            if (totalEl) {
+                totalEl.textContent = "₹0";
+            }
+
+            if (shippingEl) {
+                shippingEl.textContent =
                     "Calculated at checkout";
-                shippingElement.classList.remove("tob-free-shipping");
+
+                shippingEl.classList.remove(
+                    "tob-free-shipping"
+                );
             }
 
             if (shippingMessage) {
                 shippingMessage.textContent =
                     "Add ₹499 more for FREE shipping";
-                shippingMessage.classList.remove("unlocked");
+
+                shippingMessage.classList.remove(
+                    "unlocked"
+                );
             }
 
-            if (stockAlert) stockAlert.hidden = true;
+            if (alertBox) {
+                alertBox.hidden = true;
+            }
 
-            setCheckoutEnabled(false);
-            cartSystem.updateCartCount();
+            enableCheckout(false);
+            system.updateCartCount();
+
             return;
         }
 
-        filledCart.hidden = false;
-        emptyCart.hidden = true;
+        /*
+        |--------------------------------------------------------------------------
+        | FILLED CART
+        |--------------------------------------------------------------------------
+        */
 
-        const totalQuantity = cart.reduce(
-            (total, item) => total + Number(item.quantity || 0),
+        if (filled) filled.hidden = false;
+        if (empty) empty.hidden = true;
+
+        const totalQty = cart.reduce(
+            (sum, item) =>
+                sum + (Number(item.quantity) || 0),
             0
         );
 
-        if (headingText) {
-            headingText.textContent =
-                totalQuantity +
-                (totalQuantity === 1
+        if (heading) {
+            heading.textContent =
+                totalQty +
+                (totalQty === 1
                     ? " delicious item waiting for you."
                     : " delicious items waiting for you.");
         }
 
-        cartItems.innerHTML = "";
+        items.innerHTML = "";
 
-        cart.forEach(function (item) {
-            const quantity = Number(item.quantity) || 0;
-            const itemTotal = Number(item.price) * quantity;
+        /*
+        |--------------------------------------------------------------------------
+        | PRODUCT ROWS
+        |--------------------------------------------------------------------------
+        */
 
-            const problem = getStockProblem(item);
+        cart.forEach(item => {
+            const qty = Number(item.quantity) || 0;
 
-            const available = getStock(item.slug);
+            const price = verifiedPrice(item);
 
-            const plusDisabled =
-                !stockChecked ||
-                checkingStock ||
-                available <= quantity ||
-                quantity >= 50;
+            const wholesale = wholesaleInfo(item);
 
-            const minusDisabled = quantity <= 1;
+            const issue = problem(item);
 
-            const stockNote = problem
-                ? `<p class="tob-cart-stock-note" role="alert">${escapeHtml(problem)}</p>`
-                : "";
+            const latest = checked
+                ? stockData[item.slug]
+                : null;
+
+            const name =
+                latest?.exists === true && latest?.name
+                    ? latest.name
+                    : item.name;
+
+            const image =
+                latest?.exists === true && latest?.image
+                    ? latest.image
+                    : item.image || "";
+
+            const canPlus =
+                checked &&
+                !checking &&
+                available(item.slug) > qty &&
+                qty < 50;
+
+            const canMinus = qty > 1;
+
+            const slugUrl =
+                "/product/" +
+                encodeURIComponent(item.slug);
 
             const row = document.createElement("div");
 
@@ -208,12 +485,12 @@ document.addEventListener("DOMContentLoaded", function () {
             row.innerHTML = `
                 <div class="tob-cart-product">
                     <a
-                        href="/product/${encodeURIComponent(item.slug)}"
+                        href="${slugUrl}"
                         class="tob-cart-product-image"
                     >
                         <img
-                            src="${escapeHtml(item.image)}"
-                            alt="${escapeHtml(item.name)}"
+                            src="${escapeHtml(image)}"
+                            alt="${escapeHtml(name)}"
                         >
                     </a>
 
@@ -223,10 +500,43 @@ document.addEventListener("DOMContentLoaded", function () {
                         </span>
 
                         <h3>
-                            <a href="/product/${encodeURIComponent(item.slug)}">
-                                ${escapeHtml(item.name)}
+                            <a href="${slugUrl}">
+                                ${escapeHtml(name)}
                             </a>
                         </h3>
+
+                        ${
+                            wholesale
+                                ? `
+                                    <div style="
+                                        margin-top: 7px;
+                                        font-size: 12px;
+                                        line-height: 1.6;
+                                        color: #76513a;
+                                    ">
+                                        <strong style="
+                                            color: #237747;
+                                        ">
+                                            Wholesale Rate:
+                                            ${money(wholesale.price)}
+                                        </strong>
+
+                                        <div>
+                                            Minimum Order:
+                                            ${wholesale.moq} units
+                                        </div>
+
+                                        <div style="
+                                            margin-top: 3px;
+                                            color: #777;
+                                            font-size: 11px;
+                                        ">
+                                            Exclusive approved retailer pricing
+                                        </div>
+                                    </div>
+                                `
+                                : ""
+                        }
 
                         <button
                             type="button"
@@ -236,12 +546,38 @@ document.addEventListener("DOMContentLoaded", function () {
                             Remove
                         </button>
 
-                        ${stockNote}
+                        ${
+                            issue
+                                ? `
+                                    <p
+                                        class="tob-cart-stock-note"
+                                        role="alert"
+                                    >
+                                        ${escapeHtml(issue)}
+                                    </p>
+                                `
+                                : ""
+                        }
                     </div>
                 </div>
 
                 <div class="tob-cart-price">
-                    ${formatPrice(item.price)}
+                    ${
+                        wholesale
+                            ? `
+                                <small style="
+                                    display: block;
+                                    color: #237747;
+                                    font-size: 11px;
+                                    margin-bottom: 4px;
+                                ">
+                                    Wholesale Price
+                                </small>
+                            `
+                            : ""
+                    }
+
+                    ${money(price)}
                 </div>
 
                 <div class="tob-cart-quantity">
@@ -249,113 +585,150 @@ document.addEventListener("DOMContentLoaded", function () {
                         type="button"
                         data-cart-minus
                         aria-label="Decrease quantity"
-                        ${minusDisabled ? "disabled" : ""}
+                        ${canMinus ? "" : "disabled"}
                     >
                         −
                     </button>
 
-                    <span>${quantity}</span>
+                    <span>${qty}</span>
 
                     <button
                         type="button"
                         data-cart-plus
                         aria-label="Increase quantity"
-                        ${plusDisabled ? "disabled" : ""}
+                        ${canPlus ? "" : "disabled"}
                     >
                         +
                     </button>
                 </div>
 
                 <div class="tob-cart-item-total">
-                    ${formatPrice(itemTotal)}
+                    ${money(price * qty)}
                 </div>
             `;
 
-            cartItems.appendChild(row);
+            items.appendChild(row);
         });
 
-        const subtotal = cartSystem.getSubtotal();
-        const qualifiesForFreeShipping = subtotal >= 499;
-        const amountForFreeShipping = Math.max(0, 499 - subtotal);
+        /*
+        |--------------------------------------------------------------------------
+        | SUBTOTAL FROM VERIFIED PRICES
+        |--------------------------------------------------------------------------
+        */
 
-        if (subtotalElement) {
-            subtotalElement.textContent = formatPrice(subtotal);
+        const subtotal = cart.reduce(
+            (sum, item) => {
+                return (
+                    sum +
+                    verifiedPrice(item) *
+                        (Number(item.quantity) || 0)
+                );
+            },
+            0
+        );
+
+        const free = subtotal >= 499;
+
+        if (subtotalEl) {
+            subtotalEl.textContent = money(subtotal);
         }
 
-        // Shipping below ₹499 is not assumed.
-        // The displayed total remains the known product subtotal.
-        if (totalElement) {
-            totalElement.textContent = formatPrice(subtotal);
+        // Shipping below ₹499 is not finalized here.
+
+        if (totalEl) {
+            totalEl.textContent = money(subtotal);
         }
 
-        if (shippingElement) {
-            shippingElement.textContent = qualifiesForFreeShipping
+        if (shippingEl) {
+            shippingEl.textContent = free
                 ? "FREE"
                 : "Calculated at checkout";
 
-            shippingElement.classList.toggle(
+            shippingEl.classList.toggle(
                 "tob-free-shipping",
-                qualifiesForFreeShipping
+                free
             );
         }
 
         if (shippingMessage) {
-            shippingMessage.textContent = qualifiesForFreeShipping
+            shippingMessage.textContent = free
                 ? "You unlocked FREE shipping!"
                 : "Add " +
-                  formatPrice(amountForFreeShipping) +
+                  money(Math.max(0, 499 - subtotal)) +
                   " more for FREE shipping";
 
             shippingMessage.classList.toggle(
                 "unlocked",
-                qualifiesForFreeShipping
+                free
             );
         }
 
-        const hasProblems = cart.some(
-            item => getStockProblem(item) !== null
+        /*
+        |--------------------------------------------------------------------------
+        | CHECKOUT VALIDATION
+        |--------------------------------------------------------------------------
+        */
+
+        enableCheckout(
+            checked &&
+            !checking &&
+            cart.every(item => !problem(item))
         );
 
-        setCheckoutEnabled(
-            stockChecked &&
-            !checkingStock &&
-            !hasProblems
-        );
+        updateAlert(cart);
 
-        updateStockAlert(cart);
-        cartSystem.updateCartCount();
+        system.updateCartCount();
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | CHECK LATEST STOCK
+    |--------------------------------------------------------------------------
+    */
 
     async function checkStock() {
         const cart = getCart();
 
-        const currentRequest = ++requestNumber;
+        const id = ++requestId;
 
-        if (cart.length === 0) {
+        if (!cart.length) {
             stockData = {};
-            stockChecked = true;
-            checkingStock = false;
-            renderCart();
+            checked = true;
+            checking = false;
+
+            render();
             return;
         }
 
-        stockChecked = false;
-        checkingStock = true;
-        renderCart();
+        checked = false;
+        checking = true;
 
-        const slugs = [...new Set(cart.map(item => item.slug))];
+        render();
 
         try {
+            if (!csrf) {
+                throw new Error("CSRF token missing.");
+            }
+
             const response = await fetch(stockUrl, {
                 method: "POST",
+
                 headers: {
                     "Content-Type": "application/json",
                     "Accept": "application/json",
-                    "X-CSRF-TOKEN": csrfToken || ""
+                    "X-CSRF-TOKEN": csrf
                 },
+
                 credentials: "same-origin",
                 cache: "no-store",
-                body: JSON.stringify({ slugs })
+
+                body: JSON.stringify({
+                    slugs: [
+                        ...new Set(
+                            cart.map(item => item.slug)
+                        )
+                    ]
+                })
             });
 
             if (!response.ok) {
@@ -364,137 +737,256 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const result = await response.json();
 
-            if (currentRequest !== requestNumber) {
+            if (id !== requestId) return;
+
+            if (
+                !result ||
+                !result.products ||
+                typeof result.products !== "object" ||
+                Array.isArray(result.products)
+            ) {
+                throw new Error(
+                    "Invalid stock verification response."
+                );
+            }
+
+            // Ignore a response if the cart changed
+            // while the request was in progress.
+            const latestCart = getCart();
+
+            const requestedSlugs = [
+                ...new Set(cart.map(item => item.slug))
+            ];
+
+            const currentSlugs = [
+                ...new Set(latestCart.map(item => item.slug))
+            ];
+
+            if (
+                JSON.stringify(requestedSlugs) !==
+                JSON.stringify(currentSlugs)
+            ) {
+                checked = false;
                 return;
             }
 
-            stockData = result.products || {};
-            stockChecked = true;
+            stockData = result.products;
+            checked = true;
+
         } catch (error) {
-            if (currentRequest !== requestNumber) {
-                return;
-            }
+            if (id !== requestId) return;
 
             console.error(error);
 
             stockData = {};
-            stockChecked = false;
-        } finally {
-            if (currentRequest === requestNumber) {
-                checkingStock = false;
-                renderCart();
+            checked = false;
 
-                if (!stockChecked && stockAlert) {
-                    stockAlert.textContent =
+        } finally {
+            if (id === requestId) {
+                checking = false;
+
+                render();
+
+                if (!checked && alertBox) {
+                    alertBox.textContent =
                         "Unable to check stock right now. Please refresh the page and try again.";
-                    stockAlert.hidden = false;
+
+                    alertBox.hidden = false;
                 }
             }
         }
     }
 
-    cartItems.addEventListener("click", function (event) {
-        const plus = event.target.closest("[data-cart-plus]");
-        const minus = event.target.closest("[data-cart-minus]");
-        const remove = event.target.closest("[data-cart-remove]");
+    /*
+    |--------------------------------------------------------------------------
+    | CART BUTTON ACTIONS
+    |--------------------------------------------------------------------------
+    */
+
+    items.addEventListener("click", event => {
+        const plus = event.target.closest(
+            "[data-cart-plus]"
+        );
+
+        const minus = event.target.closest(
+            "[data-cart-minus]"
+        );
+
+        const remove = event.target.closest(
+            "[data-cart-remove]"
+        );
 
         const button = plus || minus || remove;
 
-        if (!button) {
-            return;
-        }
+        if (!button || button.disabled) return;
 
-        const row = button.closest(".tob-cart-item");
-        const slug = row?.dataset.slug;
+        const slug = button.closest(
+            ".tob-cart-item"
+        )?.dataset.slug;
 
-        if (!slug) {
-            return;
-        }
+        if (!slug) return;
+
+        /*
+        |--------------------------------------------------------------------------
+        | REMOVE PRODUCT
+        |--------------------------------------------------------------------------
+        */
 
         if (remove) {
-            cartSystem.removeItem(slug);
+            system.removeItem(slug);
             checkStock();
             return;
         }
 
-        const product = getCart().find(item => item.slug === slug);
+        const item = getCart().find(
+            entry => entry.slug === slug
+        );
 
-        if (!product) {
-            return;
-        }
+        if (!item) return;
 
-        const quantity = Number(product.quantity) || 0;
+        const qty = Number(item.quantity) || 0;
+
+        /*
+        |--------------------------------------------------------------------------
+        | INCREASE QUANTITY
+        |--------------------------------------------------------------------------
+        */
 
         if (plus) {
-            if (!stockChecked || checkingStock) {
-                return;
-            }
-
             if (
-                quantity >= getStock(slug) ||
-                quantity >= 50
+                !checked ||
+                checking ||
+                qty >= available(slug) ||
+                qty >= 50
             ) {
                 return;
             }
 
-            cartSystem.updateQuantity(slug, quantity + 1);
-            renderCart();
+            system.updateQuantity(
+                slug,
+                qty + 1
+            );
+
+            render();
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | DECREASE QUANTITY
+        |--------------------------------------------------------------------------
+        */
+
+        else if (minus && qty > 1) {
+            system.updateQuantity(
+                slug,
+                qty - 1
+            );
+
+            render();
+        }
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | CLEAR CART
+    |--------------------------------------------------------------------------
+    */
+
+    if (clear) {
+        clear.addEventListener("click", () => {
+            system.clearCart();
+            checkStock();
+        });
+    }
+
+    /*
+|--------------------------------------------------------------------------
+| CHECKOUT
+|--------------------------------------------------------------------------
+*/
+
+if (checkout) {
+    checkout.addEventListener("click", async event => {
+        event.preventDefault();
+
+        const cart = getCart();
+
+        if (!cart.length) {
             return;
         }
 
-        if (minus && quantity > 1) {
-            cartSystem.updateQuantity(slug, quantity - 1);
-            renderCart();
+        const isAuthenticated =
+            page.dataset.customerAuthenticated === "1";
+
+        // Guest ko protected checkout route par bhejo.
+        // Laravel auth middleware login par redirect karega.
+        if (!isAuthenticated) {
+            window.location.assign(checkout.href);
+            return;
+        }
+
+        // Logged-in customer ke liye stock verification.
+        if (checking) {
+            return;
+        }
+
+        await checkStock();
+
+        const latestCart = getCart();
+
+        if (
+            latestCart.length > 0 &&
+            checked &&
+            latestCart.every(item => !problem(item))
+        ) {
+            window.location.assign(checkout.href);
         }
     });
+}
 
-    if (clearButton) {
-        clearButton.addEventListener("click", function () {
-            cartSystem.clearCart();
-            checkStock();
-        });
-    }
+    /*
+    |--------------------------------------------------------------------------
+    | CART UPDATE EVENT
+    |--------------------------------------------------------------------------
+    */
 
-    if (checkoutButton) {
-        checkoutButton.addEventListener("click", async function (event) {
-            event.preventDefault();
+    window.addEventListener(
+        "tob-cart-updated",
+        () => system.updateCartCount()
+    );
 
-            if (checkingStock) {
-                return;
+    /*
+    |--------------------------------------------------------------------------
+    | RECHECK ON TAB RETURN
+    |--------------------------------------------------------------------------
+    */
+
+    document.addEventListener(
+        "visibilitychange",
+        () => {
+            if (
+                !document.hidden &&
+                getCart().length
+            ) {
+                checkStock();
             }
+        }
+    );
 
-            // Recheck immediately before leaving the cart page.
-            await checkStock();
-
-            const cart = getCart();
-
-            const valid =
-                cart.length > 0 &&
-                stockChecked &&
-                cart.every(item => getStockProblem(item) === null);
-
-            if (valid) {
-                window.location.href = checkoutButton.href;
+    window.addEventListener(
+        "pageshow",
+        event => {
+            if (event.persisted) {
+                checkStock();
             }
-        });
-    }
-
-    window.addEventListener("tob-cart-updated", function () {
-        cartSystem.updateCartCount();
-    });
-
-    // Recheck when the customer returns to this browser tab.
-    document.addEventListener("visibilitychange", function () {
-        if (!document.hidden && getCart().length > 0) {
-            checkStock();
         }
-    });
+    );
 
-    window.addEventListener("pageshow", function (event) {
-        if (event.persisted) {
-            checkStock();
-        }
-    });
+    /*
+    |--------------------------------------------------------------------------
+    | INITIALIZE
+    |--------------------------------------------------------------------------
+    */
 
     checkStock();
 });

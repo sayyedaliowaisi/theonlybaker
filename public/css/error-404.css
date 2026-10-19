@@ -1,0 +1,349 @@
+
+:root {
+    --error-cream: #fbf7f1;
+    --error-brown: #38271f;
+    --error-gold: #a78055;
+    --error-muted: #77675d;
+    --error-border: #e9dfd4;
+}
+
+.tob-error-page {
+    overflow: hidden;
+}
+
+.tob-error-section {
+    min-height: 75vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 90px 20px 110px;
+    background:
+        radial-gradient(
+            circle at 15% 20%,
+            rgba(167, 128, 85, .08),
+            transparent 30%
+        ),
+        radial-gradient(
+            circle at 85% 80%,
+            rgba(167, 128, 85, .07),
+            transparent 30%
+        ),
+        var(--error-cream);
+}
+
+.tob-error-container {
+    width: 100%;
+    max-width: 850px;
+    margin: auto;
+    text-align: center;
+}
+
+.tob-error-visual {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.tob-error-number {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    color: var(--error-brown);
+    font-family: Georgia, serif;
+    font-size: clamp(125px, 21vw, 250px);
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: -12px;
+}
+
+.tob-error-number > span {
+    display: block;
+}
+
+.tob-cookie-zero {
+    position: relative;
+    width: clamp(105px, 16vw, 190px);
+    height: clamp(105px, 16vw, 190px);
+    flex-shrink: 0;
+    border: 9px solid #b77e48;
+    border-radius: 50%;
+    background:
+        radial-gradient(
+            circle at 35% 30%,
+            #f4c78b,
+            #dca46b 75%
+        );
+    box-shadow:
+        inset -10px -10px 0 rgba(111, 64, 31, .1),
+        0 18px 35px rgba(56, 39, 31, .12);
+    animation: tobCookieFloat 4s ease-in-out infinite;
+}
+
+.tob-chip {
+    position: absolute;
+    display: block;
+    width: 15%;
+    height: 15%;
+    border-radius: 45%;
+    background: #69402b;
+    box-shadow: inset 2px 2px 0 rgba(255, 255, 255, .08);
+}
+
+.chip-one {
+    top: 20%;
+    left: 30%;
+}
+
+.chip-two {
+    top: 42%;
+    right: 18%;
+}
+
+.chip-three {
+    bottom: 18%;
+    left: 30%;
+}
+
+.chip-four {
+    top: 15%;
+    right: 24%;
+    width: 11%;
+    height: 11%;
+}
+
+.chip-five {
+    bottom: 30%;
+    right: 35%;
+    width: 11%;
+    height: 11%;
+}
+
+.chip-six {
+    top: 48%;
+    left: 14%;
+    width: 10%;
+    height: 10%;
+}
+
+.tob-error-sparkle {
+    position: absolute;
+    color: var(--error-gold);
+    animation: tobSparkle 3s ease-in-out infinite;
+}
+
+.sparkle-one {
+    top: 12%;
+    left: 12%;
+    font-size: 26px;
+}
+
+.sparkle-two {
+    top: 35%;
+    right: 10%;
+    font-size: 36px;
+    animation-delay: .7s;
+}
+
+.sparkle-three {
+    bottom: 15%;
+    left: 20%;
+    font-size: 20px;
+    animation-delay: 1.2s;
+}
+
+.sparkle-four {
+    bottom: 10%;
+    right: 18%;
+    font-size: 26px;
+    animation-delay: 1.8s;
+}
+
+.tob-error-eyebrow {
+    display: inline-block;
+    color: var(--error-gold);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 3px;
+}
+
+.tob-error-container h1 {
+    margin: 20px 0;
+    color: var(--error-brown);
+    font-family: Georgia, serif;
+    font-size: clamp(34px, 5vw, 58px);
+    font-weight: 400;
+    line-height: 1.2;
+}
+
+.tob-error-container h1 em {
+    display: block;
+    color: var(--error-gold);
+    font-weight: 400;
+}
+
+.tob-error-description {
+    max-width: 550px;
+    margin: 0 auto;
+    color: var(--error-muted);
+    font-size: 14px;
+    line-height: 2;
+}
+
+.tob-error-actions {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 35px;
+}
+
+.tob-error-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    min-height: 52px;
+    padding: 16px 28px;
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+    transition:
+        background .25s,
+        color .25s,
+        transform .25s;
+}
+
+.tob-error-btn:hover {
+    transform: translateY(-3px);
+}
+
+.tob-error-btn-primary {
+    color: #fff;
+    background: var(--error-brown);
+}
+
+.tob-error-btn-primary:hover {
+    color: #fff;
+    background: #65432e;
+}
+
+.tob-error-btn-outline {
+    color: var(--error-brown);
+    background: transparent;
+    border: 1px solid var(--error-brown);
+}
+
+.tob-error-btn-outline:hover {
+    color: #fff;
+    background: var(--error-brown);
+}
+
+.tob-error-divider {
+    width: 75px;
+    height: 1px;
+    margin: 45px auto 25px;
+    background: var(--error-border);
+}
+
+.tob-error-help {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.tob-error-help > span {
+    color: var(--error-gold);
+    font-size: 20px;
+}
+
+.tob-error-help p {
+    margin: 0;
+    color: var(--error-muted);
+    font-size: 13px;
+}
+
+.tob-error-help a {
+    color: var(--error-brown);
+    font-weight: 700;
+    text-underline-offset: 4px;
+}
+
+@keyframes tobCookieFloat {
+    0%, 100% {
+        transform: translateY(0) rotate(-5deg);
+    }
+
+    50% {
+        transform: translateY(-12px) rotate(5deg);
+    }
+}
+
+@keyframes tobSparkle {
+    0%, 100% {
+        opacity: .4;
+        transform: scale(.8);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1.2);
+    }
+}
+
+@media (max-width: 600px) {
+    .tob-error-section {
+        min-height: 70vh;
+        padding: 75px 18px;
+    }
+
+    .tob-error-number {
+        font-size: clamp(105px, 25vw, 160px);
+        letter-spacing: -7px;
+        gap: 4px;
+    }
+
+    .tob-cookie-zero {
+        width: clamp(90px, 22vw, 125px);
+        height: clamp(90px, 22vw, 125px);
+        border-width: 6px;
+    }
+
+    .tob-error-actions {
+        flex-direction: column;
+        align-items: stretch;
+        max-width: 310px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .tob-error-btn {
+        width: 100%;
+    }
+
+    .tob-error-description {
+        font-size: 13px;
+    }
+
+    .tob-error-help {
+        flex-wrap: wrap;
+    }
+
+    .tob-error-sparkle {
+        font-size: 18px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .tob-cookie-zero,
+    .tob-error-sparkle {
+        animation: none;
+    }
+
+    .tob-error-btn {
+        transition: none;
+    }
+}

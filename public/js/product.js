@@ -1,964 +1,647 @@
+
+/* THE ONLY BAKER — PRODUCT DETAILS */
+
 document.addEventListener("DOMContentLoaded", function () {
+    "use strict";
 
-    const productPage =
-        document.getElementById("tobProductPage");
+    const page = document.getElementById("tobProductPage");
 
-    if (!productPage) {
-        return;
-    }
+    if (!page) return;
 
-
-    /* =====================================================
-       PRODUCT DATA
-    ====================================================== */
+    /* PRODUCT DATA */
 
     const product = {
-        slug: productPage.dataset.productSlug,
-        name: productPage.dataset.productName,
-        price: Number(productPage.dataset.productPrice),
-        image: productPage.dataset.productImage,
+        slug: page.dataset.productSlug,
+        name: page.dataset.productName,
+        price: Number(page.dataset.productPrice),
+        image: page.dataset.productImage,
         stock: Math.max(
             0,
-            Number(productPage.dataset.productStock) || 0
+            Number(page.dataset.productStock) || 0
         )
     };
 
-
     const checkoutUrl =
-        productPage.dataset.checkoutUrl || "/checkout";
+        page.dataset.checkoutUrl || "/checkout";
+
+    const stockUrl =
+        page.dataset.stockUrl || "/cart/check-stock";
+
+    const csrfToken = document.querySelector(
+        'meta[name="csrf-token"]'
+    )?.content;
+
+    
+    const wholesaleEnabled =
+        page.dataset.wholesaleEnabled === "1";
+
+    const rawMoq = Number(page.dataset.wholesaleMoq);
+
+    const wholesaleMoq =
+        wholesaleEnabled &&
+        Number.isInteger(rawMoq) &&
+        rawMoq >= 1 &&
+        rawMoq <= 50
+            ? rawMoq
+            : 1;
+
+    const minQuantity = wholesaleEnabled
+        ? wholesaleMoq
+        : 1;
+
+    const maxQuantity = Math.min(
+        50,
+        Math.max(0, Math.floor(product.stock))
+    );
+
+    const inStock =
+        maxQuantity >= minQuantity &&
+        (!wholesaleEnabled ||
+            (Number.isInteger(rawMoq) &&
+                rawMoq >= 1 &&
+                rawMoq <= 50));
 
 
-    const productInStock =
-        product.stock > 0;
+    const input = document.getElementById(
+        "tobProductQuantity"
+    );
 
+    const minus = document.getElementById(
+        "tobProductMinus"
+    );
 
-    const maximumQuantity =
-        productInStock
-            ? Math.min(20, product.stock)
-            : 0;
+    const plus = document.getElementById(
+        "tobProductPlus"
+    );
 
+    const addButton = document.getElementById(
+        "tobProductAddCart"
+    );
 
+    const buyButton = document.getElementById(
+        "tobProductBuyNow"
+    );
 
-    /* =====================================================
-       QUANTITY
-    ====================================================== */
+    let submitting = false;
 
-    const quantityInput =
-        document.getElementById(
-            "tobProductQuantity"
-        );
-
-
-    const minusButton =
-        document.getElementById(
-            "tobProductMinus"
-        );
-
-
-    const plusButton =
-        document.getElementById(
-            "tobProductPlus"
-        );
-
+    
+    /* QUANTITY */
 
     function getQuantity() {
+        if (!inStock) return 0;
 
-        if (!productInStock) {
-            return 0;
-        }
-
-
-        if (!quantityInput) {
-            return 1;
-        }
-
-
-        let quantity =
-            parseInt(
-                quantityInput.value,
-                10
-            );
-
-
-        if (
-            Number.isNaN(quantity) ||
-            quantity < 1
-        ) {
-            quantity = 1;
-        }
-
+        const value = Number.parseInt(
+            input?.value || String(minQuantity),
+            10
+        );
 
         return Math.min(
-            quantity,
-            maximumQuantity
-        );
-    }
-
-
-    function updateQuantityButtons(quantity) {
-
-        if (!productInStock) {
-
-            if (minusButton) {
-                minusButton.disabled = true;
-            }
-
-            if (plusButton) {
-                plusButton.disabled = true;
-            }
-
-            return;
-        }
-
-
-        if (minusButton) {
-
-            minusButton.disabled =
-                quantity <= 1;
-        }
-
-
-        if (plusButton) {
-
-            plusButton.disabled =
-                quantity >= maximumQuantity;
-        }
-    }
-
-
-    function setQuantity(quantity) {
-
-        if (
-            !quantityInput ||
-            !productInStock
-        ) {
-            return;
-        }
-
-
-        quantity =
+            maxQuantity,
             Math.max(
-                1,
-                Math.min(
-                    maximumQuantity,
-                    Number(quantity) || 1
-                )
-            );
-
-
-        quantityInput.value =
-            quantity;
-
-
-        updateQuantityButtons(
-            quantity
+                minQuantity,
+                Number.isFinite(value)
+                    ? value
+                    : minQuantity
+            )
         );
     }
 
+    function setQuantity(value) {
+        if (!inStock) return;
 
-    /*
-    =====================================================
-    INITIAL QUANTITY STATE
-    =====================================================
-    */
+        const quantity = Math.min(
+            maxQuantity,
+            Math.max(
+                minQuantity,
+                Math.floor(Number(value) || minQuantity)
+            )
+        );
 
-    if (!productInStock) {
-
-        if (quantityInput) {
-            quantityInput.disabled = true;
+        if (input) {
+            input.value = String(quantity);
+            input.min = String(minQuantity);
+            input.max = String(maxQuantity);
         }
 
-
-        if (minusButton) {
-            minusButton.disabled = true;
+        if (minus) {
+            minus.disabled = quantity <= minQuantity;
         }
 
-
-        if (plusButton) {
-            plusButton.disabled = true;
+        if (plus) {
+            plus.disabled = quantity >= maxQuantity;
         }
+    }
 
+
+
+    /* INITIAL QUANTITY STATE */
+
+    if (!inStock) {
+        if (input) input.disabled = true;
+        if (minus) minus.disabled = true;
+        if (plus) plus.disabled = true;
     } else {
+        setQuantity(minQuantity);
+    }
 
-        setQuantity(
-            getQuantity()
+    if (minus) {
+        minus.addEventListener("click", () => {
+            setQuantity(getQuantity() - 1);
+        });
+    }
+
+    if (plus) {
+        plus.addEventListener("click", () => {
+            setQuantity(getQuantity() + 1);
+        });
+    }
+
+    if (input) {
+        input.addEventListener("change", () => {
+            setQuantity(getQuantity());
+        });
+
+        input.addEventListener("blur", () => {
+            setQuantity(getQuantity());
+        });
+    }
+
+    /* BUTTON STATES */
+
+    for (const button of [addButton, buyButton]) {
+        if (!button) continue;
+
+        button.disabled = !inStock;
+
+        button.setAttribute(
+            "aria-disabled",
+            inStock ? "false" : "true"
         );
     }
 
+    /* VERIFY LATEST STOCK FROM LARAVEL */
 
-    /*
-    =====================================================
-    MINUS
-    =====================================================
-    */
+    async function fetchLatest() {
+        if (!csrfToken) {
+            throw new Error("CSRF token missing.");
+        }
 
-    if (minusButton) {
+        const response = await fetch(stockUrl, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                "X-CSRF-TOKEN": csrfToken
+            },
+            credentials: "same-origin",
+            cache: "no-store",
+            body: JSON.stringify({
+                slugs: [product.slug]
+            })
+        });
 
-        minusButton.addEventListener(
-            "click",
-            function () {
+        if (!response.ok) {
+            throw new Error("Stock check failed.");
+        }
 
-                if (!productInStock) {
-                    return;
-                }
+        const result = await response.json();
 
-
-                setQuantity(
-                    getQuantity() - 1
-                );
-            }
-        );
+        return result.products?.[product.slug] || {
+            exists: false,
+            available: 0
+        };
     }
 
+    /* ADD PRODUCT TO CART */
 
-    /*
-    =====================================================
-    PLUS
-    =====================================================
-    */
-
-    if (plusButton) {
-
-        plusButton.addEventListener(
-            "click",
-            function () {
-
-                if (!productInStock) {
-                    return;
-                }
-
-
-                setQuantity(
-                    getQuantity() + 1
-                );
-            }
-        );
-    }
-
-
-
-    /* =====================================================
-       CART
-    ====================================================== */
-
-    function addProductToCart(quantity) {
-
-        /*
-        =====================================================
-        STOCK PROTECTION
-        =====================================================
-        */
-
-        if (!productInStock) {
-
-            console.warn(
-                product.name +
-                " is currently out of stock."
-            );
-
+    async function addProductToCart(quantity) {
+        if (!inStock || !product.slug) {
             return false;
         }
 
+        const system = window.TheOnlyBakerCart;
 
-        quantity =
-            Number(quantity) || 1;
-
-
-        if (
-            quantity < 1 ||
-            quantity > maximumQuantity
-        ) {
-
-            console.warn(
-                "Selected quantity is not available."
-            );
-
-            return false;
-        }
-
-
-        /*
-        =====================================================
-        CART SYSTEM
-        =====================================================
-        */
-
-        if (!window.TheOnlyBakerCart) {
-
+        if (!system) {
             console.error(
                 "Cart system is not loaded."
             );
+            return false;
+        }
+
+        let latest;
+
+        try {
+            latest = await fetchLatest();
+        } catch (error) {
+            console.error(error);
+
+            alert(
+                "Unable to verify availability. Please try again."
+            );
+
+            return false;
+        }
+
+        const available = Math.max(
+            0,
+            Math.floor(Number(latest.available) || 0)
+        );
+
+        if (
+            latest.exists === false ||
+            available <= 0
+        ) {
+            alert(
+                "This product is currently unavailable."
+            );
+
+            return false;
+        }
+
+        quantity = Number(quantity);
+
+        
+        const serverWholesaleEnabled =
+            latest.wholesale_checkout_enabled === true &&
+            latest.has_wholesale_pricing === true;
+
+        const serverMoq = Number(latest.wholesale_moq);
+
+        const latestMinimum =
+            serverWholesaleEnabled &&
+            Number.isInteger(serverMoq) &&
+            serverMoq >= 1 &&
+            serverMoq <= 50
+                ? serverMoq
+                : 1;
+
+        if (
+            wholesaleEnabled !== serverWholesaleEnabled ||
+            (
+                serverWholesaleEnabled &&
+                (
+                    !Number.isInteger(serverMoq) ||
+                    serverMoq < 1 ||
+                    serverMoq > 50 ||
+                    serverMoq !== wholesaleMoq
+                )
+            )
+        ) {
+            alert(
+                "Wholesale availability has changed. Please refresh the page."
+            );
+            return false;
+        }
+
+        if (
+            !Number.isInteger(quantity) ||
+            quantity < latestMinimum ||
+            quantity > Math.min(50, available)
+        ) {
+            alert(
+                "Please select an available quantity" +
+                (serverWholesaleEnabled
+                    ? " of at least " + latestMinimum + " units."
+                    : ".")
+            );
 
             return false;
         }
 
 
-        const cart =
-            window.TheOnlyBakerCart
-                .getCart();
+        const existing = system
+            .getCart()
+            .find(item => item.slug === product.slug);
 
+        const oldQuantity = Math.max(
+            0,
+            Number(existing?.quantity) || 0
+        );
 
-        const existing =
-            cart.find(
-                function (item) {
-
-                    return (
-                        item.slug ===
-                        product.slug
-                    );
-                }
+        if (
+    oldQuantity + quantity > Math.min(available, 50)
+) {
+            alert(
+                "Only " +
+                Math.min(available, 50) +
+                " unit(s) are available for this product in your cart."
             );
 
+            return false;
+        }
 
-        /*
-        =====================================================
-        EXISTING PRODUCT
-        =====================================================
-        */
+        const latestPrice = Number(latest.price);
+
+        const item = {
+            slug: product.slug,
+            name: latest.name || product.name,
+            price:
+                Number.isFinite(latestPrice) &&
+                latestPrice >= 0
+                    ? latestPrice
+                    : product.price,
+            image: product.image
+        };
 
         if (existing) {
-
-            const existingQuantity =
-                Number(
-                    existing.quantity
-                ) || 0;
-
-
-            const newQuantity =
-                existingQuantity +
-                quantity;
-
-
-            /*
-            =================================================
-            DO NOT EXCEED AVAILABLE STOCK
-            =================================================
-            */
-
-            if (
-                newQuantity >
-                product.stock
-            ) {
-
-                console.warn(
-                    "Only " +
-                    product.stock +
-                    " unit(s) of " +
-                    product.name +
-                    " are currently available."
-                );
-
-                return false;
-            }
-
-
-            window.TheOnlyBakerCart
-                .updateQuantity(
-                    product.slug,
-                    newQuantity
-                );
-
+            system.updateQuantity(
+                product.slug,
+                oldQuantity + quantity
+            );
         } else {
-
-            /*
-            =================================================
-            NEW PRODUCT
-            =================================================
-            */
-
-            window.TheOnlyBakerCart
-                .addItem({
-                    slug: product.slug,
-                    name: product.name,
-                    price: product.price,
-                    image: product.image
-                });
-
+            system.addItem(item);
 
             if (quantity > 1) {
-
-                window.TheOnlyBakerCart
-                    .updateQuantity(
-                        product.slug,
-                        quantity
-                    );
+                system.updateQuantity(
+                    product.slug,
+                    quantity
+                );
             }
         }
 
-
-        window.TheOnlyBakerCart
-            .updateCartCount();
-
+        system.updateCartCount();
 
         return true;
     }
 
+    /* LOADING STATE */
 
+    function setBusy(busy) {
+        submitting = busy;
 
-    /* =====================================================
-       ADD TO CART
-    ====================================================== */
+        for (const button of [addButton, buyButton]) {
+            if (!button) continue;
 
-    const addCartButton =
-        document.getElementById(
-            "tobProductAddCart"
-        );
+            button.disabled = busy || !inStock;
 
-
-    /*
-    =====================================================
-    FORCE BUTTON STATE FROM STOCK
-    =====================================================
-    */
-
-    if (addCartButton) {
-
-        addCartButton.disabled =
-            !productInStock;
-
-
-        addCartButton.setAttribute(
-            "aria-disabled",
-            productInStock
-                ? "false"
-                : "true"
-        );
-    }
-
-
-    if (
-        addCartButton &&
-        productInStock
-    ) {
-
-        addCartButton.addEventListener(
-            "click",
-            function () {
-
-                /*
-                =============================================
-                SECOND STOCK GUARD
-                =============================================
-                */
-
-                if (!productInStock) {
-                    return;
-                }
-
-
-                const success =
-                    addProductToCart(
-                        getQuantity()
-                    );
-
-
-                if (!success) {
-                    return;
-                }
-
-
-                const text =
-                    addCartButton
-                        .querySelector("span");
-
-
-                const originalText =
-                    text
-                        ? text.textContent
-                        : "ADD TO CART";
-
-
-                addCartButton.classList.add(
-                    "added"
-                );
-
-
-                if (text) {
-
-                    text.textContent =
-                        "ADDED TO CART";
-                }
-
-
-                window.setTimeout(
-                    function () {
-
-                        addCartButton
-                            .classList.remove(
-                                "added"
-                            );
-
-
-                        if (text) {
-
-                            text.textContent =
-                                originalText;
-                        }
-
-                    },
-                    1400
-                );
-            }
-        );
-    }
-
-
-
-    /* =====================================================
-       BUY NOW
-    ====================================================== */
-
-    const buyNowButton =
-        document.getElementById(
-            "tobProductBuyNow"
-        );
-
-
-    /*
-    =====================================================
-    FORCE BUTTON STATE FROM STOCK
-    =====================================================
-    */
-
-    if (buyNowButton) {
-
-        buyNowButton.disabled =
-            !productInStock;
-
-
-        buyNowButton.setAttribute(
-            "aria-disabled",
-            productInStock
-                ? "false"
-                : "true"
-        );
-    }
-
-
-    if (
-        buyNowButton &&
-        productInStock
-    ) {
-
-        buyNowButton.addEventListener(
-            "click",
-            function () {
-
-                /*
-                =============================================
-                SECOND STOCK GUARD
-                =============================================
-                */
-
-                if (!productInStock) {
-                    return;
-                }
-
-
-                const success =
-                    addProductToCart(
-                        getQuantity()
-                    );
-
-
-                if (!success) {
-                    return;
-                }
-
-
-                window.location.href =
-                    checkoutUrl;
-            }
-        );
-    }
-
-
-
-    /* =====================================================
-       PRODUCT GALLERY
-    ====================================================== */
-
-    const mainImage =
-        document.querySelector(
-            "[data-product-main-image]"
-        );
-
-
-    const thumbnails =
-        document.querySelectorAll(
-            "[data-product-thumbnail]"
-        );
-
-
-    thumbnails.forEach(
-        function (thumbnail) {
-
-            thumbnail.addEventListener(
-                "click",
-                function () {
-
-                    if (!mainImage) {
-                        return;
-                    }
-
-
-                    const imageUrl =
-                        thumbnail.dataset.image;
-
-
-                    if (!imageUrl) {
-                        return;
-                    }
-
-
-                    mainImage.style.opacity =
-                        "0";
-
-
-                    window.setTimeout(
-                        function () {
-
-                            mainImage.src =
-                                imageUrl;
-
-
-                            mainImage.style.opacity =
-                                "1";
-                        },
-                        130
-                    );
-
-
-                    thumbnails.forEach(
-                        function (item) {
-
-                            item.classList.remove(
-                                "active"
-                            );
-                        }
-                    );
-
-
-                    thumbnail.classList.add(
-                        "active"
-                    );
-                }
+            button.setAttribute(
+                "aria-disabled",
+                button.disabled ? "true" : "false"
             );
         }
+    }
+
+    /* ADD TO CART BUTTON */
+
+    if (addButton && inStock) {
+        addButton.addEventListener(
+            "click",
+            async () => {
+                if (submitting) return;
+
+                setBusy(true);
+
+                try {
+                    const success =
+                        await addProductToCart(
+                            getQuantity()
+                        );
+
+                    if (!success) return;
+
+                    const label =
+                        addButton.querySelector("span");
+
+                    const original =
+                        label?.textContent || "ADD TO CART";
+
+                    addButton.classList.add("added");
+
+                    if (label) {
+                        label.textContent =
+                            "ADDED TO CART";
+                    }
+
+                    window.setTimeout(() => {
+                        addButton.classList.remove(
+                            "added"
+                        );
+
+                        if (label) {
+                            label.textContent = original;
+                        }
+                    }, 1400);
+                } finally {
+                    setBusy(false);
+                }
+            }
+        );
+    }
+
+    /* BUY NOW BUTTON */
+
+    if (buyButton && inStock) {
+        buyButton.addEventListener(
+            "click",
+            async () => {
+                if (submitting) return;
+
+                setBusy(true);
+
+                try {
+                    const success =
+                        await addProductToCart(
+                            getQuantity()
+                        );
+
+                    if (success) {
+                        window.location.href =
+                            checkoutUrl;
+                    }
+                } finally {
+                    setBusy(false);
+                }
+            }
+        );
+    }
+
+    /* PRODUCT GALLERY */
+
+    const mainImage = document.querySelector(
+        "[data-product-main-image]"
     );
 
+    const thumbnails = document.querySelectorAll(
+        "[data-product-thumbnail]"
+    );
 
+    thumbnails.forEach(thumb => {
+        thumb.addEventListener("click", () => {
+            if (
+                !mainImage ||
+                !thumb.dataset.image
+            ) {
+                return;
+            }
 
-    /* =====================================================
-       ZOOM
-    ====================================================== */
+            mainImage.style.opacity = "0";
 
-    const zoomButton =
-        document.querySelector(
-            ".tob-product-zoom"
-        );
+            window.setTimeout(() => {
+                mainImage.src = thumb.dataset.image;
+                mainImage.style.opacity = "1";
+            }, 130);
 
+            thumbnails.forEach(item => {
+                item.classList.remove("active");
+            });
 
-    if (
-        zoomButton &&
-        mainImage
-    ) {
+            thumb.classList.add("active");
+        });
+    });
 
-        const modal =
-            document.createElement(
-                "div"
-            );
+    /* PRODUCT IMAGE ZOOM */
 
+    const zoomButton = document.querySelector(
+        ".tob-product-zoom"
+    );
+
+    if (zoomButton && mainImage) {
+        const modal = document.createElement("div");
 
         modal.className =
             "tob-product-zoom-modal";
 
-
         modal.innerHTML = `
-            <div
-                class="tob-product-zoom-backdrop"
-            ></div>
+            <div class="tob-product-zoom-backdrop"></div>
 
-            <div
-                class="tob-product-zoom-content"
-            >
+            <div class="tob-product-zoom-content">
                 <button
                     type="button"
                     class="tob-product-zoom-close"
                     aria-label="Close image"
-                >
-                    ×
-                </button>
+                >×</button>
 
-                <img
-                    src=""
-                    alt="${product.name}"
-                >
+                <img src="" alt="">
             </div>
         `;
 
+        document.body.appendChild(modal);
 
-        document.body.appendChild(
-            modal
-        );
+        const image = modal.querySelector("img");
 
+        const close = () => {
+            modal.classList.remove("active");
+            document.body.style.overflow = "";
+        };
 
-        const modalImage =
-            modal.querySelector("img");
+        zoomButton.addEventListener("click", () => {
+            image.src = mainImage.src;
 
+            image.alt =
+                product.name || "Product image";
 
-        const closeButton =
-            modal.querySelector(
-                ".tob-product-zoom-close"
-            );
+            modal.classList.add("active");
 
+            document.body.style.overflow = "hidden";
+        });
 
-        const backdrop =
-            modal.querySelector(
-                ".tob-product-zoom-backdrop"
-            );
+        modal
+            .querySelector(".tob-product-zoom-close")
+            .addEventListener("click", close);
 
-
-        function openZoom() {
-
-            if (!modalImage) {
-                return;
-            }
-
-
-            modalImage.src =
-                mainImage.src;
-
-
-            modal.classList.add(
-                "active"
-            );
-
-
-            document.body.style.overflow =
-                "hidden";
-        }
-
-
-        function closeZoom() {
-
-            modal.classList.remove(
-                "active"
-            );
-
-
-            document.body.style.overflow =
-                "";
-        }
-
-
-        zoomButton.addEventListener(
-            "click",
-            openZoom
-        );
-
-
-        if (closeButton) {
-
-            closeButton.addEventListener(
-                "click",
-                closeZoom
-            );
-        }
-
-
-        if (backdrop) {
-
-            backdrop.addEventListener(
-                "click",
-                closeZoom
-            );
-        }
-
+        modal
+            .querySelector(".tob-product-zoom-backdrop")
+            .addEventListener("click", close);
 
         document.addEventListener(
             "keydown",
-            function (event) {
-
+            event => {
                 if (
                     event.key === "Escape" &&
-                    modal.classList.contains(
-                        "active"
-                    )
+                    modal.classList.contains("active")
                 ) {
-
-                    closeZoom();
+                    close();
                 }
             }
         );
     }
 
+    /* ACCORDIONS */
 
+    const accordions = document.querySelectorAll(
+        ".tob-product-accordion"
+    );
 
-    /* =====================================================
-       ACCORDIONS
-    ====================================================== */
-
-    const accordions =
-        document.querySelectorAll(
-            ".tob-product-accordion"
+    accordions.forEach(accordion => {
+        const trigger = accordion.querySelector(
+            ".tob-accordion-trigger"
         );
 
+        if (!trigger) return;
 
-    accordions.forEach(
-        function (accordion) {
+        trigger.addEventListener("click", () => {
+            const open =
+                accordion.classList.contains("active");
 
-            const trigger =
-                accordion.querySelector(
+            accordions.forEach(item => {
+                item.classList.remove("active");
+
+                const itemTrigger = item.querySelector(
                     ".tob-accordion-trigger"
                 );
 
-
-            const icon =
-                accordion.querySelector(
+                const icon = item.querySelector(
                     ".tob-accordion-icon"
                 );
 
-
-            if (!trigger) {
-                return;
-            }
-
-
-            trigger.addEventListener(
-                "click",
-                function () {
-
-                    const wasActive =
-                        accordion.classList
-                            .contains(
-                                "active"
-                            );
-
-
-                    accordions.forEach(
-                        function (item) {
-
-                            item.classList.remove(
-                                "active"
-                            );
-
-
-                            const itemTrigger =
-                                item.querySelector(
-                                    ".tob-accordion-trigger"
-                                );
-
-
-                            const itemIcon =
-                                item.querySelector(
-                                    ".tob-accordion-icon"
-                                );
-
-
-                            if (itemTrigger) {
-
-                                itemTrigger.setAttribute(
-                                    "aria-expanded",
-                                    "false"
-                                );
-                            }
-
-
-                            if (itemIcon) {
-
-                                itemIcon.textContent =
-                                    "+";
-                            }
-                        }
+                if (itemTrigger) {
+                    itemTrigger.setAttribute(
+                        "aria-expanded",
+                        "false"
                     );
-
-
-                    if (!wasActive) {
-
-                        accordion.classList.add(
-                            "active"
-                        );
-
-
-                        trigger.setAttribute(
-                            "aria-expanded",
-                            "true"
-                        );
-
-
-                        if (icon) {
-
-                            icon.textContent =
-                                "−";
-                        }
-                    }
                 }
-            );
-        }
+
+                if (icon) {
+                    icon.textContent = "+";
+                }
+            });
+
+            if (!open) {
+                accordion.classList.add("active");
+
+                trigger.setAttribute(
+                    "aria-expanded",
+                    "true"
+                );
+
+                const icon = accordion.querySelector(
+                    ".tob-accordion-icon"
+                );
+
+                if (icon) {
+                    icon.textContent = "−";
+                }
+            }
+        });
+    });
+
+    /* RELATED PRODUCTS SLIDER */
+
+    const track = document.getElementById(
+        "tob-related-track"
     );
 
+    if (track) {
+        document
+            .querySelectorAll(".tob-related-arrow")
+            .forEach(button => {
+                button.addEventListener("click", () => {
+                    const card = track.querySelector(
+                        ".tob-related-card"
+                    );
 
+                    const amount = card
+                        ? card.getBoundingClientRect().width + 20
+                        : 280;
 
-    /* =====================================================
-       RELATED PRODUCTS SLIDER
-    ====================================================== */
-
-    const relatedTrack =
-        document.getElementById(
-            "tob-related-track"
-        );
-
-
-    const relatedArrows =
-        document.querySelectorAll(
-            ".tob-related-arrow"
-        );
-
-
-    if (
-        relatedTrack &&
-        relatedArrows.length
-    ) {
-
-        relatedArrows.forEach(
-            function (button) {
-
-                button.addEventListener(
-                    "click",
-                    function () {
-
-                        const direction =
-                            button.dataset.direction;
-
-
-                        const card =
-                            relatedTrack.querySelector(
-                                ".tob-related-card"
-                            );
-
-
-                        const amount =
-                            card
-                                ? card.getBoundingClientRect()
-                                    .width + 20
-                                : 280;
-
-
-                        relatedTrack.scrollBy({
-
-                            left:
-                                direction === "left"
-                                    ? -amount
-                                    : amount,
-
-                            behavior:
-                                "smooth"
-                        });
-                    }
-                );
-            }
-        );
+                    track.scrollBy({
+                        left:
+                            button.dataset.direction === "left"
+                                ? -amount
+                                : amount,
+                        behavior: "smooth"
+                    });
+                });
+            });
     }
-
 });

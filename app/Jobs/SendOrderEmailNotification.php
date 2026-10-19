@@ -10,6 +10,8 @@ use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
+use App\Mail\CustomerOrderUpdate;
+
 use Throwable;
 
 class SendOrderEmailNotification implements ShouldQueue
@@ -48,6 +50,10 @@ class SendOrderEmailNotification implements ShouldQueue
             if ($notification->sent_at !== null) {
                 return false;
             }
+
+            if ($notification->send_started_at !== null) {
+    return false;
+}
 
             if (!in_array(
                 $notification->status,
@@ -112,14 +118,33 @@ class SendOrderEmailNotification implements ShouldQueue
             }
 
             if ($notification->type === 'customer') {
-                $mailable = new CustomerOrderConfirmation($order);
-            } elseif ($notification->type === 'admin') {
-                $mailable = new AdminNewOrderNotification($order);
-            } else {
-                throw new \RuntimeException(
-                    'Unknown notification type.'
-                );
-            }
+
+    $mailable = new CustomerOrderConfirmation($order);
+
+} elseif ($notification->type === 'admin') {
+
+    $mailable = new AdminNewOrderNotification($order);
+
+} elseif (in_array($notification->type, [
+    'order_confirmed',
+    'order_shipped',
+    'order_delivered',
+    'order_cancelled',
+    'payment_received',
+], true)) {
+
+    $mailable = new CustomerOrderUpdate(
+        $order,
+        $notification->type
+    );
+
+} else {
+
+    throw new \RuntimeException(
+        'Unknown notification type: ' . $notification->type
+    );
+
+}
 
             /*
             |--------------------------------------------------------------------------
