@@ -617,7 +617,7 @@
     background: #f8f1eb;
 }
 
-#tob-product-quantity {
+#tobProductQuantity {
     width: 100%;
 
     border: 0;
@@ -638,8 +638,8 @@
     -moz-appearance: textfield;
 }
 
-#tob-product-quantity::-webkit-inner-spin-button,
-#tob-product-quantity::-webkit-outer-spin-button {
+#tobProductQuantity::-webkit-inner-spin-button,
+#tobProductQuantity::-webkit-outer-spin-button {
     margin: 0;
 
     -webkit-appearance: none;
@@ -1644,4 +1644,137 @@
     cursor: not-allowed;
 
     pointer-events: none;
+}
+
+
+
+/* =========================================================
+   PRODUCT GALLERY — VERTICAL THUMBNAIL SCROLL
+========================================================= */
+
+.tob-product-thumbnails {
+    width: 100%;
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    gap: 8px;
+    overflow: hidden;
+}
+
+.tob-product-thumbnail-scroll {
+    width: 100%;
+    max-height: 450px;
+    min-height: 0;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    gap: 10px;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scroll-behavior: smooth;
+}
+
+.tob-product-thumbnail-scroll .tob-product-thumb {
+    flex: 0 0 auto;
+}
+
+.tob-gallery-scroll-btn {
+    flex: 0 0 auto;
+
+    width: 36px;
+    height: 27px;
+
+    border: 1px solid #ead8c1;
+    border-radius: 7px;
+
+    background: #fff8ef;
+    color: #593728;
+
+    font-size: 17px;
+    cursor: pointer;
+}
+
+.tob-gallery-scroll-btn:hover {
+    background: #f5e8d8;
+}
+
+/* =========================================================
+   MOBILE — VERTICAL GALLERY
+========================================================= */
+
+@media (max-width: 640px) {
+
+    .tob-product-thumbnails {
+        width: 100%;
+        overflow: hidden;
+    }
+
+    .tob-product-thumbnail-scroll {
+        width: 100%;
+        max-height: min(108vw, 390px);
+
+        gap: 6px;
+
+        overflow-y: auto;
+        overflow-x: hidden;
+
+        flex-direction: column;
+    }
+
+    .tob-gallery-scroll-btn {
+        width: 29px;
+        height: 24px;
+        font-size: 14px;
+    }
+
+}
+
+/* =========================================================
+   FINAL GALLERY REFINEMENTS — DESKTOP / TABLET / MOBILE
+   Works with .tob-product-thumbnail-scroll and arrow buttons
+========================================================= */
+.tob-product-gallery { align-items: start; }
+.tob-product-thumbnails { min-width: 0; align-self: stretch; }
+.tob-product-thumbnail-scroll {
+    width: 100%;
+    max-height: 510px;
+    padding: 2px 1px;
+    scrollbar-color: #b99a82 #f5eee8;
+    scrollbar-width: thin;
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
+}
+.tob-product-thumbnail-scroll::-webkit-scrollbar { width: 5px; }
+.tob-product-thumbnail-scroll::-webkit-scrollbar-track { background: #f5eee8; border-radius: 8px; }
+.tob-product-thumbnail-scroll::-webkit-scrollbar-thumb { background: #b99a82; border-radius: 8px; }
+.tob-product-thumb { flex-shrink: 0; }
+.tob-product-thumb:focus-visible,
+.tob-gallery-scroll-btn:focus-visible { outline: 2px solid #593728; outline-offset: 2px; }
+.tob-gallery-scroll-btn:disabled { opacity: .35; cursor: default; }
+#tobProductQuantity:disabled { background: #f7f3ef; color: #9a8c82; }
+@media (max-width: 1100px) {
+    .tob-product-thumbnail-scroll { max-height: 430px; }
+}
+@media (max-width: 900px) {
+    .tob-product-thumbnail-scroll { max-height: 530px; }
+}
+@media (max-width: 640px) {
+    .tob-product-thumbnail-scroll { max-height: min(100vw, 390px); gap: 6px; }
+    .tob-product-thumbnails { gap: 6px; }
+    .tob-gallery-scroll-btn { min-height: 24px; }
+}
+@media (max-width: 420px) {
+    .tob-product-thumbnail-scroll { max-height: min(100vw, 350px); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .tob-product-thumbnail-scroll { scroll-behavior: auto; }
 }

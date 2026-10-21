@@ -32,6 +32,12 @@
 
     $totalProducts = count($products);
 
+    $shopCategories = \App\Models\Category::query()
+    ->where('is_active', true)
+    ->orderBy('sort_order')
+    ->orderBy('name')
+    ->get();
+
     $wishlistSlugs = auth()->check()
 
         ? auth()->user()
@@ -490,53 +496,22 @@
 
                             </button>
 
-                            <button
+                            
+@foreach($shopCategories as $category)
+    <button
+        type="button"
+        class="tob-category-filter"
+        data-category="{{ $category->slug }}"
+    >
+        <span class="tob-category-filter-icon">◌</span>
 
-                                type="button"
+        <span>
+            {{ $category->name }}
+            ({{ $categoryCounts[$category->slug] ?? 0 }})
+        </span>
+    </button>
+@endforeach
 
-                                class="tob-category-filter"
-
-                                data-category="dry-fruit"
-
-                            >
-
-                                <span class="tob-category-filter-icon">◌</span>
-
-                                <span>Dry Fruit Cookies ({{ $categoryCounts['dry-fruit'] ?? 0 }})</span>
-
-                            </button>
-
-                            <button
-
-                                type="button"
-
-                                class="tob-category-filter"
-
-                                data-category="chocolate"
-
-                            >
-
-                                <span class="tob-category-filter-icon">◌</span>
-
-                                <span>Chocolate Cookies ({{ $categoryCounts['chocolate'] ?? 0 }})</span>
-
-                            </button>
-
-                            <button
-
-                                type="button"
-
-                                class="tob-category-filter"
-
-                                data-category="classic"
-
-                            >
-
-                                <span class="tob-category-filter-icon">◌</span>
-
-                                <span>Classic Cookies ({{ $categoryCounts['classic'] ?? 0 }})</span>
-
-                            </button>
 
                         </div>
 

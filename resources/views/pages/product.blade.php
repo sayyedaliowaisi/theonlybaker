@@ -1,11 +1,15 @@
-
 @extends('layouts.app')
 
-@section('title', $product['name'] . ' | The Only Baker')
-
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('css/product.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/reviews.css') }}">
+    <link
+        rel="stylesheet"
+        href="{{ asset('css/product.css') }}?v={{ file_exists(public_path('css/product.css')) ? filemtime(public_path('css/product.css')) : '1' }}"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{{ asset('css/reviews.css') }}?v={{ file_exists(public_path('css/reviews.css')) ? filemtime(public_path('css/reviews.css')) : '1' }}"
+    >
 @endpush
 
 @php
@@ -16,7 +20,7 @@
     */
     $productStock = max(0, (int) ($stock ?? 0));
     $productInStock = $productStock > 0;
-    
+
     $maximumQuantity = $productInStock
         ? min(50, $productStock)
         : 1;
@@ -36,7 +40,6 @@
 
     $canPurchase = $productInStock &&
         $minimumQuantity <= $maximumQuantity;
-
 
     /*
     |--------------------------------------------------------------------------
@@ -81,29 +84,156 @@
 
     /*
     |--------------------------------------------------------------------------
-    | PRODUCT IMAGE
+    | PRODUCT RECORD, IMAGE AND GALLERY
     |--------------------------------------------------------------------------
     */
-    $productImage = !empty($product['image'])
-        ? asset($product['image'])
-        : asset('images/products/cherry-fruit.jpg');
+    $productRecord = \App\Models\Product::query()
+        ->with('galleryImages')
+        ->where('slug', $product['slug'])
+        ->first();
+
+    $resolveProductMedia = static function (?string $path): ?string {
+        if (!$path) {
+            return null;
+        }
+
+        if (preg_match('~^https?://~i', $path)) {
+            return $path;
+        }
+
+        return str_starts_with($path, 'products/')
+            ? asset('storage/' . $path)
+            : asset(ltrim($path, '/'));
+    };
+
+    $productImage = $resolveProductMedia(
+        $productRecord?->image ?? ($product['image'] ?? null)
+    ) ?? asset('images/products/cherry-fruit.jpg');
+
+    $galleryImages = [$productImage];
+
+    foreach ($productRecord?->galleryImages ?? [] as $galleryRow) {
+        $url = $resolveProductMedia($galleryRow->image);
+
+        if ($url && !in_array($url, $galleryImages, true)) {
+            $galleryImages[] = $url;
+        }
+    }
 
     /*
     |--------------------------------------------------------------------------
-    | GALLERY
+    | LEGACY GEM BADAM PISTA IMAGES
     |--------------------------------------------------------------------------
     */
-    $galleryImages = [];
+    if (
+        $product['slug'] === 'gem-badam-pista' &&
+        ($productRecord?->galleryImages->isEmpty() ?? true) &&
+        (!$productRecord?->image || !str_starts_with($productRecord->image, 'products/'))
+    ) {
+        $galleryImages = [];
 
-    if ($product['slug'] === 'gem-badam-pista') {
         for ($i = 1; $i <= 6; $i++) {
             $galleryImages[] = asset(
                 'images/product-detail/jem-badam-pista-' . $i . '.jpg'
             );
         }
-    } else {
-        $galleryImages[] = $productImage;
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | PRODUCT BANNER
+    |--------------------------------------------------------------------------
+    */
+    $bannerImage = $resolveProductMedia(
+        $productRecord?->banner_image
+    );
+
+    if (
+        !$bannerImage &&
+        $product['slug'] === 'gem-badam-pista'
+    ) {
+        $bannerImage = asset(
+            'images/product-detail/jem-badam-pista-banner.jpg'
+        );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | ADMIN CONTROLLED PRODUCT DETAIL CONTENT
+    |--------------------------------------------------------------------------
+    */
+    $productSubtitle = $productRecord?->subtitle
+        ?: $categoryName;
+
+    $showPremiumBadge = $productRecord
+        ? (bool) $productRecord->show_premium_badge
+        : true;
+
+    $premiumBadgeText = $productRecord?->premium_badge_text
+        ?: 'PREMIUM';
+
+    $productIngredients = $productRecord?->ingredients
+        ?: 'Please refer to the product packaging for the complete ingredients and allergen information.';
+
+    $productNutrition = $productRecord?->nutrition_information
+        ?: 'Nutritional information may vary depending on the product and batch. Please check the product packaging.';
+
+    $productStorage = $productRecord?->storage_instructions
+        ?: 'Store in a cool and dry place. Keep the pack tightly sealed after opening.';
+
+    $productShipping = $productRecord?->shipping_delivery
+        ?: 'Carefully packed to help maintain freshness during delivery.';
+
+    /*
+    |--------------------------------------------------------------------------
+    | ADMIN CONTROLLED BENEFITS
+    |--------------------------------------------------------------------------
+    */
+    $defaultBenefits = [
+        1 => ['♡', 'Freshly Baked', 'Made with care'],
+        2 => ['✦', 'Premium Quality', 'Carefully selected ingredients'],
+        3 => ['♧', 'Quality Packaging', 'Freshness protected'],
+        4 => ['♢', 'Made with Love', 'The Only Baker'],
+    ];
+
+    $productBenefits = [];
+
+    for ($i = 1; $i <= 4; $i++) {
+        $productBenefits[] = [
+            'icon' => $productRecord?->{"benefit_{$i}_icon"}
+                ?: $defaultBenefits[$i][0],
+
+            'title' => $productRecord?->{"benefit_{$i}_title"}
+                ?: $defaultBenefits[$i][1],
+
+            'description' => $productRecord?->{"benefit_{$i}_description"}
+                ?: $defaultBenefits[$i][2],
+        ];
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | PRODUCT ACCORDIONS
+    |--------------------------------------------------------------------------
+    */
+    $productAccordions = [
+        [
+            'title' => 'Ingredients',
+            'content' => $productIngredients,
+        ],
+        [
+            'title' => 'Nutritional Information',
+            'content' => $productNutrition,
+        ],
+        [
+            'title' => 'Storage Instructions',
+            'content' => $productStorage,
+        ],
+        [
+            'title' => 'Shipping & Delivery',
+            'content' => $productShipping,
+        ],
+    ];
 
     /*
     |--------------------------------------------------------------------------
@@ -116,7 +246,104 @@
             ->pluck('product_slug')
             ->all()
         : [];
+
+    /*
+    |--------------------------------------------------------------------------
+    | PRODUCT SEO
+    |--------------------------------------------------------------------------
+    */
+    $seoTitle = $productRecord?->seo_title
+        ?: $product['name'] . ' | The Only Baker';
+
+    $descriptionText = trim(strip_tags(
+        (string) ($product['description'] ?? '')
+    ));
+
+    $seoDescription = $productRecord?->seo_description
+        ?: \Illuminate\Support\Str::limit(
+            $descriptionText !== ''
+                ? $descriptionText
+                : 'Shop freshly baked cookies from The Only Baker.',
+            155,
+            ''
+        );
+
+    $seoCanonical = route('product.show', [
+        'slug' => $product['slug'],
+    ]);
+
+    $seoRobots = ($productRecord?->seo_noindex ?? false)
+        ? 'noindex, follow'
+        : 'index, follow';
+
+    $seoImage = $resolveProductMedia(
+        $productRecord?->seo_image
+    ) ?? $productImage;
+
+    /*
+    |--------------------------------------------------------------------------
+    | PRODUCT STRUCTURED DATA
+    |--------------------------------------------------------------------------
+    */
+    $productSchema = [
+        '@context' => 'https://schema.org',
+        '@type' => 'Product',
+        'name' => $product['name'],
+        'description' => $seoDescription,
+        'image' => $galleryImages,
+        'sku' => 'TOB-' . strtoupper($product['slug']),
+        'brand' => [
+            '@type' => 'Brand',
+            'name' => 'The Only Baker',
+        ],
+        'offers' => [
+            '@type' => 'Offer',
+            'url' => $seoCanonical,
+            'priceCurrency' => 'INR',
+            'price' => number_format(
+                (float) $product['price'],
+                2,
+                '.',
+                ''
+            ),
+            'availability' => $productInStock
+                ? 'https://schema.org/InStock'
+                : 'https://schema.org/OutOfStock',
+            'itemCondition' => 'https://schema.org/NewCondition',
+        ],
+    ];
+
+    if (($reviewCount ?? 0) > 0) {
+        $productSchema['aggregateRating'] = [
+            '@type' => 'AggregateRating',
+            'ratingValue' => round((float) $averageRating, 1),
+            'reviewCount' => (int) $reviewCount,
+            'bestRating' => 5,
+            'worstRating' => 1,
+        ];
+    }
 @endphp
+
+@section('title', $seoTitle)
+@section('meta_description', $seoDescription)
+@section('meta_robots', $seoRobots)
+@section('canonical_url', $seoCanonical)
+@section('og_type', 'product')
+@section('og_title', $seoTitle)
+@section('og_description', $seoDescription)
+@section('og_image', $seoImage)
+
+@push('seo')
+    <script type="application/ld+json">{!! json_encode(
+        $productSchema,
+        JSON_UNESCAPED_SLASHES
+        | JSON_UNESCAPED_UNICODE
+        | JSON_HEX_TAG
+        | JSON_HEX_AMP
+        | JSON_HEX_APOS
+        | JSON_HEX_QUOT
+    ) !!}</script>
+@endpush
 
 @section('content')
 
@@ -128,28 +355,20 @@
     data-product-price="{{ $product['price'] }}"
     data-product-image="{{ $productImage }}"
     data-product-stock="{{ $productStock }}"
-    
     data-wholesale-enabled="{{ $wholesaleEnabled ? '1' : '0' }}"
     data-wholesale-moq="{{ $wholesaleMoq }}"
     data-product-min-quantity="{{ $minimumQuantity }}"
     data-product-max-quantity="{{ $maximumQuantity }}"
-
     data-checkout-url="{{ route('checkout') }}"
     data-stock-url="{{ route('cart.check-stock') }}"
 >
     <div class="tob-product-container">
 
         {{-- BREADCRUMB --}}
-        <nav
-            class="tob-product-breadcrumb"
-            aria-label="Breadcrumb"
-        >
+        <nav class="tob-product-breadcrumb" aria-label="Breadcrumb">
             <a href="{{ route('home') }}">Home</a>
-
             <span>›</span>
-
             <a href="{{ route('shop') }}">Cookies</a>
-
             <span>›</span>
 
             <a href="{{ route('shop', ['category' => $product['category']]) }}">
@@ -157,7 +376,6 @@
             </a>
 
             <span>›</span>
-
             <span>{{ $product['name'] }}</span>
         </nav>
 
@@ -167,29 +385,59 @@
             <div class="tob-product-gallery">
 
                 <div class="tob-product-thumbnails">
-                    @foreach ($galleryImages as $index => $galleryImage)
-                        <button
-                            type="button"
-                            class="tob-product-thumb {{ $index === 0 ? 'active' : '' }}"
-                            data-product-thumbnail
-                            data-image="{{ $galleryImage }}"
-                            aria-label="View product image {{ $index + 1 }}"
-                        >
-                            <img
-                                src="{{ $galleryImage }}"
-                                alt="{{ $product['name'] }} view {{ $index + 1 }}"
+
+                    <button
+                        type="button"
+                        class="tob-gallery-scroll-btn"
+                        data-gallery-scroll="up"
+                        aria-label="Scroll gallery up"
+                    >
+                        ↑
+                    </button>
+
+                    <div
+                        class="tob-product-thumbnail-scroll"
+                        id="tobThumbnailScroll"
+                    >
+                        @foreach ($galleryImages as $index => $galleryImage)
+                            <button
+                                type="button"
+                                class="tob-product-thumb {{ $index === 0 ? 'active' : '' }}"
+                                data-product-thumbnail
+                                data-image="{{ $galleryImage }}"
+                                aria-label="View product image {{ $index + 1 }}"
+                                aria-pressed="{{ $index === 0 ? 'true' : 'false' }}"
                             >
-                        </button>
-                    @endforeach
+                                <img
+                                    src="{{ $galleryImage }}"
+                                    alt="{{ $product['name'] }} view {{ $index + 1 }}"
+                                    loading="lazy"
+                                >
+                            </button>
+                        @endforeach
+                    </div>
+
+                    <button
+                        type="button"
+                        class="tob-gallery-scroll-btn"
+                        data-gallery-scroll="down"
+                        aria-label="Scroll gallery down"
+                    >
+                        ↓
+                    </button>
+
                 </div>
 
                 <div class="tob-product-image-area">
 
                     <div class="tob-product-image-frame">
 
-                        <span class="tob-product-image-badge">
-                            PREMIUM
-                        </span>
+                        {{-- PREMIUM BADGE --}}
+                        @if ($showPremiumBadge)
+                            <span class="tob-product-image-badge">
+                                {{ $premiumBadgeText }}
+                            </span>
+                        @endif
 
                         <img
                             id="tob-main-product-image"
@@ -235,13 +483,16 @@
                                 />
                             </svg>
                         </div>
+
                     </div>
 
-                    @if ($product['slug'] === 'gem-badam-pista')
+                    {{-- PRODUCT BANNER --}}
+                    @if ($bannerImage)
                         <div class="tob-product-lifestyle">
                             <img
-                                src="{{ asset('images/product-detail/jem-badam-pista-banner.jpg') }}"
-                                alt="{{ $product['name'] }} cookies"
+                                src="{{ $bannerImage }}"
+                                alt="{{ $product['name'] }} banner"
+                                loading="lazy"
                             >
                         </div>
                     @endif
@@ -295,7 +546,7 @@
                 </h1>
 
                 <p class="tob-product-subtitle">
-                    {{ $categoryName }}
+                    {{ $productSubtitle }}
                 </p>
 
                 {{-- REAL REVIEW RATING --}}
@@ -323,76 +574,77 @@
                     <span class="tob-rating-divider"></span>
                 </div>
 
-                
-{{-- RETAIL PRICE --}}
-<div class="tob-product-price-row">
-    <span class="tob-current-price">
-        ₹{{ number_format((float) $product['price'], 2) }}
-    </span>
-</div>
+                {{-- RETAIL PRICE --}}
+                <div class="tob-product-price-row">
+                    <span class="tob-current-price">
+                        ₹{{ number_format((float) $product['price'], 2) }}
+                    </span>
+                </div>
 
-<p class="tob-tax-text">
-    Inclusive of all taxes
-</p>
+                <p class="tob-tax-text">
+                    Inclusive of all taxes
+                </p>
 
-{{-- WHOLESALE INFORMATION: APPROVED RETAILERS ONLY --}}
-@if($wholesaleEnabled)
-    <div
-        class="tob-product-wholesale-info"
-        style="
-            margin: 18px 0;
-            padding: 18px 20px;
-            border: 1px solid #ead8c1;
-            border-radius: 12px;
-            background: #fff8ef;
-        "
-    >
-        <div style="
-            color: #76513a;
-            font-size: 13px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        ">
-            EXCLUSIVE WHOLESALE RATE
-        </div>
+                {{-- WHOLESALE INFORMATION --}}
+                @if ($wholesaleEnabled)
+                    <div
+                        class="tob-product-wholesale-info"
+                        style="
+                            margin:18px 0;
+                            padding:18px 20px;
+                            border:1px solid #ead8c1;
+                            border-radius:12px;
+                            background:#fff8ef;
+                        "
+                    >
+                        <div style="
+                            color:#76513a;
+                            font-size:13px;
+                            font-weight:700;
+                            margin-bottom:8px;
+                        ">
+                            EXCLUSIVE WHOLESALE RATE
+                        </div>
 
-        <div style="
-            color: #237747;
-            font-size: 27px;
-            font-weight: 700;
-            line-height: 1.3;
-        ">
-            ₹{{ number_format((float) $product['wholesale_price'], 2) }}
-            <span style="font-size: 13px; font-weight: 400;">
-                / unit
-            </span>
-        </div>
+                        <div style="
+                            color:#237747;
+                            font-size:27px;
+                            font-weight:700;
+                            line-height:1.3;
+                        ">
+                            ₹{{ number_format((float) $product['wholesale_price'], 2) }}
 
-        <p style="
-            margin: 10px 0 0;
-            font-size: 14px;
-            color: #76513a;
-        ">
-            Minimum wholesale order:
-            <strong>
-                {{ $product['wholesale_moq'] }}
-                {{ (int) $product['wholesale_moq'] === 1 ? 'unit' : 'units' }}
-            </strong>
-        </p>
+                            <span style="font-size:13px;font-weight:400;">
+                                / unit
+                            </span>
+                        </div>
 
-        <p style="
-            margin: 10px 0 0;
-            font-size: 12px;
-            line-height: 1.6;
-            color: #8a6a52;
-        ">
-            Wholesale pricing applies at checkout when
-            the minimum order quantity is met.
-        </p>
-    </div>
-@endif
+                        <p style="
+                            margin:10px 0 0;
+                            font-size:14px;
+                            color:#76513a;
+                        ">
+                            Minimum wholesale order:
 
+                            <strong>
+                                {{ $product['wholesale_moq'] }}
+                                {{ (int) $product['wholesale_moq'] === 1 ? 'unit' : 'units' }}
+                            </strong>
+                        </p>
 
+                        <p style="
+                            margin:10px 0 0;
+                            font-size:12px;
+                            line-height:1.6;
+                            color:#8a6a52;
+                        ">
+                            Wholesale pricing applies at checkout when
+                            the minimum order quantity is met.
+                        </p>
+                    </div>
+                @endif
+
+                {{-- PRODUCT DESCRIPTION --}}
                 <div class="tob-product-description">
                     <p>
                         {{ $product['description']
@@ -418,7 +670,7 @@
                                 class="tob-qty-btn"
                                 id="tobProductMinus"
                                 aria-label="Decrease quantity"
-                                @disabled(!$productInStock)
+                                @disabled(!$canPurchase)
                             >
                                 −
                             </button>
@@ -426,11 +678,11 @@
                             <input
                                 type="number"
                                 id="tobProductQuantity"
-                                value="1"
-                                min="1"
+                                value="{{ $canPurchase ? $minimumQuantity : 1 }}"
+                                min="{{ $minimumQuantity }}"
                                 max="{{ $maximumQuantity }}"
                                 readonly
-                                @disabled(!$productInStock)
+                                @disabled(!$canPurchase)
                             >
 
                             <button
@@ -438,7 +690,7 @@
                                 class="tob-qty-btn"
                                 id="tobProductPlus"
                                 aria-label="Increase quantity"
-                                @disabled(!$productInStock)
+                                @disabled(!$canPurchase)
                             >
                                 +
                             </button>
@@ -472,7 +724,7 @@
                         type="button"
                         class="tob-add-cart-btn"
                         id="tobProductAddCart"
-                        @disabled(!$productInStock)
+                        @disabled(!$canPurchase)
                     >
                         <svg
                             width="19"
@@ -492,9 +744,9 @@
                         </svg>
 
                         <span>
-                            {{ $productInStock
+                            {{ $canPurchase
                                 ? 'ADD TO CART'
-                                : 'OUT OF STOCK' }}
+                                : ($productInStock ? 'UNAVAILABLE' : 'OUT OF STOCK') }}
                         </span>
                     </button>
 
@@ -502,137 +754,68 @@
                         type="button"
                         class="tob-buy-now-btn"
                         id="tobProductBuyNow"
-                        @disabled(!$productInStock)
+                        @disabled(!$canPurchase)
                     >
-                        {{ $productInStock
+                        {{ $canPurchase
                             ? 'BUY NOW'
-                            : 'OUT OF STOCK' }}
+                            : ($productInStock ? 'UNAVAILABLE' : 'OUT OF STOCK') }}
                     </button>
 
                 </div>
 
-                {{-- BENEFITS --}}
+                {{-- ADMIN CONTROLLED BENEFITS --}}
                 <div class="tob-product-benefits">
 
-                    <div class="tob-product-benefit">
-                        <div class="tob-benefit-icon">♡</div>
-                        <div>
-                            <strong>Freshly Baked</strong>
-                            <span>Made with care</span>
-                        </div>
-                    </div>
+                    @foreach ($productBenefits as $benefit)
+                        <div class="tob-product-benefit">
 
-                    <div class="tob-product-benefit">
-                        <div class="tob-benefit-icon">✦</div>
-                        <div>
-                            <strong>Premium Quality</strong>
-                            <span>Carefully selected ingredients</span>
-                        </div>
-                    </div>
+                            <div class="tob-benefit-icon">
+                                {{ $benefit['icon'] }}
+                            </div>
 
-                    <div class="tob-product-benefit">
-                        <div class="tob-benefit-icon">♧</div>
-                        <div>
-                            <strong>Quality Packaging</strong>
-                            <span>Freshness protected</span>
-                        </div>
-                    </div>
+                            <div>
+                                <strong>
+                                    {{ $benefit['title'] }}
+                                </strong>
 
-                    <div class="tob-product-benefit">
-                        <div class="tob-benefit-icon">♢</div>
-                        <div>
-                            <strong>Made with Love</strong>
-                            <span>The Only Baker</span>
+                                <span>
+                                    {{ $benefit['description'] }}
+                                </span>
+                            </div>
+
                         </div>
-                    </div>
+                    @endforeach
 
                 </div>
 
-                {{-- ACCORDIONS --}}
+                {{-- ADMIN CONTROLLED ACCORDIONS --}}
                 <div class="tob-product-accordions">
 
-                    <div class="tob-product-accordion active">
+                    @foreach ($productAccordions as $index => $accordion)
 
-                        <button
-                            type="button"
-                            class="tob-accordion-trigger"
-                            aria-expanded="true"
-                        >
-                            <span>Ingredients</span>
-                            <span class="tob-accordion-icon">−</span>
-                        </button>
+                        <div class="tob-product-accordion {{ $index === 0 ? 'active' : '' }}">
 
-                        <div class="tob-accordion-content">
-                            <p>
-                                Please refer to the product packaging
-                                for the complete ingredients and
-                                allergen information.
-                            </p>
+                            <button
+                                type="button"
+                                class="tob-accordion-trigger"
+                                aria-expanded="{{ $index === 0 ? 'true' : 'false' }}"
+                            >
+                                <span>
+                                    {{ $accordion['title'] }}
+                                </span>
+
+                                <span class="tob-accordion-icon">
+                                    {{ $index === 0 ? '−' : '+' }}
+                                </span>
+                            </button>
+
+                            <div class="tob-accordion-content">
+                                <p style="white-space:pre-line;">{{ $accordion['content'] }}</p>
+                            </div>
+
                         </div>
 
-                    </div>
-
-                    <div class="tob-product-accordion">
-
-                        <button
-                            type="button"
-                            class="tob-accordion-trigger"
-                            aria-expanded="false"
-                        >
-                            <span>Nutritional Information</span>
-                            <span class="tob-accordion-icon">+</span>
-                        </button>
-
-                        <div class="tob-accordion-content">
-                            <p>
-                                Nutritional information may vary
-                                depending on the product and batch.
-                                Please check the product packaging.
-                            </p>
-                        </div>
-
-                    </div>
-
-                    <div class="tob-product-accordion">
-
-                        <button
-                            type="button"
-                            class="tob-accordion-trigger"
-                            aria-expanded="false"
-                        >
-                            <span>Storage Instructions</span>
-                            <span class="tob-accordion-icon">+</span>
-                        </button>
-
-                        <div class="tob-accordion-content">
-                            <p>
-                                Store in a cool and dry place.
-                                Keep the pack tightly sealed
-                                after opening.
-                            </p>
-                        </div>
-
-                    </div>
-
-                    <div class="tob-product-accordion">
-
-                        <button
-                            type="button"
-                            class="tob-accordion-trigger"
-                            aria-expanded="false"
-                        >
-                            <span>Shipping & Delivery</span>
-                            <span class="tob-accordion-icon">+</span>
-                        </button>
-
-                        <div class="tob-accordion-content">
-                            <p>
-                                Carefully packed to help maintain
-                                freshness during delivery.
-                            </p>
-                        </div>
-
-                    </div>
+                    @endforeach
 
                 </div>
 
@@ -1006,9 +1189,9 @@
                         true
                     );
 
-                    $relatedImage = !empty($related['image'])
-                        ? asset($related['image'])
-                        : asset('images/products/cherry-fruit.jpg');
+                    $relatedImage = $resolveProductMedia(
+                        $related['image'] ?? null
+                    ) ?? asset('images/products/cherry-fruit.jpg');
                 @endphp
 
                 <article class="tob-related-card">
@@ -1073,6 +1256,7 @@
 @endsection
 
 @push('scripts')
-    <script src="{{ asset('js/product.js') }}"></script>
-    <script src="{{ asset('js/reviews.js') }}"></script>
+    <script src="{{ asset('js/product.js') }}?v={{ file_exists(public_path('js/product.js')) ? filemtime(public_path('js/product.js')) : '1' }}"></script>
+
+    <script src="{{ asset('js/reviews.js') }}?v={{ file_exists(public_path('js/reviews.js')) ? filemtime(public_path('js/reviews.js')) : '1' }}"></script>
 @endpush

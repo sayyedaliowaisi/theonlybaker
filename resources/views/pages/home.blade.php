@@ -726,7 +726,7 @@
                     <div class="tob-cookie-image">
 
                         <img
-                            src="{{ asset('images/cookies/chocolate-chip.jpg') }}"
+                            src="{{ asset('images/products/choco-chips.jpg') }}"
                             alt="Chocolate Chip"
                             loading="lazy"
                         >
@@ -755,7 +755,7 @@
                     <div class="tob-cookie-image">
 
                         <img
-                            src="{{ asset('images/cookies/jem-badam-pista.jpg') }}"
+                            src="{{ asset('images/products/gem-badam-pista.jpg') }}"
                             alt="Jem Badam Pista"
                             loading="lazy"
                         >
@@ -784,7 +784,7 @@
                     <div class="tob-cookie-image">
 
                         <img
-                            src="{{ asset('images/cookies/mix-nuts.jpg') }}"
+                            src="{{ asset('images/products/badam-pista.jpg') }}"
                             alt="Mix Nuts"
                             loading="lazy"
                         >
@@ -813,7 +813,7 @@
                     <div class="tob-cookie-image">
 
                         <img
-                            src="{{ asset('images/cookies/kaju.jpg') }}"
+                            src="{{ asset('images/products/kaju-cashew.jpg') }}"
                             alt="Kaju"
                             loading="lazy"
                         >
@@ -842,7 +842,7 @@
                     <div class="tob-cookie-image">
 
                         <img
-                            src="{{ asset('images/cookies/coconut.jpg') }}"
+                            src="{{ asset('images/products/coconut.jpg') }}"
                             alt="Coconut"
                             loading="lazy"
                         >
@@ -945,7 +945,7 @@
                 <div class="tob-category-image-wrap">
 
                     <img
-                        src="{{ asset('images/categories/all-cookies.png') }}"
+                        src="{{ asset('images/collections/best-sellers.jpg') }}"
                         alt="All Cookies"
                         class="tob-category-image"
                         loading="lazy"
@@ -967,7 +967,7 @@
                 <div class="tob-category-image-wrap">
 
                     <img
-                        src="{{ asset('images/categories/dry-fruit-cookies.png') }}"
+                        src="{{ asset('images/collections/dry-fruit.jpg') }}"
                         alt="Dry Fruit Cookies"
                         class="tob-category-image"
                         loading="lazy"
@@ -990,7 +990,7 @@
                 <div class="tob-category-image-wrap">
 
                     <img
-                        src="{{ asset('images/categories/chocolate-cookies.png') }}"
+                        src="{{ asset('images/collections/chocolate.jpg') }}"
                         alt="Chocolate Cookies"
                         class="tob-category-image"
                         loading="lazy"
@@ -1013,7 +1013,7 @@
                 <div class="tob-category-image-wrap">
 
                     <img
-                        src="{{ asset('images/categories/traditional-flavours.png') }}"
+                        src="{{ asset('images/collections/classic.jpg') }}"
                         alt="Traditional Flavours"
                         class="tob-category-image"
                         loading="lazy"
@@ -1036,7 +1036,7 @@
                 <div class="tob-category-image-wrap">
 
                     <img
-                        src="{{ asset('images/categories/coconut-cookies.png') }}"
+                        src="{{ asset('images/products/coconut.jpg') }}"
                         alt="Coconut Cookies"
                         class="tob-category-image"
                         loading="lazy"
@@ -1059,7 +1059,7 @@
                 <div class="tob-category-image-wrap">
 
                     <img
-                        src="{{ asset('images/categories/savoury-cookies.png') }}"
+                        src="{{ asset('images/products/ajwain.jpg') }}"
                         alt="Savoury Cookies"
                         class="tob-category-image"
                         loading="lazy"
@@ -1082,7 +1082,7 @@
                 <div class="tob-category-image-wrap">
 
                     <img
-                        src="{{ asset('images/categories/gifting.png') }}"
+                        src="{{ asset('images/collections/gifting.jpg') }}"
                         alt="Gifting"
                         class="tob-category-image"
                         loading="lazy"
@@ -1584,7 +1584,7 @@
 
                 <div class="tob-ingredient-image-wrap">
                     <img
-                        src="{{ asset('images/ingredients/cashews.png') }}"
+                        src="{{ asset('images/ingredients/Cashews.png') }}"
                         alt="Cashews"
                         class="tob-ingredient-image"
                         loading="lazy"
@@ -1623,7 +1623,7 @@
 
                 <div class="tob-ingredient-image-wrap">
                     <img
-                        src="{{ asset('images/ingredients/coconut.png') }}"
+                        src="{{ asset('images/ingredients/Coconut.png') }}"
                         alt="Coconut"
                         class="tob-ingredient-image"
                         loading="lazy"

@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,18 +13,86 @@
         content="{{ csrf_token() }}"
     >
 
+    {{-- SEO TITLE --}}
     <title>@yield('title', 'The Only Baker')</title>
 
+    {{-- META DESCRIPTION --}}
     <meta
         name="description"
         content="@yield('meta_description', 'The Only Baker - Freshly baked cakes, cookies and desserts.')"
     >
 
-    {{-- =====================================================
-         VERSIONED GLOBAL CSS
-         Automatically refreshes when file changes
-    ====================================================== --}}
+    {{-- GOOGLE INDEXING --}}
+    <meta
+        name="robots"
+        content="@yield('meta_robots', 'index, follow')"
+    >
 
+    {{-- CANONICAL --}}
+    <link
+        rel="canonical"
+        href="@yield('canonical_url', url()->current())"
+    >
+
+    {{-- OPEN GRAPH --}}
+    <meta
+        property="og:type"
+        content="@yield('og_type', 'website')"
+    >
+
+    <meta
+        property="og:site_name"
+        content="The Only Baker"
+    >
+
+    <meta
+        property="og:title"
+        content="@yield('og_title', 'The Only Baker')"
+    >
+
+    <meta
+        property="og:description"
+        content="@yield('og_description', 'The Only Baker - Freshly baked cakes, cookies and desserts.')"
+    >
+
+    <meta
+        property="og:url"
+        content="@yield('canonical_url', url()->current())"
+    >
+
+    @hasSection('og_image')
+        <meta
+            property="og:image"
+            content="@yield('og_image')"
+        >
+    @endif
+
+    {{-- TWITTER / X --}}
+    <meta
+        name="twitter:card"
+        content="summary_large_image"
+    >
+
+    <meta
+        name="twitter:title"
+        content="@yield('og_title', 'The Only Baker')"
+    >
+
+    <meta
+        name="twitter:description"
+        content="@yield('og_description', 'The Only Baker - Freshly baked cakes, cookies and desserts.')"
+    >
+
+    @hasSection('og_image')
+        <meta
+            name="twitter:image"
+            content="@yield('og_image')"
+        >
+    @endif
+
+    @stack('seo')
+
+    {{-- VERSIONED GLOBAL CSS AND JS --}}
     @php
         $mainCssVersion = file_exists(public_path('css/main.css'))
             ? filemtime(public_path('css/main.css'))
@@ -50,31 +117,15 @@
 
 <body>
 
-    {{-- =====================================================
-         GLOBAL NAVBAR
-    ====================================================== --}}
-
     @include('components.navbar')
-
-    {{-- =====================================================
-         PAGE CONTENT
-    ====================================================== --}}
 
     <main>
         @yield('content')
     </main>
 
-    {{-- =====================================================
-         GLOBAL FOOTER
-    ====================================================== --}}
-
     @include('components.footer')
 
-    {{-- =====================================================
-         GLOBAL PRODUCT SEARCH DATA
-         Source: config/products.php
-    ====================================================== --}}
-
+    {{-- GLOBAL PRODUCT SEARCH --}}
     @php
         $searchProducts = collect(config('products', []))
             ->map(function ($product, $slug) {
@@ -97,10 +148,6 @@
             shopUrl: @json(route('shop'))
         };
     </script>
-
-    {{-- =====================================================
-         VERSIONED GLOBAL JAVASCRIPT
-    ====================================================== --}}
 
     <script
         src="{{ asset('js/cart-storage.js') }}?v={{ $cartJsVersion }}"

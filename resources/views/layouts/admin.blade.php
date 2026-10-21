@@ -21,9 +21,9 @@
     </title>
 
     <link
-        rel="stylesheet"
-        href="{{ asset('css/admin.css') }}"
-    >
+    rel="stylesheet"
+    href="{{ asset('css/admin.css') }}?v={{ file_exists(public_path('css/admin.css')) ? filemtime(public_path('css/admin.css')) : '1' }}"
+>
 
     @stack('styles')
 
@@ -108,6 +108,14 @@
 
                 <a href="{{ route('admin.products.index') }}">
     Products
+</a>
+
+<a
+    href="{{ route('admin.categories.index') }}"
+    class="{{ request()->routeIs('admin.categories.*') ? 'active' : '' }}"
+>
+    <span class="tob-admin-nav-icon">▤</span>
+    Categories
 </a>
 
                 {{-- INVENTORY --}}
@@ -275,7 +283,7 @@
 
     </div>
 
-    <script src="{{ asset('js/admin.js') }}" defer></script>
+    <script src="{{ asset('js/admin.js') }}?v={{ file_exists(public_path('js/admin.js')) ? filemtime(public_path('js/admin.js')) : '1' }}"></script>
 
     @stack('scripts')
 

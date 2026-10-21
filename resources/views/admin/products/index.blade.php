@@ -4,17 +4,25 @@
 @section('title', 'Product Management | The Only Baker')
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('css/admin-products.css') }}">
+    <link
+    rel="stylesheet"
+    href="{{ asset('css/admin-product.css') }}?v={{ file_exists(public_path('css/admin-product.css')) ? filemtime(public_path('css/admin-product.css')) : '1' }}"
+>
 @endpush
 
 @section('content')
+
 <div class="tob-products-admin">
 
     {{-- PAGE HEADER --}}
     <div class="tob-products-heading">
         <div>
             <h1>Product Management</h1>
-            <p>Manage products, retail prices, wholesale pricing and availability.</p>
+
+            <p>
+                Manage products, retail prices, wholesale pricing,
+                stock availability and archived products.
+            </p>
         </div>
 
         <a
@@ -25,14 +33,81 @@
         </a>
     </div>
 
+    {{-- SUCCESS MESSAGE --}}
+    @if (session('success'))
+        <div
+            role="status"
+            style="
+                padding: 14px 18px;
+                margin-bottom: 20px;
+                background: #eaf7ee;
+                border: 1px solid #b8e0c3;
+                border-radius: 10px;
+                color: #237747;
+            "
+        >
+            {{ session('success') }}
+        </div>
+    @endif
+
+    {{-- ERROR MESSAGE --}}
+    @if (session('error'))
+        <div
+            role="alert"
+            style="
+                padding: 14px 18px;
+                margin-bottom: 20px;
+                background: #fff0ed;
+                border: 1px solid #f0c1b9;
+                border-radius: 10px;
+                color: #c0392b;
+            "
+        >
+            {{ session('error') }}
+        </div>
+    @endif
+
+    {{-- PRODUCT TABS --}}
+    <div style="
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 20px;
+    ">
+        <a
+            href="{{ route('admin.products.index') }}"
+            class="tob-products-btn {{
+                $view === 'current'
+                    ? 'tob-products-btn-primary'
+                    : 'tob-products-btn-outline'
+            }}"
+        >
+            All Products ({{ $currentCount }})
+        </a>
+
+        <a
+            href="{{ route('admin.products.index', ['view' => 'archived']) }}"
+            class="tob-products-btn {{
+                $view === 'archived'
+                    ? 'tob-products-btn-primary'
+                    : 'tob-products-btn-outline'
+            }}"
+        >
+            Archived Products ({{ $archivedCount }})
+        </a>
+    </div>
+
     {{-- FILTERS --}}
     <form
         method="GET"
         action="{{ route('admin.products.index') }}"
         class="tob-products-panel tob-products-filters"
     >
+        <input type="hidden" name="view" value="{{ $view }}">
+
         <div class="tob-products-filter-grid">
 
+            {{-- SEARCH --}}
             <div class="tob-products-field">
                 <label for="product-search">
                     Search products
@@ -47,6 +122,7 @@
                 >
             </div>
 
+            {{-- CATEGORY FILTER --}}
             <div class="tob-products-field">
                 <label for="product-category">
                     Category
@@ -58,7 +134,7 @@
                 >
                     <option value="">All Categories</option>
 
-                    @foreach($categories as $category)
+                    @foreach ($categories as $category)
                         <option
                             value="{{ $category }}"
                             @selected(request('category') === $category)
@@ -69,6 +145,7 @@
                 </select>
             </div>
 
+            {{-- STATUS FILTER --}}
             <div class="tob-products-field">
                 <label for="product-status">
                     Status
@@ -96,6 +173,7 @@
                 </select>
             </div>
 
+            {{-- FILTER ACTIONS --}}
             <div class="tob-products-filter-actions">
                 <button
                     type="submit"
@@ -105,7 +183,12 @@
                 </button>
 
                 <a
-                    href="{{ route('admin.products.index') }}"
+                    href="{{ route(
+                        'admin.products.index',
+                        $view === 'archived'
+                            ? ['view' => 'archived']
+                            : []
+                    ) }}"
                     class="tob-products-btn tob-products-btn-outline"
                 >
                     Reset
@@ -117,6 +200,7 @@
 
     {{-- PRODUCTS TABLE --}}
     <div class="tob-products-panel tob-products-table-panel">
+
         <div class="tob-products-table-scroll">
 
             <table class="tob-products-table">
@@ -135,12 +219,15 @@
 
                 <tbody>
 
-                    @forelse($products as $product)
+                    @forelse ($products as $product)
 
                         @php
                             $imageUrl = $product->image
                                 ? (
-                                    str_starts_with($product->image, 'products/')
+                                    str_starts_with(
+                                        $product->image,
+                                        'products/'
+                                    )
                                         ? asset('storage/' . $product->image)
                                         : asset($product->image)
                                 )
@@ -161,7 +248,7 @@
                             <td>
                                 <div class="tob-products-product-cell">
 
-                                    @if($imageUrl)
+                                    @if ($imageUrl)
                                         <img
                                             class="tob-products-thumb"
                                             src="{{ $imageUrl }}"
@@ -185,6 +272,13 @@
                                         <small>
                                             {{ $product->slug }}
                                         </small>
+
+                                        @if ($product->trashed())
+                                            <small style="color: #c0392b;">
+                                                Archived:
+                                                {{ $product->deleted_at?->format('d M Y, h:i A') }}
+                                            </small>
+                                        @endif
                                     </div>
 
                                 </div>
@@ -202,14 +296,13 @@
 
                             {{-- WHOLESALE PRICE & MOQ --}}
                             <td>
-                                @if($product->hasWholesalePricing())
+                                @if ($product->hasWholesalePricing())
 
                                     <div style="
                                         display: flex;
                                         flex-direction: column;
                                         gap: 5px;
                                     ">
-
                                         <strong style="
                                             color: #237747;
                                             font-size: 14px;
@@ -217,14 +310,11 @@
                                             ₹{{ number_format((float) $product->wholesale_price, 2) }}
                                         </strong>
 
-                                        <small style="
-                                            color: #76665b;
-                                        ">
+                                        <small style="color: #76665b;">
                                             MOQ:
                                             {{ $product->getWholesaleMinimumQuantity() }}
                                             units
                                         </small>
-
                                     </div>
 
                                 @else
@@ -253,51 +343,109 @@
                                     }}"
                                 >
                                     {{ $stock }}
-
                                     {{ $stock <= 0 ? '(Out of stock)' : '' }}
                                 </span>
                             </td>
 
                             {{-- STATUS --}}
                             <td>
-                                <span
-                                    class="tob-products-status {{
-                                        $product->is_active
-                                            ? 'is-active'
-                                            : 'is-inactive'
-                                    }}"
-                                >
-                                    {{ $product->is_active ? 'Active' : 'Inactive' }}
-                                </span>
+                                @if ($product->trashed())
+
+                                    <span
+                                        class="tob-products-status is-inactive"
+                                        style="
+                                            background: #fff0ed;
+                                            color: #c0392b;
+                                        "
+                                    >
+                                        Archived
+                                    </span>
+
+                                @else
+
+                                    <span
+                                        class="tob-products-status {{
+                                            $product->is_active
+                                                ? 'is-active'
+                                                : 'is-inactive'
+                                        }}"
+                                    >
+                                        {{ $product->is_active ? 'Active' : 'Inactive' }}
+                                    </span>
+
+                                @endif
                             </td>
 
                             {{-- ACTIONS --}}
                             <td>
                                 <div class="tob-products-actions">
 
-                                    <a
-                                        href="{{ route('admin.products.edit', $product) }}"
-                                        class="tob-products-action-link"
-                                    >
-                                        Edit
-                                    </a>
+                                    @if ($product->trashed())
 
-                                    <form
-                                        method="POST"
-                                        action="{{ route('admin.products.toggle-status', $product) }}"
-                                    >
-                                        @csrf
-                                        @method('PATCH')
-
-                                        <button
-                                            type="submit"
-                                            class="tob-products-action-link tob-products-toggle"
-                                            onclick="return confirm(@js($product->is_active ? 'Deactivate this product?' : 'Activate this product?'))"
+                                        {{-- RESTORE PRODUCT --}}
+                                        <form
+                                            method="POST"
+                                            action="{{ route('admin.products.restore', $product->id) }}"
+                                            onsubmit="return confirm('Restore this product?')"
                                         >
-                                            {{ $product->is_active ? 'Deactivate' : 'Activate' }}
-                                        </button>
+                                            @csrf
+                                            @method('PATCH')
 
-                                    </form>
+                                            <button
+                                                type="submit"
+                                                class="tob-products-action-link"
+                                                style="color: #237747;"
+                                            >
+                                                Restore
+                                            </button>
+                                        </form>
+
+                                    @else
+
+                                        {{-- EDIT PRODUCT --}}
+                                        <a
+                                            href="{{ route('admin.products.edit', $product) }}"
+                                            class="tob-products-action-link"
+                                        >
+                                            Edit
+                                        </a>
+
+                                        {{-- ACTIVATE / DEACTIVATE --}}
+                                        <form
+                                            method="POST"
+                                            action="{{ route('admin.products.toggle-status', $product) }}"
+                                        >
+                                            @csrf
+                                            @method('PATCH')
+
+                                            <button
+                                                type="submit"
+                                                class="tob-products-action-link tob-products-toggle"
+                                                onclick="return confirm(@js($product->is_active ? 'Deactivate this product?' : 'Activate this product?'))"
+                                            >
+                                                {{ $product->is_active ? 'Deactivate' : 'Activate' }}
+                                            </button>
+                                        </form>
+
+                                        {{-- ARCHIVE PRODUCT --}}
+                                        <form
+                                            method="POST"
+                                            action="{{ route('admin.products.archive', $product) }}"
+                                            onsubmit="return confirm('Archive this product? You can restore it later.');"
+                                        >
+                                            @csrf
+                                            @method('PATCH')
+
+                                            <button
+                                                type="submit"
+                                                class="tob-products-action-link"
+                                                style="color: #c0392b;"
+                                            >
+                                                Archive
+                                            </button>
+                                        </form>
+
+                                    @endif
 
                                 </div>
                             </td>
@@ -311,7 +459,10 @@
                                 colspan="7"
                                 class="tob-products-empty"
                             >
-                                No products found.
+                                {{ $view === 'archived'
+                                    ? 'No archived products found.'
+                                    : 'No products found.'
+                                }}
                             </td>
                         </tr>
 
@@ -325,11 +476,14 @@
     </div>
 
     {{-- PAGINATION --}}
-    @if($products->hasPages())
+    @if ($products->hasPages())
+
         <div class="tob-products-pagination">
             {{ $products->onEachSide(1)->links('pagination::bootstrap-5') }}
         </div>
+
     @endif
 
 </div>
+
 @endsection

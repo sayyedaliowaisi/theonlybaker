@@ -4,9 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Product extends Model
 {
+    use SoftDeletes;
+
     protected $fillable = [
         'slug',
         'number',
@@ -20,6 +24,37 @@ class Product extends Model
         'is_active',
         'is_featured',
         'sort_order',
+        'banner_image',
+
+        'seo_title',
+        'seo_description',
+        'seo_keywords',
+        'seo_image',
+        'seo_noindex',
+
+        'subtitle',
+        'premium_badge_text',
+        'show_premium_badge',
+        'ingredients',
+        'nutrition_information',
+        'storage_instructions',
+        'shipping_delivery',
+
+        'benefit_1_icon',
+        'benefit_1_title',
+        'benefit_1_description',
+
+        'benefit_2_icon',
+        'benefit_2_title',
+        'benefit_2_description',
+
+        'benefit_3_icon',
+        'benefit_3_title',
+        'benefit_3_description',
+
+        'benefit_4_icon',
+        'benefit_4_title',
+        'benefit_4_description',
     ];
 
     protected function casts(): array
@@ -32,12 +67,11 @@ class Product extends Model
             'is_active' => 'boolean',
             'is_featured' => 'boolean',
             'sort_order' => 'integer',
+            'show_premium_badge' => 'boolean',
+            'seo_noindex' => 'boolean',
         ];
     }
 
-    /**
-     * Product inventory relationship.
-     */
     public function inventory(): HasOne
     {
         return $this->hasOne(
@@ -47,46 +81,28 @@ class Product extends Model
         );
     }
 
-    /**
-     * Only active products.
-     */
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
     }
 
-    /**
-     * Check whether product is in stock.
-     */
     public function getIsInStockAttribute(): bool
     {
         return $this->inventory !== null
             && $this->inventory->stock > 0;
     }
 
-    /**
-     * Check whether wholesale pricing is configured.
-     */
     public function hasWholesalePricing(): bool
     {
         return $this->wholesale_price !== null
             && (float) $this->wholesale_price > 0;
     }
 
-    /**
-     * Minimum quantity required for wholesale orders.
-     */
     public function getWholesaleMinimumQuantity(): int
     {
         return max(1, (int) $this->wholesale_moq);
     }
 
-    /**
-     * Return price according to approved retailer status.
-     *
-     * Note: Checkout must independently validate
-     * wholesale eligibility and minimum quantity.
-     */
     public function getPriceForUser(?User $user): string
     {
         if (
@@ -98,5 +114,12 @@ class Product extends Model
         }
 
         return (string) $this->price;
+    }
+
+    public function galleryImages(): HasMany
+    {
+        return $this->hasMany(ProductImage::class)
+            ->orderBy('sort_order')
+            ->orderBy('id');
     }
 }

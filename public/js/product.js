@@ -486,8 +486,49 @@ document.addEventListener("DOMContentLoaded", function () {
             });
 
             thumb.classList.add("active");
+
+            thumbnails.forEach(item => {
+    item.setAttribute(
+        "aria-pressed",
+        item === thumb ? "true" : "false"
+    );
+});
         });
     });
+
+    /* =========================================================
+   PRODUCT THUMBNAIL VERTICAL SCROLL
+========================================================= */
+
+const thumbnailScroll = document.getElementById(
+    "tobThumbnailScroll"
+);
+
+const galleryButtons = document.querySelectorAll(
+    "[data-gallery-scroll]"
+);
+
+galleryButtons.forEach(button => {
+
+    button.addEventListener("click", () => {
+
+        if (!thumbnailScroll) {
+            return;
+        }
+
+        const direction =
+            button.dataset.galleryScroll === "up"
+                ? -1
+                : 1;
+
+        thumbnailScroll.scrollBy({
+            top: direction * 200,
+            behavior: "smooth"
+        });
+
+    });
+
+});
 
     /* PRODUCT IMAGE ZOOM */
 
