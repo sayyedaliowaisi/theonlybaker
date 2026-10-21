@@ -5,7 +5,7 @@
 @push('styles')
     <link
     rel="stylesheet"
-    href="{{ asset('css/admin-product.css') }}?v={{ file_exists(public_path('css/admin-product.css')) ? filemtime(public_path('css/admin-product.css')) : '1' }}"
+    href="{{ asset('css/admin-products.css') }}?v={{ file_exists(public_path('css/admin-products.css')) ? filemtime(public_path('css/admin-products.css')) : '1' }}"
 >
 @endpush
 
