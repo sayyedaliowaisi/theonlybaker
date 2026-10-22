@@ -10022,3 +10022,40 @@ body.tob-mobile-menu-locked {
         animation-duration: .01ms;
     }
 }
+
+
+/* THE ONLY BAKER — SHOP HOVER DROPDOWN */
+
+@media (min-width: 1024px) {
+    .tob-nav-dropdown {
+        position: relative;
+    }
+
+    .tob-nav-dropdown .tob-shop-dropdown {
+        display: block;
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transform: translateY(12px);
+        transition:
+            opacity 0.25s ease,
+            transform 0.25s ease,
+            visibility 0.25s ease;
+    }
+
+    .tob-nav-dropdown:hover .tob-shop-dropdown,
+    .tob-nav-dropdown:focus-within .tob-shop-dropdown,
+    .tob-nav-dropdown.is-open .tob-shop-dropdown {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+        transform: translateY(0);
+    }
+
+    .tob-nav-dropdown:hover .tob-arrow,
+    .tob-nav-dropdown:focus-within .tob-arrow,
+    .tob-nav-dropdown.is-open .tob-arrow {
+        transform: rotate(180deg);
+    }
+}
+

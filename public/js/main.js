@@ -1698,21 +1698,35 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 
+
 /* ==========================================
-   DESKTOP SHOP DROPDOWN
+   DESKTOP SHOP DROPDOWN — HOVER + CLICK
 ========================================== */
 
 document.addEventListener("DOMContentLoaded", function () {
-
     const dropdown = document.getElementById("tobDesktopShopDropdown");
     const toggle = document.getElementById("tobDesktopShopToggle");
 
     if (!dropdown || !toggle) return;
 
+    const desktopQuery = window.matchMedia("(min-width: 901px)");
+
     function setDropdownState(isOpen) {
         dropdown.classList.toggle("is-open", isOpen);
         toggle.setAttribute("aria-expanded", String(isOpen));
     }
+
+    dropdown.addEventListener("mouseenter", function () {
+        if (desktopQuery.matches) {
+            setDropdownState(true);
+        }
+    });
+
+    dropdown.addEventListener("mouseleave", function () {
+        if (desktopQuery.matches) {
+            setDropdownState(false);
+        }
+    });
 
     toggle.addEventListener("click", function () {
         setDropdownState(!dropdown.classList.contains("is-open"));
@@ -1727,7 +1741,8 @@ document.addEventListener("DOMContentLoaded", function () {
     document.addEventListener("keydown", function (event) {
         if (event.key === "Escape") {
             setDropdownState(false);
+            toggle.focus();
         }
     });
-
 });
+
